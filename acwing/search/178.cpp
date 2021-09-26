@@ -69,7 +69,7 @@ inline void addEdge(int u, int v, int w)
     edge[++cnt] = {v, u, w, rhead[v]};
     rhead[v] = cnt;
 }
-int g[maxn], h[maxn];
+int h[maxn];
 struct Node
 {
     int u;
@@ -115,7 +115,6 @@ int times[maxn];
 int astar()
 {
     priority_queue<Node> q;
-    g[s] = 0;
     q.push({s, -h[s]});
     while (q.size())
     {
@@ -134,7 +133,6 @@ int astar()
             if (times[v] < k)
             {
                 q.push({v, -(gdis + edge[i].w + h[v])});
-                // g[v] = g[u] + edge[i].w;
             }
         }
     }
