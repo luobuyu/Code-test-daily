@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 #define ll long long
 #define lll long long
+#define pair <int, int> PII;
 namespace FAST_IO
 {
 
@@ -60,6 +61,8 @@ int main()
 #ifndef ONLINE_JUDGE
     freopen("in.txt", "r", stdin);
 #endif
+    ios::sync_with_stdio(false);
+    cin.tie(0);
     int tcase;
     read(tcase);
     while (tcase--)
