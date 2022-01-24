@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 #define ll long long
 #define lll long long
-#define pair <int, int> PII;
+#define PII pair<int, int>
 namespace FAST_IO
 {
 
