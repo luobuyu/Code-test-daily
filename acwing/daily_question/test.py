@@ -1,7 +1,16 @@
-import random
-s = '500000 '
-for i in range(500000):
-    s += str(random.randint(0, 10000))
-    s += ' '
-with open('./in.txt', 'w') as file:
-    file.write(s)
+from pydoc import importfile
+from random import randrange
+
+
+import sys
+sys.stdout = open("./in.txt", "w")
+n = 100000
+l = 100000
+print(n, l)
+for i in range(99716):
+    print(0)
+for i in range(1):
+    print(10)
+for i in range(283):
+    print(n)
+

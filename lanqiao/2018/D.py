@@ -13,3 +13,4 @@ while x % 7 == 0:
     c = c + 1
     x /= 7
 print(a, b, c)
+print(3 ** 15 * 5 * (7 ** 7))
