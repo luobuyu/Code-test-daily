@@ -37,8 +37,6 @@ const double eps = 1e-5;
 const int maxn = 1e3 + 10;
 const int maxm = 1e5 + 10;
 
-
-
 const double pi = acos(-1.0);
 
 int sgn(double x)

@@ -56,7 +56,7 @@ const int maxn = 1e3 + 10;
 const int maxm = 1e5 + 10;
 int t, n, m, k;
 int a[maxn][3];
-
+int minx, maxx;
 vector<int> ans;
 bool check(int len)
 {
@@ -75,18 +75,71 @@ bool check(int len)
     return dp[len] == len;
 }
 
+int testTWO()
+{
+    int f[maxn][maxn];
+    for (int i = 0; i <= n; i++)
+    {
+        f[i][0] = 1;
+    }
+    for (int i = 1; i <= n; ++i)
+    {
+        for (int j = 1; j <= maxx; j++)
+        {
+            f[i][j] |= f[i - 1][j];
+            if (j - a[i][0] >= 0)
+                f[i][j] |= f[i - 1][j - a[i][0]];
+            if (j - a[i][1] >= 0)
+                f[i][j] |= f[i - 1][j - a[i][1]];
+        }
+    }
+    int ppp = 0;
+    for (int i = minx; i <= maxx; ++i)
+    {
+        if (f[n][i] == 1)
+            ppp++;
+    }
+    cout << ppp << endl;
+}
+
+void testONE()
+{
+    cout << "--------one-----------" << endl;
+    int f[maxn] = {0};
+    for (int i = 1; i <= maxx; i++)
+        f[i] = 0;
+    f[0] = 1;
+    for (int i = 1; i <= n; ++i)
+    {
+        for (int j = maxx; j >= 1; j--)
+        {
+            if (j - a[i][0] >= 0)
+                f[j] |= f[j - a[i][0]];
+            if (j - a[i][1] >= 0)
+                f[j] |= f[j - a[i][1]];
+        }
+    }
+    int ppp = 0;
+    for (int i = minx; i <= maxx; ++i)
+    {
+        if (f[i] == 1)
+            ppp++;
+    }
+    cout << ppp << endl;
+}
+
 vector<int> tmp;
 set<int> s;
 int main()
 {
 // #define COMP_DATA
 #ifndef ONLINE_JUDGE
-    freopen("in.txt", "r", stdin);
+    freopen("out.txt", "r", stdin);
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
     cin >> n;
-    int minx = 0, maxx = 0;
+    minx = 0, maxx = 0;
     int area = 0;
     double mind = INF;
 
@@ -95,7 +148,7 @@ int main()
         cin >> a[i][0] >> a[i][1];
         int l = min(a[i][0], a[i][1]);
         int r = max(a[i][0], a[i][1]);
-        minx = max(minx, r);
+        minx = max(minx, l);
         area += a[i][0] * a[i][1];
         maxx += r;
     }
@@ -115,32 +168,19 @@ int main()
     cout << (endTime - startTime) * 1.0 / CLOCKS_PER_SEC << endl;
 
     startTime = clock();
-    s.insert(a[1][0]);
-    s.insert(a[1][1]);
-    for (int i = 2; i <= n; i++)
+
+    s.insert(0);
+    for (int j = 1; j <= n; j++)
     {
-        tmp.clear();
-        for (int j = 1; j <= maxx; j++)
+        for (int i = maxx; i >= 1; i--)
         {
-            if (s.count(j))
-                continue;
-            int x = j - a[i][0], y = j - a[i][1];
-            if (x >= 0 && s.count(x) || y >= 0 && s.count(y))
+            int x = i - a[j][0], y = i - a[j][1];
+            if (s.count(x) || s.count(y))
             {
-                tmp.push_back(j);
-            }
-        }
-        tmp.push_back(a[i][0]);
-        tmp.push_back(a[i][1]);
-        for (auto x : tmp)
-        {
-            if (!s.count(x))
-            {
-                s.insert(x);
+                s.insert(i);
             }
         }
     }
-    // todo, 可能是先插入minx，后面遍历的时候又遇到了。
 
     int cnt = 0;
     for (auto x : s)
@@ -155,6 +195,8 @@ int main()
     cout << cnt << endl;
     cout << "-----------------" << endl;
     cout << ans.size() << "  " << maxx - minx + 1 << endl;
-
+    cout << minx << "   " << maxx << endl;
+    testTWO();
+    testONE();
     return 0;
 }

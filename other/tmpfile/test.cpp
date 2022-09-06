@@ -1,74 +1,113 @@
 #include <bits/stdc++.h>
+#define ll long long
+#define lll long long
+#define PII pair<int, int>
+namespace FAST_IO
+{
+
+   inline char nextChar()
+   {
+      static char buf[1000000], *p1 = buf, *p2 = buf;
+      return p1 == p2 && (p2 = (p1 = buf) + fread(buf, 1, 1000000, stdin), p1 == p2) ? EOF : *p1++;
+   }
+#define getch getchar
+   template <class T>
+   inline void read(T &x)
+   {
+      T flag = 1;
+      x = 0;
+      char ch = getch();
+      while (ch < '0' || ch > '9')
+      {
+         if (ch == '-')
+            flag = -1;
+         ch = getch();
+      }
+      while (ch >= '0' && ch <= '9')
+      {
+         x = (x << 3) + (x << 1) + (ch ^ 48), ch = getch();
+      }
+      x *= flag;
+   }
+
+   template <class T, class... _T>
+   inline void read(T &x, _T &...y)
+   {
+      return read(x), read(y...);
+   }
+
+   inline void print128(lll x)
+   {
+      if (x < 0)
+         putchar('-'), x = -x;
+      if (x > 9)
+         print128(x / 10);
+      putchar(x % 10 + '0');
+   }
+
+} // namespace FAST_IO
+
 using namespace std;
-int m, k;
-bool point[100005];
-vector<int> g[100005];
-queue<int> q;
-int son[100005];
-void dfs(int i)
+using namespace FAST_IO;
+const ll mod = 1e9 + 7;
+const int INF = 0x3f3f3f3f;
+const ll INF_LL = 0x3f3f3f3f3f3f3f3f;
+const double eps = 1e-5;
+const int maxn = 1e5 + 10;
+const int maxm = 1e5 + 10;
+int t, n, m, k;
+int a[maxn][2];
+int p[maxn];
+struct node
 {
-   point[i] = true;
-   for (int j = 0; j < g[i].size(); j++)
-   {
-      int v = g[i][j];
-      if (!point[v])
-      {
-         dfs(v);
-      }
-   }
+   int tt;
+   int bb;
+};
+
+#define DEBUG
+#ifdef DEBUG
+#define eprintf(x) fprintf(stderr, x)
+#define eputs(str) fputs(str, stderr), fputc('\n', stderr)
+#define var(x) "" #x " = " << x
+#define watch(...) trace(#__VA_ARGS__, __VA_ARGS__)
+#else
+#define eprintf(...)
+#define eputs(...)
+#define watch(...)
+#endif
+
+template <class printable>
+void trace(const char *name, printable &&value)
+{
+   cerr << name << " = " << value << endl;
+}
+template <class printable, class... args>
+void trace(const char *names, printable &&value, args &&...list)
+{
+   const char *separate = strchr(names + 1, ',');
+   cerr.write(names, separate - names) << " = " << value << ',';
+   trace(separate + 1, list...);
 }
 
-void dfs(int u, int fa)
+struct Node
 {
-   for (int i = 0; i < g[u].size(); i++)
-   {
-      int v = g[u][i];
-      if (v != fa)
-      {
-         dfs(v, u);
-      }
-   }
-}
-int num = 0;
-void dfs(int i)
-{
-   point[i] = true;
-   num++;
-   for (int j = 0; j < g[i].size(); j++)
-   {
-      int v = g[i][j];
-      if (!point[v])
-      {
-         dfs(v);
-      }
-   }
-}
-
+   vector<vector<int>> a;
+   Node() : a(10, vector<int>(0)) {}
+};
 int main()
 {
+// #define COMP_DATA
+#ifndef ONLINE_JUDGE
+   freopen("in.txt", "r", stdin);
+#endif
    ios::sync_with_stdio(false);
    cin.tie(0);
-   cin >> m >> k;
-   for (int i = 0; i < m; i++)
-   {
-      int x, y;
-      cin >> x >> y;
-      g[x].push_back(y);
-      g[y].push_back(x);
-   }
-   dfs(1);
-   int cnt = 0;
-   for (int i = 1; i <= n; i++)
-   {
-      cnt += point[i];
-   }
-   if (cnt != n)
-   {
-   }
-   else
-   {
-      if (m == n - 1)
-      {
-      }
-   }
+   vector<int> a(100);
+   cout << a.capacity() << " " << a.size() << endl;
+   vector<int> b;
+   b.reserve(100);
+   cout << b.capacity() << " " << b.size() << endl;
+   b[99] = 100;
+   cout << b[99] << endl;
+   return 0;
 }
