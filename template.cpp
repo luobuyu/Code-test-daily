@@ -1,3 +1,4 @@
+// #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 #define ll long long
 #define lll long long

@@ -226,23 +226,22 @@ int main()
 {
 // #define COMP_DATA
 #ifndef ONLINE_JUDGE
-    freopen("in30.txt", "r", stdin);
+    freopen("in.txt", "r", stdin);
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
 
     int Width, Height;
     read(n, Width, Height);
-    Drawer html_drawer("b30.html", Width, Height);
-    int x, y, length, width, rotate;
+    Drawer html_drawer("b10.html", Width, Height);
+    int x, y, width, height, rotate;
     int w = 0, h = 0;
     for (int i = 1; i <= n; i++)
     {
-        read(x, y, length, width, rotate);
-        int height = width;
-        if (rotate == 90)
-            height = length;
-        html_drawer.rect(x, Height - y - height, length, width, rotate == 90, to_string(i));
+        read(x, y, width, height, rotate);
+        // if (rotate == 1)
+        //     height = width;
+        html_drawer.rect(x, Height - y - height, width, height, 0, to_string(i));
     }
     return 0;
 }
