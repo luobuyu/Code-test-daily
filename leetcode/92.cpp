@@ -1,6 +1,5 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
-#include "head.h"
 #define ll long long
 #define lll long long
 #define PII pair<int, int>
@@ -57,11 +56,39 @@ const double eps = 1e-5;
 const int maxn = 1e3 + 10;
 const int maxm = 1e5 + 10;
 int t, n, m, k;
+struct ListNode
+{
+    int val;
+    ListNode *next;
+    ListNode() : val(0), next(nullptr) {}
+    ListNode(int x) : val(x), next(nullptr) {}
+    ListNode(int x, ListNode *next) : val(x), next(next) {}
+};
 class Solution
 {
 public:
-    ListNode *deleteDuplicates(ListNode *head)
+    ListNode *reverseBetween(ListNode *head, int left, int right)
     {
+        if (left == right)
+            return head;
+        ListNode *virtul_head = new ListNode;
+        virtul_head->next = head;
+        virtul_head->val = -1;
+        ListNode *pre = virtul_head;
+        for (int i = 0; i < left - 1; ++i)
+        {
+            pre = pre->next;
+        }
+        auto cur = pre->next;
+        ListNode *nex;
+        for (int i = 0; i < right - left; ++i)
+        {
+            nex = cur->next;
+            cur->next = nex->next;
+            nex->next = pre->next;
+            pre->next = nex;
+        }
+        return virtul_head->next;
     }
 };
 
@@ -74,6 +101,20 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    int a[5] = {1, 2, 3, 4, 5};
+    ListNode *head = new ListNode, *cur;
+    for (int i = 1; i <= 5; ++i)
+    {
+        cur = new ListNode;
+        cur->next = head->next;
+        cur->val = 5 - i + 1;
+        head->next = cur;
+    }
+    head = solution.reverseBetween(head->next, 2, 4);
+    while (head)
+    {
+        cout << head->val << endl;
+        head = head->next;
+    }
     return 0;
 }

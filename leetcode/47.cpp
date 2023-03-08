@@ -1,6 +1,6 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
-#include "head.h"
+#include <head.h>
 #define ll long long
 #define lll long long
 #define PII pair<int, int>
@@ -60,11 +60,29 @@ int t, n, m, k;
 class Solution
 {
 public:
-    ListNode *deleteDuplicates(ListNode *head)
+    int maxValue(vector<vector<int>> &grid)
     {
+        int up, left;
+        int n = grid.size();
+        int m = grid[0].size();
+        for (int i = 0; i < n; ++i)
+        {
+            for (int j = 0; j < m; ++j)
+            {
+                if (j == 0)
+                    left = 0;
+                else
+                    left = grid[i][j - 1];
+                if (i == 0)
+                    up = 0;
+                else
+                    up = grid[i - 1][j];
+                grid[i][j] = max(up, left) + grid[i][j];
+            }
+        }
+        return grid[n - 1][m - 1];
     }
 };
-
 int main()
 {
 // #define COMP_DATA
