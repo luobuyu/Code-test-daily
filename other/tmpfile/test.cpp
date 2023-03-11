@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <string>
 #define ll long long
 #define lll long long
 #define PII pair<int, int>
@@ -57,13 +58,6 @@ const int maxn = 1e5 + 10;
 const int maxm = 1e5 + 10;
 int t, n, m, k;
 
-struct Node
-{
-   int a;
-   int b;
-   Node(int c) : a(c), b(a){};
-};
-
 int main()
 {
 // #define COMP_DATA
@@ -72,9 +66,10 @@ int main()
 #endif
    ios::sync_with_stdio(false);
    cin.tie(0);
-   deque<int> q;
-   q.push_back(1);
-   q.back() = 100;
-   cout << q.back() << endl;
+   string s = "asdasdasd";
+   for (int i = 0; i < 3; ++i)
+   {
+      cout << s[i] << endl;
+   }
    return 0;
 }

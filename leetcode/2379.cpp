@@ -54,17 +54,34 @@ const ll mod = 1e9 + 7;
 const int INF = 0x3f3f3f3f;
 const ll INF_LL = 0x3f3f3f3f3f3f3f3f;
 const double eps = 1e-5;
+const int maxn = 1e3 + 10;
+const int maxm = 1e5 + 10;
 int t, n, m, k;
 class Solution
 {
 public:
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    int minSubarray(vector<int> &nums, int p)
+    int minimumRecolors(string blocks, int k)
     {
+        int l = 0;
+        int ans = 1e9;
+        int sum = 0;
+        for (int i = 0; i < blocks.size(); ++i)
+        {
+            if (blocks[i] == 'W')
+                sum++;
+            while (i - l + 1 >= k)
+            {
+                ans = min(sum, ans);
+                if (blocks[l] == 'W')
+                {
+                    sum--;
+                }
+                l++;
+            }
+        }
+        return ans;
     }
 };
-
 int main()
 {
 // #define COMP_DATA
@@ -74,6 +91,10 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    string s;
+    cin >> k >> s;
+    cout << solution.minimumRecolors(s, k);
+    s = "123123";
+    cout << s << endl;
     return 0;
 }

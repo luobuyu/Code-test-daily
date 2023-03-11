@@ -60,8 +60,30 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    int minSubarray(vector<int> &nums, int p)
+    unordered_map<int, int> mp;
+    vector<string> findLongestSubarray(vector<string> &array)
     {
+        mp[0] = -1;
+        int l = 0, r = 0, ans = 0, tmp = 0;
+        for (int i = 0; i < array.size(); ++i)
+        {
+            if (isalpha(array[i][0]))
+                tmp++;
+            else
+                tmp--;
+            if (mp.count(tmp))
+            {
+                if (ans < i - mp[tmp])
+                {
+                    ans = i - mp[tmp];
+                    l = mp[tmp];
+                    r = i;
+                }
+            }
+            else
+                mp[tmp] = i;
+        }
+        return vector<string>(array.begin() + l + 1, array.begin() + r + 1);
     }
 };
 
@@ -74,6 +96,16 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<string> a;
+    string s;
+    while (cin >> s)
+    {
+        a.emplace_back(s);
+    }
+    for (auto ss : solution.findLongestSubarray(a))
+    {
+        cout << ss;
+    }
+    cerr << "123123" << endl;
     return 0;
 }

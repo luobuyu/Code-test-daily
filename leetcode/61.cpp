@@ -54,14 +54,36 @@ const ll mod = 1e9 + 7;
 const int INF = 0x3f3f3f3f;
 const ll INF_LL = 0x3f3f3f3f3f3f3f3f;
 const double eps = 1e-5;
+const int maxn = 1e3 + 10;
+const int maxm = 1e5 + 10;
 int t, n, m, k;
 class Solution
 {
 public:
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    int minSubarray(vector<int> &nums, int p)
+    ListNode *rotateRight(ListNode *head, int k)
     {
+        int len = 0;
+        if (k == 0 || head == nullptr || head->next == nullptr)
+            return head;
+        ListNode *cur = head, *end;
+        while (cur)
+        {
+            len++;
+            end = cur;
+            cur = cur->next;
+        }
+        k = k % len;
+        if (k == 0)
+            return head;
+        cur = head;
+        for (int i = 0; i < len - k - 1; ++i)
+        {
+            cur = cur->next;
+        }
+        end->next = head;
+        head = cur->next;
+        cur->next = nullptr;
+        return head;
     }
 };
 

@@ -76,7 +76,7 @@ public:
         mp[1] = 0;
         for (int i = lo; i <= hi; ++i)
         {
-            b.push_back({i, getPower(i, 0)});
+            b.push_back({i, getPower(i)});
         }
         sort(b.begin(), b.end(), [](pair<int, int> x, pair<int, int> y)
              {

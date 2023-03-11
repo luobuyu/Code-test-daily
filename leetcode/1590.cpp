@@ -60,8 +60,32 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
+    const static int INF = 0x3f3f3f3f;
+    unordered_map<int, int> mp;
     int minSubarray(vector<int> &nums, int p)
     {
+        int sum = 0;
+        int ans = INF;
+        for (int i = 0; i < nums.size(); ++i)
+        {
+            sum = (sum + nums[i]) % p;
+        }
+        if (sum == 0)
+            return 0;
+        // r = sum
+        int x2 = 0, x1;
+        mp[0] = -1;
+        for (int i = 0; i < nums.size(); ++i)
+        {
+            x2 = (x2 + nums[i]) % p;
+            x1 = (x2 - sum + p) % p;
+            if (mp.count(x1))
+            {
+                ans = min(ans, i - mp[x1]);
+            }
+            mp[x2] = i;
+        }
+        return ans == INF ? -1 : ans;
     }
 };
 
@@ -74,6 +98,13 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<int> a;
+    read(n, k);
+    for (int i = 0, x; i < n; ++i)
+    {
+        read(x);
+        a.push_back(x);
+    }
+    cout << solution.minSubarray(a, k) << endl;
     return 0;
 }
