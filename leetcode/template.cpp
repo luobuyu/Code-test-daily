@@ -60,6 +60,7 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
+    const static int INF = 0x3f3f3f3f;
     int minSubarray(vector<int> &nums, int p)
     {
     }
