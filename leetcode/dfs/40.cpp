@@ -62,7 +62,7 @@ public:
     const static int maxm = 1e5 + 10;
     const static int INF = 0x3f3f3f3f;
     vector<vector<int>> ans;
-    void dfs(int step, int sum, int target, vector<int> &cur, vector<int> &nums)
+    void dfs(int step, int sum, int target, vector<int> &cur, vector<int> &nums, vector<bool> &vis)
     {
         if (sum == target)
         {
@@ -73,19 +73,26 @@ public:
             return;
         if (step == nums.size())
             return;
-        for (int i = step; i < nums.size(); ++i)
+        if (step > 0 && nums[step] == nums[step - 1] && !vis[step - 1])
         {
-            if (i > 0 && nums[i] == nums[i - 1])
-                continue;
-            cur.emplace_back(nums[i]);
-            dfs(step + 1, sum + nums[i], target, cur, nums);
+            dfs(step + 1, sum, target, cur, nums, vis);
+        }
+        else
+        {
+            cur.emplace_back(nums[step]);
+            vis[step] = true;
+            dfs(step + 1, sum + nums[step], target, cur, nums, vis);
+            vis[step] = false;
             cur.pop_back();
+            dfs(step + 1, sum, target, cur, nums, vis);
         }
     }
     vector<vector<int>> combinationSum2(vector<int> &candidates, int target)
     {
         vector<int> cur;
-        dfs(0, 0, target, cur, candidates);
+        vector<bool> vis(candidates.size(), false);
+        sort(candidates.begin(), candidates.end());
+        dfs(0, 0, target, cur, candidates, vis);
         return ans;
     }
 };
@@ -106,6 +113,6 @@ int main()
         cin >> x;
         a.emplace_back(x);
     }
-    solution.combinationSum(a, t);
+    solution.combinationSum2(a, t);
     return 0;
 }

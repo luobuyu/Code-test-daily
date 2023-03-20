@@ -61,42 +61,29 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static int INF = 0x3f3f3f3f;
-    vector<vector<int>> dp;
-    int numDupDigitsAtMostN(int n)
+    vector<string> ans;
+    void dfs(int step, int n, int suml, int sumr, string cur, int sum)
     {
-        string s = to_string(n);
-        dp.resize(s.size(), vector<int>(1 << 10, 0));
-        return n - dfs(0, s, true, 0) + 1;
+        if (sum < 0)
+            return;
+        if (step == n * 2 && sum == 0)
+        {
+            ans.emplace_back(cur);
+            return;
+        }
+        if (suml < n)
+        {
+            dfs(step + 1, n, suml + 1, sumr, cur + "(", sum + 1);
+        }
+        if (sumr < n)
+        {
+            dfs(step + 1, n, suml, sumr + 1, cur + ")", sum - 1);
+        }
     }
-
-    int dfs(int step, string &s, bool isPreUpper, int mask)
+    vector<string> generateParenthesis(int n)
     {
-        if (step == s.size())
-        {
-            return 1;
-        }
-        if (!isPreUpper && dp[step][mask])
-        {
-            return dp[step][mask];
-        }
-        int ans = 0;
-        int upper = isPreUpper ? (s[step] - '0') : 9;
-        for (int i = 0; i <= upper; ++i)
-        {
-            if (mask & (1 << i))
-                continue;
-            int new_mask = mask;
-            if (mask == 0 && i == 0)
-                new_mask = 0;
-            else
-                new_mask = mask | (1 << i);
-
-            ans += dfs(step + 1, s, isPreUpper && i == upper, new_mask);
-        }
-        if (!isPreUpper)
-        {
-            dp[step][mask] = ans;
-        }
+        string cur;
+        dfs(0, n, 0, 0, cur, 0);
         return ans;
     }
 };
@@ -111,6 +98,6 @@ int main()
     cin.tie(0);
     Solution solution;
     cin >> n;
-    cout << solution.numDupDigitsAtMostN(n) << endl;
+    solution.generateParenthesis(n);
     return 0;
 }

@@ -61,42 +61,32 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static int INF = 0x3f3f3f3f;
-    vector<vector<int>> dp;
-    int numDupDigitsAtMostN(int n)
+    vector<vector<int>> ans;
+    void dfs(int mask, int step, int k, int sum, int n, vector<int> &cur)
     {
-        string s = to_string(n);
-        dp.resize(s.size(), vector<int>(1 << 10, 0));
-        return n - dfs(0, s, true, 0) + 1;
-    }
-
-    int dfs(int step, string &s, bool isPreUpper, int mask)
-    {
-        if (step == s.size())
+        if (sum == n)
         {
-            return 1;
+            ans.emplace_back(cur);
+            return;
         }
-        if (!isPreUpper && dp[step][mask])
+        if (step == k)
         {
-            return dp[step][mask];
+            return;
         }
-        int ans = 0;
-        int upper = isPreUpper ? (s[step] - '0') : 9;
-        for (int i = 0; i <= upper; ++i)
+        for (int i = 1; i <= 9; ++i)
         {
             if (mask & (1 << i))
                 continue;
-            int new_mask = mask;
-            if (mask == 0 && i == 0)
-                new_mask = 0;
-            else
-                new_mask = mask | (1 << i);
-
-            ans += dfs(step + 1, s, isPreUpper && i == upper, new_mask);
+            cur.emplace_back(i);
+            dfs(mask | (1 << i), step + 1, k, sum + i, n, cur);
+            cur.pop_back();
         }
-        if (!isPreUpper)
-        {
-            dp[step][mask] = ans;
-        }
+    }
+    vector<vector<int>> combinationSum3(int k, int n)
+    {
+        vector<int> cur;
+        int mask = 0;
+        dfs(mask, 0, k, n, cur);
         return ans;
     }
 };
@@ -110,7 +100,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    cin >> n;
-    cout << solution.numDupDigitsAtMostN(n) << endl;
+    cin >> k >> n;
+    solution.combinationSum3(k, n);
     return 0;
 }
