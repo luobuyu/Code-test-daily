@@ -66,10 +66,9 @@ int main()
 #endif
    ios::sync_with_stdio(false);
    cin.tie(0);
-   string s = "asdasdasd";
-   for (int i = 0; i < 3; ++i)
-   {
-      cout << s[i] << endl;
-   }
+   double p = 0.5;
+   int h = -log(p) / log(exp(1)) * 2;
+   cout << h << endl;
+   cout << pow(0.99, -5) << endl;
    return 0;
 }
