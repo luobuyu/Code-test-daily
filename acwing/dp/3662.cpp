@@ -100,8 +100,9 @@ int main()
         b[i] = a[i];
     }
     // b 作为临时数组
-    sort(b, b + n);
-    int size = unique(b, b + n) - b;
+    b[n] = -1e9 - 1;
+    sort(b, b + n + 1);
+    int size = unique(b, b + n + 1) - b;
     // 对 a 离散化之后的a
     for (int i = 0; i < n; ++i)
     {
@@ -112,8 +113,8 @@ int main()
     ll ans = 0;
     for (int i = 0; i < n; ++i)
     {
-        dp[i] = query(a[i]) + b[a[i]];
-        insert(a[i] + 1, dp[i]);
+        dp[i] = query(a[i] - 1) + b[a[i]];
+        insert(a[i], dp[i]);
         ans = max(ans, dp[i]);
     }
     cout << ans << endl;
