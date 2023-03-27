@@ -118,7 +118,7 @@ int main()
     cin.tie(0);
     Solution solution;
     string s, t;
-    cin >> s >> t;
+    cin >> s >> t; // 试试
     cout << solution.countSubstrings(s, t) << endl;
     return 0;
 }
