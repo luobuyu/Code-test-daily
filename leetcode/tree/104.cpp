@@ -61,51 +61,16 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static int INF = 0x3f3f3f3f;
-    bool dfs(TreeNode *left, TreeNode *right)
+    int dep(TreeNode *node)
     {
-        if (left == nullptr && right == nullptr)
-            return true;
-        if (left && right)
-        {
-            return false;
-        }
-        if (left->val != right->val)
-            return false;
-        if (dfs(left->left, right->right))
-        {
-            return dfs(left->right, right->left);
-        }
-        return false;
+        if (node == nullptr)
+            return 0;
+        return max(dep(node->left), dep(node->right)) + 1;
     }
-    bool bfs(TreeNode *left, TreeNode *right)
+    int maxDepth(TreeNode *root)
     {
-        queue<TreeNode *> q;
-        q.push(left);
-        q.push(right);
-        TreeNode *u1, *u2;
-        while (q.size())
-        {
-            u1 = q.front();
-            q.pop();
-            u2 = q.front();
-            q.pop();
-            if (u1 == nullptr && u2 == nullptr)
-                continue;
-            if (!u1 && !u2)
-                return false;
-            if (u1->val != u2->val)
-                return false;
-            q.push(u1->left);
-            q.push(u2->right);
-            q.push(u1->right);
-            q.push(u2->left);
-        }
-        return true;
-    }
-
-    bool isSymmetric(TreeNode *root)
-    {
-        return bfs(root->left, root->right);
+        return dep(root);
+        vector<int> a;
     }
 };
 
