@@ -1,5 +1,6 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
+#include "head.h"
 #define ll long long
 #define lll long long
 #define PII pair<int, int>
@@ -53,15 +54,37 @@ const ll mod = 1e9 + 7;
 const int INF = 0x3f3f3f3f;
 const ll INF_LL = 0x3f3f3f3f3f3f3f3f;
 const double eps = 1e-5;
-const int maxn = 1e3 + 10;
-const int maxm = 1e5 + 10;
 int t, n, m, k;
-
-struct NNode
+class Solution
 {
-    int u, cj;
-    NNode(int uu, int ccj) : u(uu), cj(ccj) {}
+public:
+    const static int maxn = 1e5 + 10;
+    const static int maxm = 1e5 + 10;
+    const static int INF = 0x3f3f3f3f;
+    int countVowelStrings(int n)
+    {
+        vector<vector<int>> dp(n + 1, vector<int>(5, 0));
+        for (int i = 0; i < 5; ++i)
+            dp[1][i] = 1;
+        for (int i = 2; i <= n; ++i)
+        {
+            for (int j = 0; j < 5; ++j)
+            {
+                for (int k = j; k < 5; ++k)
+                {
+                    dp[i][j] += dp[i - 1][k];
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < 5; ++i)
+        {
+            ans += dp[n][i];
+        }
+        return ans;
+    }
 };
+
 int main()
 {
 // #define COMP_DATA
@@ -70,8 +93,7 @@ int main()
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
-    vector<NNode> a;
-    a.emplace_back(1, 2);
-    cout << a[0].u << ", " << a[0].cj << endl;
+    Solution solution;
+
     return 0;
 }

@@ -57,7 +57,7 @@ const double eps = 1e-5;
 const int maxn = 1e5 + 10;
 const int maxm = 1e5 + 10;
 int t, n, m, k;
-
+set<int> mp;
 int main()
 {
 // #define COMP_DATA
@@ -66,9 +66,20 @@ int main()
 #endif
    ios::sync_with_stdio(false);
    cin.tie(0);
-   double p = 0.5;
-   int h = -log(p) / log(exp(1)) * 2;
-   cout << h << endl;
-   cout << pow(0.99, -5) << endl;
+   for (int i = 0; i <= 9; ++i)
+   {
+      for (int j = 0; j <= 9; ++j)
+      {
+         if (i != 0 && i + j <= 9)
+         {
+            mp.insert(i * 10 + j);
+         }
+      }
+   }
+   cout << mp.size() << endl;
+   for (auto u : mp)
+   {
+      cout << u << endl;
+   }
    return 0;
 }
