@@ -61,15 +61,26 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static int INF = 0x3f3f3f3f;
-    int dep(TreeNode *node)
+    bool isValidSerialization(string preorder)
     {
-        if (node == nullptr)
-            return 0;
-        return max(dep(node->left), dep(node->right)) + 1;
-    }
-    int maxDepth(TreeNode *root)
-    {
-        return dep(root);
+        int cnt = 1;
+        for (int i = 0; i < preorder.size(); ++i)
+        {
+            if (preorder[i] == '#')
+            {
+                cnt--;
+                ++i;
+            }
+            else if (isdigit(preorder[i]))
+            {
+                cnt++;
+                while (i < preorder.size() && preorder[i] != ',')
+                    ++i;
+            }
+            if (cnt < 0)
+                return false;
+        }
+        return true;
     }
 };
 
@@ -82,11 +93,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {1, 2, 3};
-    vector<int> b = {4, 5};
-    a.insert(a.end(), b.begin(), b.end());
-    for (auto u : a)
-        cout << u << " ";
-    cout << endl;
+
     return 0;
 }

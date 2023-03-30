@@ -61,15 +61,27 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static int INF = 0x3f3f3f3f;
-    int dep(TreeNode *node)
+    // 前序，中序
+    TreeNode *build(vector<int> &preorder, vector<int> &inorder, int l1, int r1, int l2, int r2)
     {
-        if (node == nullptr)
-            return 0;
-        return max(dep(node->left), dep(node->right)) + 1;
+        TreeNode *cur = new TreeNode;
+        if (l1 > r1)
+            return nullptr;
+        cur->val = preorder[l1];
+        int i;
+        for (i = l2; i <= r2; ++i)
+        {
+            if (cur->val == inorder[i])
+                break;
+        }
+        int size = i - l2;
+        cur->left = build(preorder, inorder, l1 + 1, l1 + size, l2, i - 1);
+        cur->right = build(preorder, inorder, l1 + size + 1, r1, i + 1, r2);
+        return cur;
     }
-    int maxDepth(TreeNode *root)
+    TreeNode *buildTree(vector<int> &preorder, vector<int> &inorder)
     {
-        return dep(root);
+        return build(preorder, inorder, 0, preorder.size() - 1, 0, inorder.size() - 1);
     }
 };
 
@@ -82,11 +94,16 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {1, 2, 3};
-    vector<int> b = {4, 5};
-    a.insert(a.end(), b.begin(), b.end());
-    for (auto u : a)
-        cout << u << " ";
-    cout << endl;
+    cin >> n;
+    vector<int> pre(n), in(n);
+    for (int i = 0; i < n; ++i)
+    {
+        cin >> pre[i];
+    }
+    for (int i = 0; i < n; ++i)
+    {
+        cin >> in[i];
+    }
+    solution.buildTree(pre, in);
     return 0;
 }

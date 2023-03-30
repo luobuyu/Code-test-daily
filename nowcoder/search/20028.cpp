@@ -189,7 +189,7 @@ int sum;
 //     }
 //     return false;
 // }
-set<int> ans;
+set<string> ans;
 template <typename T>
 struct st
 {
@@ -235,17 +235,16 @@ void dfs(int step)
         if (find)
         {
             string s;
-            // int pre = -1; // 前面的运算符优先级
-            // for (int i = 0; i < op.size(); ++i)
-            // {
-            //     int op_char = op[i];
-            //     if(get_op_level(op_char) < pre)
-            //     {
-
-            //     }
-            // }
+            // 全加上小括号
+            double pre_result;
+            for (int i = 0; i < op.size(); ++i)
+            {
+            }
         }
         return;
+    }
+    for (int i = step; i < 4; ++i)
+    {
     }
 }
 int main()
