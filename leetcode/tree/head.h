@@ -46,4 +46,28 @@ void show(ListNode *head)
 void show()
 {
 }
+
+TreeNode *build_tree(vector<int> &nums)
+{
+    TreeNode *root;
+    queue<TreeNode **> q;
+    q.push(&root);
+    TreeNode **u;
+    for (int i = 0; i < nums.size(); ++i)
+    {
+        u = q.front();
+        q.pop();
+        if (nums[i] != -1)
+        {
+            (*u) = new TreeNode(nums[i]);
+            q.push(&((*u)->left));
+            q.push(&((*u)->right));
+        }
+        else
+        {
+            u = nullptr;
+        }
+    }
+    return root;
+}
 #endif
