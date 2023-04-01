@@ -205,7 +205,8 @@ struct st
 
 st<char> op;
 st<double> s1, s2, result;
-
+st<string> result_string;
+bool vis[4];
 int get_op_level(char op)
 {
     switch (op)
@@ -217,6 +218,23 @@ int get_op_level(char op)
     case '/':
         return 2;
     }
+}
+int sgn(double x)
+{
+    if (fabs(x) < eps)
+        return 0;
+    return x < -1 ? -1 : 1;
+}
+double get_result(double nums1, double nums2, int op)
+{
+    if (op == 0)
+        return nums1 + nums2;
+    else if (op == 1)
+        return nums1 - nums2;
+    else if (op == 2)
+        return nums1 * nums2;
+    else
+        return nums1 / nums2;
 }
 void dfs(int step)
 {
@@ -243,8 +261,32 @@ void dfs(int step)
         }
         return;
     }
-    for (int i = step; i < 4; ++i)
+    for (int i = 0; i < 4; ++i)
     {
+        if (vis[i])
+            continue;
+        for (int j = 1; j < 4; ++j)
+        {
+            if (vis[j])
+                continue;
+            double op_num1 = a[i];
+            double op_num2 = a[j];
+            for (int is_swap = 0; is_swap < 2; ++is_swap)
+            {
+                if (is_swap)
+                    swap(op_num1, op_num2);
+                for (int k = 0; k < 4; ++k)
+                {
+                    // 首先 nums1 op nums2
+                    if (k == 3 && fabs(op_num2) < eps)
+                        continue;
+                    if (k == 2 && sgn(op_num1 - op_num2) == -1)
+                        continue;
+                    int tmp = a[i]; // 方便恢复现场
+                    int res = get_result(op_num1, op_num2, k);
+                }
+            }
+        }
     }
 }
 int main()
