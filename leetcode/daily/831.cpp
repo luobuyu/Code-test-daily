@@ -63,7 +63,7 @@ public:
     const static int INF = 0x3f3f3f3f;
     string solve_email(string s)
     {
-        int l = 0, r;
+        int r;
         for (int i = 0; i < s.length(); ++i)
         {
             if (s[i] == '.' || s[i] == '@')
@@ -75,7 +75,7 @@ public:
             if (isupper(s[i]))
                 s[i] += ' ';
         }
-        s.replace(l + 1, r - 1, "*****");
+        s.replace(1, r - 1, "*****");
         return s;
     }
     string solve_phone_num(string s)
