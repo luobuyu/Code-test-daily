@@ -62,8 +62,24 @@ public:
     const static int maxm = 1e5 + 10;
     const static int INF = 0x3f3f3f3f;
     static void optimize_cpp_stdio() { ios::sync_with_stdio(false), cin.tie(0); }
-    int minSubarray(vector<int> &nums, int p)
+    bool searchMatrix(vector<vector<int>> &matrix, int target)
     {
+        optimize_cpp_stdio();
+        int n = matrix.size(), m = matrix[0].size();
+        int x = 0, y = m - 1, ans = 0;
+        while (x < n && y >= 0)
+        {
+            if (matrix[x][y] == target)
+            {
+                ans = 1;
+                break;
+            }
+            else if (matrix[x][y] > target)
+                y--;
+            else
+                x++;
+        }
+        return ans;
     }
 };
 
