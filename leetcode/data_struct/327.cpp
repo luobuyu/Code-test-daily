@@ -89,8 +89,8 @@ public:
     int countRangeSum(vector<int> &nums, int lower, int upper)
     {
         int n = nums.size();
-        vector<int> sum(n, 0);
-        int tmp = 0;
+        vector<long long> sum(n, 0);
+        long long tmp = 0;
         for (int i = 0; i < n; ++i)
         {
             tmp += nums[i];
@@ -99,8 +99,33 @@ public:
         // 需要统计 sum[i] 有多少个
         // [1, max_sum]
         // 离散化，需要和 lower, upper一起离散化？
-        // 查询[1, sum[i] + upper] [1, sum[i] - upper]
-        // [1, sum[i] - lower] [1, sum[i] + lower]
+        // 查询[1, sum[i] - upper] [1, sum[i] - lower]
+        // 需要一起进行离散化，因为需要用到这两个值
+        vector<long long> b;
+        b.reserve(n);
+        for (int i = 0; i < n; ++i)
+        {
+            b.emplace_back(sum[i]);
+            b.emplace_back(sum[i] - lower);
+            b.emplace_back(sum[i] - upper);
+        }
+        b.emplace_back(-pow(2, 31) * 1e5 - 1);
+        b.emplace_back(0);
+        sort(b.begin(), b.end());
+        int max_size = unique(b.begin(), b.end()) - b.begin();
+        int ans = 0;
+        Tree tree(max_size);
+        int zero = lower_bound(b.begin(), b.begin() + max_size, 0) - b.begin();
+        tree.add(zero, 1);
+        for (int i = 0; i < n; ++i)
+        {
+            int sum_i = lower_bound(b.begin(), b.begin() + max_size, sum[i]) - b.begin();
+            int sum_lower = lower_bound(b.begin(), b.begin() + max_size, sum[i] - lower) - b.begin();
+            int sum_upper = lower_bound(b.begin(), b.begin() + max_size, sum[i] - upper) - b.begin();
+            ans += tree.query(sum_lower) - tree.query(sum_upper - 1);
+            tree.add(sum_i, 1);
+        }
+        return ans;
     }
 };
 
@@ -119,6 +144,8 @@ int main()
     vector<int> a;
     while (cin >> k)
     {
+        a.emplace_back(k);
     }
+    solution.countRangeSum(a, l, r);
     return 0;
 }
