@@ -61,79 +61,36 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static int INF = 0x3f3f3f3f;
-    unordered_map<TreeNode *, unordered_map<int, TreeNode *>> fa;
-    unordered_map<TreeNode *, int> depth;
-    void dfs(TreeNode *root, TreeNode *p, int dep)
+    static void optimize_cpp_stdio() { ios::sync_with_stdio(false), cin.tie(0); }
+    TreeNode *dfs(TreeNode *root, TreeNode *p, TreeNode *q)
     {
-
         if (root == nullptr)
-            return;
-        if (root->val == 5)
-        {
-            cout << p << endl;
-        }
-        fa[root][0] = p;
-        depth[root] = dep;
-        dfs(root->left, root, dep + 1);
-        dfs(root->right, root, dep + 1);
-    }
-
-    void build()
-    {
-        for (int k = 1; k < 17; ++k)
-        {
-            for (auto &root : depth)
-            {
-                fa[root.first][k] = fa[fa[root.first][k - 1]][k - 1];
-            }
-        }
-    }
-
-    TreeNode *query(TreeNode *p, TreeNode *q)
-    {
-        if (depth[p] < depth[q])
-            swap(p, q);
-        int tmp = depth[p] - depth[q];
-        for (int i = 17; i >= 0; --i)
-        {
-            if (tmp >= (1 << i))
-            {
-                p = fa[p][i];
-            }
-        }
-        if (p == q)
-            return p;
-        for (int i = 17; i >= 0; --i)
-        {
-            if (depth[p] >= (1 << i))
-            {
-                if (fa[p][i] != fa[q][i])
-                {
-                    p = fa[p][i];
-                    q = fa[q][i];
-                }
-            }
-        }
-        return fa[p][0];
+            return nullptr;
+        if (root == p || root == q)
+            return root;
+        TreeNode *left = dfs(root->left, p, q);
+        TreeNode *right = dfs(root->right, p, q);
+        if (left && right)
+            return root;
+        return left != nullptr ? left : right;
     }
     TreeNode *lowestCommonAncestor(TreeNode *root, TreeNode *p, TreeNode *q)
     {
-        dfs(root, nullptr, 0);
-        cout << depth[p] << endl;
-        build();
-        return query(p, q);
+        return dfs(root, p, q);
     }
 };
 
 TreeNode *search(TreeNode *root, int val)
 {
-    if (root == nullptr)
-        return nullptr;
-    if (root->val == val)
+    if (root == nullptr || root->val == val)
         return root;
     TreeNode *left = search(root->left, val);
-    search(root->right, val);
+    if (left)
+        return left;
+    else
+        return search(root->right, val);
 }
+
 int main()
 {
 // #define COMP_DATA
@@ -147,7 +104,7 @@ int main()
     TreeNode *root = build_tree(a);
 
     TreeNode *p = search(root, 5);
-    TreeNode *q = search(root, 1);
-    solution.lowestCommonAncestor(build_tree(a), p, q);
+    TreeNode *q = search(root, 4);
+    solution.lowestCommonAncestor(root, p, q);
     return 0;
 }
