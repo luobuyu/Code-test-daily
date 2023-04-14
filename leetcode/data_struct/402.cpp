@@ -67,8 +67,39 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    string removeKdigits(string num, int k)
     {
+        if (num.size() <= k)
+            return "0";
+        string st;
+        int n = num.size();
+        int cnt = 0;
+        for (int i = 0; i < n; ++i)
+        {
+            while (st.size() && cnt < k && st.back() > num[i])
+            {
+                cnt++;
+                st.pop_back();
+            }
+            st.push_back(num[i]);
+        }
+
+        int index = 0;
+        while (index < st.size() && st[index] == '0')
+        {
+            index++;
+        }
+        st = st.substr(index);
+        if (st.size() == 0 || st.size() < k - cnt)
+            return "0";
+        if (cnt == k)
+        {
+            return st;
+        }
+        else
+        {
+            return st.substr(0, st.size() - (k - cnt));
+        }
     }
 };
 
@@ -81,6 +112,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    cout << solution.removeKdigits("10001", 4) << endl;
     return 0;
 }

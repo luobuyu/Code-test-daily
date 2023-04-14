@@ -67,8 +67,37 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    bool check(string query, string &pattern)
     {
+        int size1 = query.size(), size2 = pattern.size();
+        int l1 = 0, l2 = 0;
+        while (l1 < size1 && l2 < size2)
+        {
+            if (query[l1] == pattern[l2])
+            {
+                ++l1;
+                ++l2;
+            }
+            else if (isupper(query[l1]))
+                return false;
+            else
+            {
+                l1++;
+            }
+        }
+        while (l1 < size1)
+            if (isupper(query[l1++]))
+                return false;
+        return l2 == size2;
+    }
+    vector<bool> camelMatch(vector<string> &queries, string pattern)
+    {
+        vector<bool> ans;
+        for (auto &s : queries)
+        {
+            ans.emplace_back(check(s, pattern));
+        }
+        return ans;
     }
 };
 

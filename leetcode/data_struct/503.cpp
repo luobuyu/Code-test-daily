@@ -55,23 +55,32 @@ const int INF = 0x3f3f3f3f;
 const ll INF_LL = 0x3f3f3f3f3f3f3f3f;
 const double eps = 1e-5;
 int t, n, m, k;
-auto optimize_cpp_stdio = []()
-{
-    std::ios::sync_with_stdio(false);
-    std::cin.tie(nullptr);
-    return 0;
-}();
 class Solution
 {
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    stack<int> st;
+    static void optimize_cpp_stdio() { ios::sync_with_stdio(false), cin.tie(0); }
+    vector<int> nextGreaterElements(vector<int> &nums)
     {
+        int n = nums.size();
+        for (int i = 0; i < n - 1; ++i)
+            nums.emplace_back(nums[i]);
+        vector<int> ans(n, -1);
+        for (int i = 0; i < 2 * n - 1; ++i)
+        {
+            while (st.size() && nums[i % n] > nums[st.top()])
+            {
+                ans[st.top()] = nums[i % n];
+                st.pop();
+            }
+            st.push(i % n);
+        }
+        return ans;
     }
 };
-
 int main()
 {
 // #define COMP_DATA
@@ -81,6 +90,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<int> a = {1, 2, 1};
+    solution.nextGreaterElements(a);
     return 0;
 }

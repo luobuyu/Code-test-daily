@@ -67,8 +67,52 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+
+    struct Trie
     {
+        const static int Len = 100 * 30;
+        const static int M = 'z' - 'A';
+        int nex[Len][M] = {}, cnt = 0;
+        bool exist[Len] = {};
+        void insert(string s)
+        {
+            int now = 0;
+            for (int i = 0; i < s.length(); ++i)
+            {
+                int ch = s[i] - 'A';
+                if (!nex[now][ch])
+                    nex[now][ch] = ++cnt;
+                now = nex[now][ch];
+            }
+            exist[now] = true;
+        }
+
+        bool query(string s)
+        {
+            int now = 0;
+            for (int i = 0; i < s.length(); ++i)
+            {
+                int ch = s[i] - 'A';
+                if (nex[now][ch])
+                    now = nex[now][ch];
+                else if (isupper(s[i]))
+                    return false;
+                else
+                    continue;
+            }
+            return exist[now];
+        }
+    };
+    vector<bool> camelMatch(vector<string> &queries, string pattern)
+    {
+        Trie trie;
+        trie.insert(pattern);
+        vector<bool> ans;
+        for (auto &s : queries)
+        {
+            ans.emplace_back(trie.query(s));
+        }
+        return ans;
     }
 };
 
@@ -81,6 +125,8 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<string> s = {
+        "FooBar", "FooBarTest", "FootBall", "FrameBuffer", "ForceFeedBack"};
+    solution.camelMatch(s, "FoBa");
     return 0;
 }
