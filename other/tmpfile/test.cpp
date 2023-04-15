@@ -66,20 +66,10 @@ int main()
 #endif
    ios::sync_with_stdio(false);
    cin.tie(0);
-   for (int i = 0; i <= 9; ++i)
-   {
-      for (int j = 0; j <= 9; ++j)
-      {
-         if (i != 0 && i + j <= 9)
-         {
-            mp.insert(i * 10 + j);
-         }
-      }
-   }
-   cout << mp.size() << endl;
-   for (auto u : mp)
-   {
-      cout << u << endl;
-   }
+   vector<int> a(10, 100);
+   vector<int> b;
+   b.swap(a);
+   cout << b.size() << endl;
+   cout << a.size() << endl;
    return 0;
 }

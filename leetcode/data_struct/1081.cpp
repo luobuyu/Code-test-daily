@@ -55,42 +55,48 @@ const int INF = 0x3f3f3f3f;
 const ll INF_LL = 0x3f3f3f3f3f3f3f3f;
 const double eps = 1e-5;
 int t, n, m, k;
+auto optimize_cpp_stdio = []()
+{
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    return 0;
+}();
 class Solution
 {
 public:
-    static void optimize_cpp_stdio() { ios::sync_with_stdio(false), cin.tie(0); }
+    const static int maxn = 1e5 + 10;
+    const static int maxm = 1e5 + 10;
+    const static int INF = 0x3f3f3f3f;
 
-    string removeDuplicateLetters(string s)
+    string smallestSubsequence(string s)
     {
-        optimize_cpp_stdio();
-        // 单调增栈
-        // 后面字母还剩几个
-        vector<int> mp(26, 0);
-        // 当前是否已经存在该种字母
-        vector<int> exist(26, 0);
+        unordered_map<char, int> mp;
+        vector<bool> exist(26, 0);
         string st;
-        int n = s.size();
-        for (int i = 0; i < n; ++i)
-            mp[s[i] - 'a']++;
-        for (int i = 0; i < n; ++i)
+        for (auto &ch : s)
+            mp[ch]++;
+
+        for (int i = 0; i < s.length(); ++i)
         {
+            mp[s[i]]--;
             if (exist[s[i] - 'a'])
-            {
-                mp[s[i] - 'a']--;
                 continue;
-            }
-            while (st.size() && mp[st.back() - 'a'] > 0 && st.back() >= s[i])
+            while (st.size() && mp[st.back()] >= 1 && st.back() > s[i])
             {
                 exist[st.back() - 'a'] = false;
                 st.pop_back();
             }
-            st.push_back(s[i]);
-            exist[s[i] - 'a'] = true;
-            mp[s[i] - 'a']--;
+
+            if (!exist[s[i] - 'a'])
+            {
+                st.push_back(s[i]);
+                exist[s[i] - 'a'] = true;
+            }
         }
         return st;
     }
 };
+
 int main()
 {
 // #define COMP_DATA
@@ -100,6 +106,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    solution.removeDuplicateLetters("cbaacabcaaccaacababa");
+    cout << solution.smallestSubsequence("cbaacabcaaccaacababa") << endl;
     return 0;
 }

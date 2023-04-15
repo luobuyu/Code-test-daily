@@ -55,42 +55,42 @@ const int INF = 0x3f3f3f3f;
 const ll INF_LL = 0x3f3f3f3f3f3f3f3f;
 const double eps = 1e-5;
 int t, n, m, k;
+auto optimize_cpp_stdio = []()
+{
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    return 0;
+}();
 class Solution
 {
 public:
-    static void optimize_cpp_stdio() { ios::sync_with_stdio(false), cin.tie(0); }
-
-    string removeDuplicateLetters(string s)
+    const static int maxn = 1e5 + 10;
+    const static int maxm = 1e5 + 10;
+    const static int INF = 0x3f3f3f3f;
+    bool find132pattern(vector<int> &nums)
     {
-        optimize_cpp_stdio();
-        // 单调增栈
-        // 后面字母还剩几个
-        vector<int> mp(26, 0);
-        // 当前是否已经存在该种字母
-        vector<int> exist(26, 0);
-        string st;
-        int n = s.size();
-        for (int i = 0; i < n; ++i)
-            mp[s[i] - 'a']++;
-        for (int i = 0; i < n; ++i)
+        int top = -1;
+        int n = nums.size();
+        stack<int> st;
+        int maxx = -1e9 - 1;
+        for (int i = n - 1; i >= 0; --i)
         {
-            if (exist[s[i] - 'a'])
+            if (st.size() && maxx > nums[i] && st.top() > nums[i])
             {
-                mp[s[i] - 'a']--;
-                continue;
+                return true;
             }
-            while (st.size() && mp[st.back() - 'a'] > 0 && st.back() >= s[i])
+            while (st.size() && st.top() < nums[i])
             {
-                exist[st.back() - 'a'] = false;
-                st.pop_back();
+                maxx = max(maxx, st.top());
+                st.pop();
             }
-            st.push_back(s[i]);
-            exist[s[i] - 'a'] = true;
-            mp[s[i] - 'a']--;
+            st.push(nums[i]);
         }
-        return st;
+
+        return false;
     }
 };
+
 int main()
 {
 // #define COMP_DATA
@@ -100,6 +100,8 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    solution.removeDuplicateLetters("cbaacabcaaccaacababa");
+    vector<int> a = {
+        1, 0, 1, -4, -3};
+    solution.find132pattern(a);
     return 0;
 }
