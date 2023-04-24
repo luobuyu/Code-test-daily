@@ -66,10 +66,10 @@ int main()
 #endif
    ios::sync_with_stdio(false);
    cin.tie(0);
-   vector<int> a(10, 100);
-   vector<int> b;
-   b.swap(a);
-   cout << b.size() << endl;
-   cout << a.size() << endl;
+   int *a = new int[100]();
+   auto &tmp = a;
+   a[10] = 100;
+   cout << a << endl;
+   cout << tmp << endl;
    return 0;
 }
