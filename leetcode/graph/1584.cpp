@@ -59,17 +59,57 @@ auto optimize_cpp_stdio = []()
 {
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr);
-    std::cout.tie(nullptr);
     return 0;
 }();
 class Solution
 {
 public:
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    struct Edge
     {
+        int u, v, w;
+        bool operator<(const Edge &p) const { return this->w < p.w; }
+    };
+    struct UF
+    {
+        vector<int> fa;
+        UF(int n) : fa(n)
+        {
+            for (int i = 0; i < n; ++i)
+                fa[i] = i;
+        };
+        int find(int u) { return u == fa[u] ? u : fa[u] = find(fa[u]); }
+        void unite(int u, int v)
+        {
+            int up = find(u), vp = find(v);
+            if (up != vp)
+                fa[up] = vp;
+        }
+        bool isConnect(int u, int v) { return find(u) == find(v); }
+    };
+
+    int getManDis(vector<int> &px, vector<int> &py)
+    {
+        return abs(px[0] - py[0]) + abs(px[1] - py[1]);
+    }
+    int minCostConnectPoints(vector<vector<int>> &points)
+    {
+        int n = points.size();
+        UF uf(n);
+        vector<Edge> edges;
+        for (int i = 0; i < n; ++i)
+            for (int j = i + 1; j < n; ++j)
+                edges.push_back({i, j, getManDis(points[i], points[j])});
+        sort(edges.begin(), edges.end());
+        int ans = 0;
+        for (auto &edge : edges)
+        {
+            if (!uf.isConnect(edge.u, edge.v))
+            {
+                ans += edge.w;
+                uf.unite(edge.u, edge.v);
+            }
+        }
+        return ans;
     }
 };
 

@@ -59,7 +59,6 @@ auto optimize_cpp_stdio = []()
 {
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr);
-    std::cout.tie(nullptr);
     return 0;
 }();
 class Solution
@@ -67,9 +66,41 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    const static int INF = 0x3f3f3f3f;
+    int getManDis(vector<int> &px, vector<int> &py)
     {
+        return abs(px[0] - py[0]) + abs(px[1] - py[1]);
+    }
+    int minCostConnectPoints(vector<vector<int>> &points)
+    {
+        int n = points.size();
+        vector<bool> vis(n, false);
+        vector<int> dis(n, INF);
+        priority_queue<pair<int, int>> q;
+        q.push({0, 0});
+        dis[0] = 0;
+        int ans = 0;
+        while (q.size())
+        {
+            auto out = q.top();
+            q.pop();
+            if (vis[out.second])
+                continue;
+            vis[out.second] = true;
+            ans += out.first;
+            for (int i = 0; i < n; ++i)
+            {
+                if (i == out.second || vis[i])
+                    continue;
+                int w = getManDis(points[out.second], points[i]);
+                if (w < dis[i])
+                {
+                    dis[i] = w;
+                    q.push({-w, i});
+                }
+            }
+        }
+        return ans;
     }
 };
 
