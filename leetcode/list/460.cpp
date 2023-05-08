@@ -62,86 +62,172 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-class LFUCache
+
+struct Node
 {
-public:
-    struct Node
+    int val;
+    int key;
+    int cnt;
+    Node *pre = nullptr;
+    Node *next = nullptr;
+    Node()
     {
-        Node *next;
-        Node *pre;
-        int val;
-        int key;
-    };
-    Node *head;
-    Node *tail;
-    int capacity;
-    unordered_map<int, Node *> mp;
-    LFUCache(int capacity)
+        val = key = -1;
+        cnt = 1;
+    }
+    Node(int key, int val)
+    {
+        this->val = val;
+        this->key = key;
+        cnt = 1;
+    }
+};
+struct List
+{
+    Node *head, *tail;
+    int size;
+    List()
     {
         head = new Node;
         tail = new Node;
-        this->capacity = capacity;
         head->next = tail;
         tail->pre = head;
-        head->pre = nullptr;
-        tail->next = nullptr;
+        size = 0;
     }
-
+    ~List()
+    {
+        Node *p = head, *q;
+        while (p)
+        {
+            q = p->next;
+            delete p;
+            p = q;
+        }
+    }
     void erase(Node *p)
     {
         p->pre->next = p->next;
         p->next->pre = p->pre;
+        size--;
     }
-
     void insertLast(Node *p)
     {
-        p->pre = tail->pre;
         p->next = tail;
-        p->next->pre = p;
+        p->pre = tail->pre;
         p->pre->next = p;
+        tail->pre = p;
+        size++;
     }
-
-    void insertLast(int val)
+    void insertLast(int key, int val)
     {
-        Node *p = new Node;
-        p->val = val;
+        Node *p = new Node(key, val);
         insertLast(p);
+    }
+    void eraseFirst()
+    {
+        Node *p = head->next;
+        head->next = p->next;
+        p->next->pre = head;
+        size--;
+        delete p;
+    }
+    Node *back()
+    {
+        return tail->pre;
+    }
+    Node *front()
+    {
+        return head->next;
+    }
+};
+class LFUCache
+{
+public:
+    unordered_map<int, Node *> key_map;
+    unordered_map<int, List *> freq_map; // cnt
+    int capacity;
+    int min_freq;
+    int cnt;
+    LFUCache(int capacity) : capacity(capacity), cnt(0)
+    {
     }
 
     int get(int key)
     {
-        if (mp.count(key))
+        if (key_map.count(key))
         {
-            erase(mp[key]);
-            insertLast(mp[key]);
-            return mp[key]->val;
+            Node *p = key_map[key];
+            int old_cnt = p->cnt;
+            p->cnt++;
+            change_backet(p, old_cnt, p->cnt);
+            return p->val;
         }
         else
             return -1;
     }
 
+    void change_backet(Node *p, int b1, int b2)
+    {
+        // b1 原来的桶，b2 新的桶
+        freq_map[b1]->erase(p);
+        if (freq_map[b1]->size == 0)
+        {
+            delete freq_map[b1];
+            freq_map.erase(b1);
+            if (b1 == min_freq)
+                min_freq += 1;
+        }
+
+        if (freq_map.count(b2))
+            freq_map[b2]->insertLast(p);
+        else
+        {
+            List *l = new List;
+            l->insertLast(p);
+            freq_map[b2] = l;
+        }
+    }
+
+    void erase()
+    {
+        key_map.erase(freq_map[min_freq]->front()->key);
+        freq_map[min_freq]->eraseFirst();
+        if (freq_map[min_freq]->size == 0)
+        {
+            delete freq_map[min_freq];
+            freq_map.erase(min_freq);
+        }
+    }
+
     void put(int key, int value)
     {
-        if (mp.count(key))
+        if (key_map.count(key))
         {
-            mp[key]->val = value;
-            erase(mp[key]);
-            insertLast(mp[key]);
+            Node *p = key_map[key];
+            int old_cnt = p->cnt;
+            p->val = value;
+            p->cnt++;
+            change_backet(p, old_cnt, p->cnt);
         }
         else
         {
-            if (mp.size() >= capacity)
+            if (cnt == capacity)
             {
-                Node *tmp = head->next;
-                mp.erase(tmp->key);
-                erase(tmp);
-                delete tmp;
+                // 删除一个频率最低最老的
+                erase();
+                cnt--;
             }
-            Node *p = new Node;
-            mp[key] = p;
-            p->val = value;
-            p->key = key;
-            insertLast(p);
+            if (freq_map.count(1))
+                freq_map[1]->insertLast(key, value);
+            else
+            {
+                List *l = new List;
+                l->insertLast(key, value);
+                freq_map[1] = l;
+            }
+            min_freq = 1;
+            cnt++;
+            key_map[key] = freq_map[1]->back();
         }
     }
 };
@@ -154,17 +240,17 @@ int main()
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
-    LFUCache solution(3);
-    solution.put(2, 2);
+    LFUCache solution(2);
     solution.put(1, 1);
-    solution.get(2);
+    solution.put(2, 2);
     solution.get(1);
-    solution.get(2);
     solution.put(3, 3);
-    solution.put(4, 4);
-    solution.get(3);
     solution.get(2);
+    solution.get(3);
+    solution.put(4, 4);
     solution.get(1);
-    solution.get(4);
+    solution.get(3);
+    cout << solution.get(4) << endl;
+
     return 0;
 }

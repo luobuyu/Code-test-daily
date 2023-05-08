@@ -10,20 +10,20 @@ struct ListNode
     ListNode(int x) : val(x), next(nullptr) {}
     ListNode(int x, ListNode *next) : val(x), next(next) {}
 };
-// class Node
-// {
-// public:
-//     int val;
-//     Node *next;
-//     Node *random;
+class Node
+{
+public:
+    int val;
+    Node *next;
+    Node *random;
 
-//     Node(int _val)
-//     {
-//         val = _val;
-//         next = NULL;
-//         random = NULL;
-//     }
-// };
+    Node(int _val)
+    {
+        val = _val;
+        next = NULL;
+        random = NULL;
+    }
+};
 
 void show(ListNode *head)
 {
