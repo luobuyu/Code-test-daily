@@ -104,7 +104,7 @@ struct List
             p = q;
         }
     }
-    void erase(Node *p)
+    void eraseNode(Node *p)
     {
         p->pre->next = p->next;
         p->next->pre = p->pre;
@@ -169,7 +169,7 @@ public:
     void change_backet(Node *p, int b1, int b2)
     {
         // b1 原来的桶，b2 新的桶
-        freq_map[b1]->erase(p);
+        freq_map[b1]->eraseNode(p);
         if (freq_map[b1]->size == 0)
         {
             delete freq_map[b1];
@@ -188,7 +188,7 @@ public:
         }
     }
 
-    void erase()
+    void eraseMinFreq()
     {
         key_map.erase(freq_map[min_freq]->front()->key);
         freq_map[min_freq]->eraseFirst();
@@ -214,7 +214,7 @@ public:
             if (cnt == capacity)
             {
                 // 删除一个频率最低最老的
-                erase();
+                eraseMinFreq();
                 cnt--;
             }
             if (freq_map.count(1))
