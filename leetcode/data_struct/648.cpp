@@ -106,12 +106,11 @@ public:
             for (int i = 0; i < s.size(); ++i)
             {
                 int ch = s[i] - 'a';
-                if (cur->exist)
-                    return s.substr(0, i);
                 if (!cur->next[ch])
                     break;
-
                 cur = cur->next[ch];
+                if (cur->exist)
+                    return s.substr(0, i + 1);
             }
             return s;
         }
