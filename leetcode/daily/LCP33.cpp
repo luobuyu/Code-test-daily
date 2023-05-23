@@ -68,23 +68,38 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-
-    vector<int> maxSlidingWindow(vector<int> &nums, int k)
+    int storeWater(vector<int> &bucket, vector<int> &vat)
     {
-        int n = nums.size();
-        int hh = 0, tt = -1;
-        vector<int> q(n);
-        vector<int> ans(n - k + 1);
-        // 里面存下标，单调减栈
+        priority_queue<pair<int, int>> q;
+        int n = bucket.size(), cnt = 0;
+        // cnt 是扩容次数
         for (int i = 0; i < n; ++i)
         {
-            while (tt >= hh && nums[i] >= nums[q[tt]])
-                --tt;
-            q[++tt] = i;
-            while (tt >= hh && i - q[hh] + 1 > k)
-                ++hh;
-            if (i + 1 >= k)
-                ans[i - k + 1] = nums[q[hh]];
+            if (vat[i] == 0)
+                continue;
+            if (bucket[i] == 0 && vat[i] != 0)
+            {
+                bucket[i]++;
+                cnt++;
+            }
+            int times = (vat[i] - 1) / bucket[i] + 1;
+            q.push({times, i});
+        }
+        int ans = 1e9;
+        if (q.empty())
+            return 0;
+        while (cnt < ans)
+        {
+            auto out = q.top();
+            q.pop();
+            ans = min(ans, cnt + out.first);
+            // 扩容至 倒水次数减一
+            if (out.first == 1)
+                break;
+            int b_size = (vat[out.second] - 1) / (out.first - 1) + 1;
+            cnt += b_size - bucket[out.second];
+            bucket[out.second] = b_size;
+            q.push({out.first - 1, out.second});
         }
         return ans;
     }
@@ -99,8 +114,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {7, 2, 4};
-    k = 2;
-    solution.maxSlidingWindow(a, k);
+
     return 0;
 }

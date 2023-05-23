@@ -55,6 +55,17 @@ const int INF = 0x3f3f3f3f;
 const ll INF_LL = 0x3f3f3f3f3f3f3f3f;
 const double eps = 1e-5;
 int t, n, m, k;
+
+struct TreeNode
+{
+    int val;
+    TreeNode *left;
+    TreeNode *right;
+    TreeNode() : val(0), left(nullptr), right(nullptr) {}
+    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+    TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+};
+
 auto optimize_cpp_stdio = []()
 {
     std::ios::sync_with_stdio(false);
@@ -65,28 +76,28 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const int INF = 0x3f3f3f3f;
-
-    vector<int> maxSlidingWindow(vector<int> &nums, int k)
+    TreeNode *dfs(TreeNode *u, int value, int &limit)
     {
-        int n = nums.size();
-        int hh = 0, tt = -1;
-        vector<int> q(n);
-        vector<int> ans(n - k + 1);
-        // 里面存下标，单调减栈
-        for (int i = 0; i < n; ++i)
+        if (u == nullptr)
         {
-            while (tt >= hh && nums[i] >= nums[q[tt]])
-                --tt;
-            q[++tt] = i;
-            while (tt >= hh && i - q[hh] + 1 > k)
-                ++hh;
-            if (i + 1 >= k)
-                ans[i - k + 1] = nums[q[hh]];
+            return nullptr;
         }
-        return ans;
+        if (u->left == nullptr && u->right == nullptr)
+        {
+            if (value < limit)
+                return nullptr;
+            else
+                return u;
+        }
+        u->left = dfs(u->left, value + u->val, limit);
+        u->right = dfs(u->right, u->val + value, limit);
+        if (left == nullptr && right == nullptr)
+            return nullptr;
+        return u;
+    }
+    TreeNode *sufficientSubset(TreeNode *root, int limit)
+    {
+        return dfs(root, 0, limit);
     }
 };
 
@@ -99,8 +110,5 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {7, 2, 4};
-    k = 2;
-    solution.maxSlidingWindow(a, k);
-    return 0;
+    vector<int> a = {} return 0;
 }

@@ -62,31 +62,45 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-class Solution
+class MaxQueue
 {
 public:
     const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const int INF = 0x3f3f3f3f;
-
-    vector<int> maxSlidingWindow(vector<int> &nums, int k)
+    int q[maxn];
+    int hh = 0, tt = -1;
+    int q2[maxn];
+    int h2 = 0, t2 = -1;
+    // 单调减
+    MaxQueue()
     {
-        int n = nums.size();
-        int hh = 0, tt = -1;
-        vector<int> q(n);
-        vector<int> ans(n - k + 1);
-        // 里面存下标，单调减栈
-        for (int i = 0; i < n; ++i)
+    }
+
+    int max_value()
+    {
+        if (empty())
+            return -1;
+        return q[hh];
+    }
+
+    bool empty() { return t2 < h2; }
+
+    void push_back(int value)
+    {
+        while (tt >= hh && value > q[tt])
+            --tt;
+        q[++tt] = value;
+        q2[++t2] = value;
+    }
+
+    int pop_front()
+    {
+        if (empty())
+            return -1;
+        if (q2[h2] == q[hh])
         {
-            while (tt >= hh && nums[i] >= nums[q[tt]])
-                --tt;
-            q[++tt] = i;
-            while (tt >= hh && i - q[hh] + 1 > k)
-                ++hh;
-            if (i + 1 >= k)
-                ans[i - k + 1] = nums[q[hh]];
+            ++hh;
         }
-        return ans;
+        return q2[h2++];
     }
 };
 
@@ -98,9 +112,13 @@ int main()
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
-    Solution solution;
-    vector<int> a = {7, 2, 4};
-    k = 2;
-    solution.maxSlidingWindow(a, k);
+    MaxQueue solution;
+    solution.push_back(1);
+    solution.push_back(2);
+    solution.push_back(2);
+    solution.max_value();
+    solution.pop_front();
+    solution.pop_front();
+    solution.max_value();
     return 0;
 }
