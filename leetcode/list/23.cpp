@@ -62,7 +62,6 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
 // 默认大顶堆
 template <class T, class Container = vector<T>, class Cmp = less<T>>
 class Heap
@@ -144,10 +143,31 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    struct Cmp
     {
-        priority_queue<int> q;
-        q.size();
+        bool operator()(const ListNode *p, const ListNode *q) { return p->val > q->val; }
+    };
+    ListNode *mergeKLists(vector<ListNode *> &lists)
+    {
+        Heap<ListNode *, vector<ListNode *>, Cmp> heap;
+        for (auto &l : lists)
+        {
+            if (l != nullptr)
+                heap.push(l);
+        }
+        ListNode *virHead = new ListNode();
+        ListNode *pre = virHead, *out;
+        while (heap.size())
+        {
+            out = heap.top();
+            heap.pop();
+            pre->next = out;
+            pre = pre->next;
+            out = out->next;
+            if (out != nullptr)
+                heap.push(out);
+        }
+        return virHead->next;
     }
 };
 
@@ -160,15 +180,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    Heap<int, vector<int>, greater<int>> heap;
-    vector<int> a;
-    for (int i = 0; i < 10; ++i)
-        heap.push(i);
-    while (heap.size())
-    {
-        cout << heap.top() << ", ";
-        heap.pop();
-    }
-    cout << endl;
+
     return 0;
 }
