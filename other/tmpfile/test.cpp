@@ -58,6 +58,19 @@ const int maxn = 1e5 + 10;
 const int maxm = 1e5 + 10;
 int t, n, m, k;
 set<int> mp;
+struct Node
+{
+   int u, delta;
+   bool operator<(const Node &x) const
+   {
+      return delta < x.delta;
+   }
+   bool operator>(const Node &x) const
+   {
+      return delta > x.delta;
+   }
+};
+
 int main()
 {
 // #define COMP_DATA
@@ -66,10 +79,5 @@ int main()
 #endif
    ios::sync_with_stdio(false);
    cin.tie(0);
-   int *a = new int[100]();
-   auto &tmp = a;
-   a[10] = 100;
-   cout << a << endl;
-   cout << tmp << endl;
    return 0;
 }
