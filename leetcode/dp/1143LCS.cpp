@@ -65,41 +65,33 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    vector<vector<int>> ans;
-    int maxEnvelopes(vector<vector<int>> &envelopes)
+    const static int maxn = 1e3 + 10;
+    const static int maxm = 1e5 + 10;
+    const int INF = 0x3f3f3f3f;
+    int dp[maxn];
+    int pre[maxn][maxn];
+    int longestCommonSubsequence(string text1, string text2)
     {
-        auto old = envelopes;
-        int len = 1, n = envelopes.size();
-        sort(envelopes.begin(), envelopes.end(), [&](const vector<int> &x, const vector<int> &y)
-             { if(x[0] != y[0]) return x[0] < y[0];
-             else return x[1] > y[1]; });
-        ans.push_back(vector<int>(1, 0));
-        for (int i = 1; i < n; ++i)
+        int n = text1.size(), m = text2.size();
+        for (int i = 1; i <= n; ++i)
         {
-            if (envelopes[i][0] > envelopes[len - 1][0] && envelopes[i][1] > envelopes[len - 1][1])
+            int tmp = 0;
+            int leftUp = 0;
+            for (int j = 1; j <= m; ++j)
             {
-                envelopes[len++] = envelopes[i];
-                auto tmp = ans.back();
-                tmp.push_back(i);
-                ans.push_back(tmp);
-            }
-            else
-            {
-                int index = lower_bound(envelopes.begin(), envelopes.begin() + len, envelopes[i],
-                                        [&](const vector<int> &x, const vector<int> &y)
-                                        { return x[1] < y[1]; }) -
-                            envelopes.begin();
-                if (index < len)
-                    envelopes[index] = envelopes[i];
-                ans[index].back() = i;
+                tmp = dp[j];
+                if (text1[i - 1] == text2[j - 1])
+                {
+                    dp[j] = leftUp + 1;
+                }
+                else
+                {
+                    dp[j] = max(dp[j - 1], dp[j]);
+                }
+                leftUp = tmp;
             }
         }
-        cout << "------------------" << endl;
-        for (int i = 0; i < len; ++i)
-        {
-            cout << old[ans[len - 1][i]][0] << ", " << old[ans[len - 1][i]][1] << endl;
-        }
-        return len;
+        return dp[m];
     }
 };
 
@@ -112,11 +104,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<vector<int>> a = {{46, 89},
-                             {50, 53},
-                             {52, 68},
-                             {72, 45},
-                             {77, 81}};
-    solution.maxEnvelopes(a);
+
     return 0;
 }

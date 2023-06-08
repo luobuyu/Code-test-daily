@@ -75,9 +75,31 @@ int main()
 {
 // #define COMP_DATA
 #ifndef ONLINE_JUDGE
-   freopen("in.txt", "r", stdin);
+   freopen("out.out", "rb", stdin);
 #endif
    ios::sync_with_stdio(false);
    cin.tie(0);
+   // ofstream ofs("./out.out", ios::out | ios::binary);
+   // char a[] = "hello";
+   // ofs.write(a, sizeof(a));
+   // ofs.close();
+   char ch;
+   int cnt = 0;
+   // while (cin.peek() != EOF)
+   // {
+   //    cin.read(&ch, sizeof(ch));
+   //    ++cnt;
+   //    cout << ch << endl;
+   // }
+   // cout << cnt << endl;
+   while (true)
+   {
+      cin.read(&ch, sizeof(ch));
+      if (cin.eof())
+         break;
+      ++cnt;
+      cout << ch << endl;
+   }
+   cout << cnt << endl;
    return 0;
 }

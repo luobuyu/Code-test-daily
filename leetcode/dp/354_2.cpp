@@ -65,39 +65,48 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    vector<vector<int>> ans;
+    vector<int> pre;
+    vector<pair<int, int>> dp; // 高度，下标
     int maxEnvelopes(vector<vector<int>> &envelopes)
     {
         auto old = envelopes;
         int len = 1, n = envelopes.size();
+        pre.resize(n, -1);
+        dp.resize(n + 1, {0, 0});
         sort(envelopes.begin(), envelopes.end(), [&](const vector<int> &x, const vector<int> &y)
              { if(x[0] != y[0]) return x[0] < y[0];
              else return x[1] > y[1]; });
-        ans.push_back(vector<int>(1, 0));
+        dp[0] = {envelopes[0][1], 0};
         for (int i = 1; i < n; ++i)
         {
-            if (envelopes[i][0] > envelopes[len - 1][0] && envelopes[i][1] > envelopes[len - 1][1])
+            if (envelopes[i][1] > dp[len - 1].first)
             {
-                envelopes[len++] = envelopes[i];
-                auto tmp = ans.back();
-                tmp.push_back(i);
-                ans.push_back(tmp);
+                pre[i] = dp[len - 1].second;
+                dp[len++] = {envelopes[i][1], i};
             }
             else
             {
-                int index = lower_bound(envelopes.begin(), envelopes.begin() + len, envelopes[i],
-                                        [&](const vector<int> &x, const vector<int> &y)
-                                        { return x[1] < y[1]; }) -
-                            envelopes.begin();
-                if (index < len)
-                    envelopes[index] = envelopes[i];
-                ans[index].back() = i;
+                int index = lower_bound(dp.begin(), dp.begin() + len, make_pair(envelopes[i][1], i),
+                                        [&](const pair<int, int> &x, const pair<int, int> &y)
+                                        {
+                                            return x.first < y.first;
+                                        }) -
+                            dp.begin();
+                pre[i] = pre[dp[index].second];
+                dp[index] = {envelopes[i][1], i};
             }
         }
-        cout << "------------------" << endl;
+        vector<int> ans;
+        int tmp = dp[len - 1].second;
+        while (tmp != -1)
+        {
+            ans.push_back(tmp);
+            tmp = pre[tmp];
+        }
+        reverse(ans.begin(), ans.end());
         for (int i = 0; i < len; ++i)
         {
-            cout << old[ans[len - 1][i]][0] << ", " << old[ans[len - 1][i]][1] << endl;
+            cout << envelopes[ans[i]][0] << ", " << envelopes[ans[i]][1] << endl;
         }
         return len;
     }
@@ -112,11 +121,12 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<vector<int>> a = {{46, 89},
-                             {50, 53},
-                             {52, 68},
-                             {72, 45},
-                             {77, 81}};
+    vector<vector<int>> a = {{4, 5},
+                             {4, 6},
+                             {6, 7},
+                             {2, 3},
+                             {1, 1},
+                             {1, 1}};
     solution.maxEnvelopes(a);
     return 0;
 }
