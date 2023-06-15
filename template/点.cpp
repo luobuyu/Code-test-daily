@@ -43,7 +43,7 @@ int sgn(double x)
 {
     if (fabs(x) < eps)
         return 0;
-    return x < -1 ? -1 : 1;
+    return x < 0 ? -1 : 1;
 }
 struct Point
 {

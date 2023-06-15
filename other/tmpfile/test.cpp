@@ -61,14 +61,11 @@ set<int> mp;
 struct Node
 {
    int u, delta;
-   bool operator<(const Node &x) const
-   {
-      return delta < x.delta;
-   }
-   bool operator>(const Node &x) const
-   {
-      return delta > x.delta;
-   }
+};
+
+struct OP : Node
+{
+   vector<int> a;
 };
 
 int main()
@@ -79,27 +76,11 @@ int main()
 #endif
    ios::sync_with_stdio(false);
    cin.tie(0);
-   // ofstream ofs("./out.out", ios::out | ios::binary);
-   // char a[] = "hello";
-   // ofs.write(a, sizeof(a));
-   // ofs.close();
-   char ch;
-   int cnt = 0;
-   // while (cin.peek() != EOF)
-   // {
-   //    cin.read(&ch, sizeof(ch));
-   //    ++cnt;
-   //    cout << ch << endl;
-   // }
-   // cout << cnt << endl;
-   while (true)
-   {
-      cin.read(&ch, sizeof(ch));
-      if (cin.eof())
-         break;
-      ++cnt;
-      cout << ch << endl;
-   }
-   cout << cnt << endl;
+   vector<Node> tmp;
+   OP op;
+   op.a.push_back(12312);
+   op.a.push_back(3322);
+   tmp.push_back(op);
+
    return 0;
 }
