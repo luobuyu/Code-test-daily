@@ -1,5 +1,6 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
+#include "head.h"
 #define ll long long
 #define lll long long
 #define PII pair<int, int>
@@ -53,54 +54,49 @@ const ll mod = 1e9 + 7;
 const int INF = 0x3f3f3f3f;
 const ll INF_LL = 0x3f3f3f3f3f3f3f3f;
 const double eps = 1e-5;
-const int maxn = 1e3 + 10;
-const int maxm = 1e5 + 10;
 int t, n, m, k;
+auto optimize_cpp_stdio = []()
+{
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    std::cout.tie(nullptr);
+    return 0;
+}();
+class Solution
+{
+public:
+    const static int maxn = 5e2 + 1;
+    int dp[maxn][maxn];
+    int minDistance(string word1, string word2)
+    {
+        int n = word1.size(), m = word2.size();
+        for (int i = 1; i <= n; ++i)
+        {
+            for (int j = 1; j <= m; ++j)
+            {
+                if (word1[i - 1] == word2[j - 1])
+                {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                }
+                else
+                {
+                    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return m + n - 2 * dp[n][m];
+    }
+};
 
-struct Point
-{
-    double x, y;
-    Point(double x, double y) : x(x), y(y) {}
-    Point operator-(const Point &b) const
-    {
-        return Point(x - b.x, y - b.y);
-    }
-    Point rotate(Point p, double angle)
-    {
-        Point v = (*this) - p;
-        double c = cos(angle), s = sin(angle);
-        return Point(p.x + v.x * c - v.y * s, p.y + v.x * s + v.y * c);
-    }
-};
-enum TYPE
-{
-    POLY = 1,
-    SEG = 2
-};
 int main()
 {
 // #define COMP_DATA
 #ifndef ONLINE_JUDGE
-    freopen("20x054-1.bool", "rb", stdin);
+    freopen("in.txt", "r", stdin);
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
-    // double pi = acos(-1);
-    // Point a(0.05, 782.87);
-    // Point b(3.94, 786.76);
-    // Point c = a.rotate(b, -pi / 4);
-    // cout << c.x << ", " << c.y << endl;
-    char type = 3;
-    switch (type)
-    {
-    case TYPE::POLY:
-        cout << "poly" << endl;
-        break;
-    case TYPE::SEG:
-        cout << "seg" << endl;
-        break;
-    default:
-        break;
-    }
+    Solution solution;
+
     return 0;
 }
