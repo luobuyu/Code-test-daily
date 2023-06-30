@@ -118,11 +118,64 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    const static int maxn = 1e5 + 10;
+    const static int maxn = 1e2 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    vector<vector<int>> pos;
+    int dis[maxn][maxn];
+    bool vis[maxn][maxn];
+    struct Node
     {
+        int i, j, step; // key[i], ring[j],
+        bool operator<(const Node &p) const
+        {
+            return step > p.step;
+        }
+        Node(int i, int j, int step) : i(i), j(j), step(step) {}
+    };
+    int findRotateSteps(string ring, string key)
+    {
+        pos.resize(26);
+        int n = key.size(), m = ring.size();
+        for (int i = 0; i < m; ++i)
+            pos[ring[i] - 'a'].emplace_back(i);
+
+        priority_queue<Node> q;
+        // key[0], j
+        int step;
+        memset(dis, 0x3f, sizeof(dis));
+        for (auto &j : pos[key[0] - 'a'])
+        {
+            step = min(j, m - j) + 1;
+            q.emplace(Node(0, j, step));
+            dis[0][j] = step;
+        }
+        int ans = INF;
+        while (q.size())
+        {
+            auto out = q.top();
+            q.pop();
+            if (out.i == n - 1)
+                break;
+            if (vis[out.i][out.j])
+                continue;
+            vis[out.i][out.j] = true;
+            // 找 out.i 的出边
+            if (out.i + 1 >= n)
+                break;
+            for (auto &j : pos[key[out.i + 1] - 'a'])
+            {
+                int w = min(abs(out.j - j), m - abs(out.j - j)) + 1;
+                if (dis[out.i + 1][j] > dis[out.i][out.j] + w)
+                {
+                    dis[out.i + 1][j] = dis[out.i][out.j] + w;
+                    if (out.i + 1 == n - 1)
+                        ans = min(ans, dis[out.i + 1][j]);
+                    q.push(Node(out.i + 1, j, dis[out.i + 1][j]));
+                }
+            }
+        }
+        return ans;
     }
 };
 

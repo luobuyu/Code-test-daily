@@ -6,7 +6,7 @@
 #define PII pair<int, int>
 namespace FAST_IO
 {
-    static string buf_line;
+    static char buf_line[10000];
     static int _i;
     static int _n;
 
@@ -40,9 +40,9 @@ namespace FAST_IO
 
     inline bool getline()
     {
-        if (!getline(cin, buf_line))
+        if (!gets(buf_line))
             return false;
-        _i = 0, _n = buf_line.length();
+        _i = 0, _n = strlen(buf_line);
         return true;
     }
     template <class T>
@@ -75,34 +75,42 @@ using namespace FAST_IO;
 
 int init = []
 {
-    /*********** fast_read ***************/
+/*********** fast_read ***************/
+#ifndef ONLINE_JUDGE
+    freopen("in.txt", "r", stdin);
     freopen("user.out", "w", stdout);
+#endif
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     cout.tie(nullptr);
     /*************************************/
-
-    int dp[100000][2] = {};
-    int v, ans;
+    static const int maxn = 5e2 + 1;
+    int dp[maxn][maxn];
     string s;
+    int n;
     for (; getline();)
     {
-        for (int i = 0; read(v); ++i)
+        n = _n - 1;
+        for (int i = 1; i <= n; ++i)
         {
-            if (i == 0)
+            dp[i][i] = 1;
+        }
+        int ans = 0;
+        for (int i = n; i >= 1; --i)
+        {
+            for (int j = i + 1; j <= n; ++j)
             {
-                dp[0][0] = v;
-                dp[0][1] = 0;
-                ans = v;
-            }
-            else
-            {
-                dp[i][0] = max(dp[i - 1][0] + v, v);
-                dp[i][1] = max(dp[i - 1][0], dp[i - 1][1] + v);
-                ans = max(ans, max(dp[i][0], dp[i][1]));
+                if (buf_line[i] == buf_line[j])
+                {
+                    dp[i][j] = dp[i + 1][j - 1] + 2;
+                }
+                else
+                {
+                    dp[i][j] = max(dp[i + 1][j], dp[i][j - 1]);
+                }
             }
         }
-        cout << ans << endl;
+        cout << dp[1][n] << "\n";
     }
     exit(0);
     return 0;
@@ -118,11 +126,34 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    const static int maxn = 1e5 + 10;
+    const static int maxn = 5e2 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    // 找到最长的回文子序列
+    int dp[maxn][maxn] = {};
+    int minInsertions(string s)
     {
+        int n = s.length();
+        for (int i = 1; i <= n; ++i)
+        {
+            dp[i][i] = 1;
+        }
+        for (int len = 2; len <= n; ++len)
+        {
+            for (int i = 1; i + len - 1 <= n; ++i)
+            {
+                int j = i + len - 1;
+                if (s[i - 1] == s[j - 1])
+                {
+                    dp[i][j] = dp[i + 1][j - 1] + 2;
+                }
+                else
+                {
+                    dp[i][j] = max(dp[i + 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return n - dp[1][n];
     }
 };
 

@@ -121,8 +121,34 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    int dp[maxn][maxn];
+    vector<vector<int>> pos;
+    int findRotateSteps(string ring, string key)
     {
+        pos.resize(26);
+        int n = key.size(), m = ring.size();
+        for (int i = 0; i < m; ++i)
+            pos[ring[i] - 'a'].emplace_back(i);
+
+        for (int i = 0; i < pos[key[0]].size(); ++i)
+        {
+            int j = pos[key[0] - 'a'][i];
+            dp[0][j] = min(j, n - j) + 1;
+        }
+        int ans = INF;
+        for (int i = 1; i < n; ++i)
+        {
+            for (auto &j : pos[key[i] - 'a'])
+            {
+                for (auto &k : pos[key[i - 1] - 'a'])
+                {
+                    dp[i][j] = min(dp[i][j], dp[i - 1][k] + min(abs(j - k), n - abs(j - k)) + 1);
+                }
+                if (i == n - 1)
+                    ans = min(ans, dp[i][j]);
+            }
+        }
+        return ans;
     }
 };
 

@@ -118,11 +118,34 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    const static int maxn = 1e5 + 10;
+    const static int maxn = 5e2 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    // 找到最长的回文子序列
+    int dp[maxn][maxn] = {};
+    int minInsertions(string s)
     {
+        int n = s.length();
+        for (int i = 1; i <= n; ++i)
+        {
+            dp[i][i] = 1;
+        }
+        int ans = 0;
+        for (int i = n; i >= 1; --i)
+        {
+            for (int j = i + 1; j <= n; ++j)
+            {
+                if (s[i - 1] == s[j - 1])
+                {
+                    dp[i][j] = dp[i + 1][j - 1] + 2;
+                }
+                else
+                {
+                    dp[i][j] = max(dp[i + 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return n - dp[1][n];
     }
 };
 

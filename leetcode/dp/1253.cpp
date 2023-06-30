@@ -4,6 +4,7 @@
 #define ll long long
 #define lll long long
 #define PII pair<int, int>
+#define LEETCODE
 namespace FAST_IO
 {
     static string buf_line;
@@ -72,7 +73,7 @@ namespace FAST_IO
     }
 } // namespace FAST_IO
 using namespace FAST_IO;
-
+// #ifndef LEETCODE
 int init = []
 {
     /*********** fast_read ***************/
@@ -81,50 +82,84 @@ int init = []
     cin.tie(nullptr);
     cout.tie(nullptr);
     /*************************************/
-
-    int dp[100000][2] = {};
-    int v, ans;
-    string s;
-    for (; getline();)
+    static const int maxn = 1e5 + 10;
+    int ans[2][maxn];
+    int upper, lower;
+    int n, v;
+    int colsum[maxn];
+    while (true)
     {
-        for (int i = 0; read(v); ++i)
+        if (!getline())
+            break;
+        read(upper);
+        getline();
+        read(lower);
+        getline();
+        for (n = 0; read(v); ++n)
+            colsum[n] = v;
+        for (int i = 0; i < n; ++i)
         {
-            if (i == 0)
+            ans[0][i] = ans[1][i] = 0;
+        }
+
+        int tot0 = 0, tot1 = 0, tot2 = 0;
+        for (int i = 0; i < n; ++i)
+        {
+            if (colsum[i] == 2)
             {
-                dp[0][0] = v;
-                dp[0][1] = 0;
-                ans = v;
+                tot0++;
+                tot1++;
+                ans[0][i] = 1;
+                ans[1][i] = 1;
+            }
+            else if (colsum[i] == 0)
+                ++tot2;
+        }
+        if (tot0 > upper || tot1 > lower || (upper - tot0 + lower - tot1 < n - tot0 - tot2))
+        {
+            cout << "[]\n";
+        }
+        else
+        {
+            for (int i = 0; i < n; ++i)
+            {
+                if (colsum[i] == 1)
+                {
+                    if (tot0 < upper)
+                    {
+                        ans[0][i] = 1;
+                        ++tot0;
+                    }
+                    else
+                    {
+                        ans[1][i] = 1;
+                        ++tot1;
+                    }
+                }
+            }
+            if (tot0 != upper || tot1 != lower)
+            {
+                cout << "[]\n";
             }
             else
             {
-                dp[i][0] = max(dp[i - 1][0] + v, v);
-                dp[i][1] = max(dp[i - 1][0], dp[i - 1][1] + v);
-                ans = max(ans, max(dp[i][0], dp[i][1]));
+                show(ans, 2, n);
+                cout << "\n";
             }
         }
-        cout << ans << endl;
     }
     exit(0);
-    return 0;
-}();
-
-auto optimize_cpp_stdio = []()
-{
-    std::ios::sync_with_stdio(false);
-    std::cin.tie(nullptr);
-    std::cout.tie(nullptr);
     return 0;
 }();
 class Solution
 {
 public:
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    vector<vector<int>> reconstructMatrix(int upper, int lower, vector<int> &colsum)
     {
+        return vector<vector<int>>();
     }
 };
+// #endif
 
 int t, n, m, k;
 int main()

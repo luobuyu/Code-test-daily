@@ -121,8 +121,23 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    bool isCircularSentence(string sentence)
     {
+        int n = sentence.size();
+        char pre = sentence[0];
+        for (int i = 0; i < n; ++i)
+        {
+            if (i - 1 >= 0 && sentence[i - 1] == ' ')
+            {
+                if (sentence[i] != pre)
+                    return false;
+            }
+            if (i + 1 < n && sentence[i + 1] == ' ')
+            {
+                pre = sentence[i];
+            }
+        }
+        return true;
     }
 };
 
