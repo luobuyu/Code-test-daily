@@ -9,7 +9,7 @@ namespace FAST_IO
     static string buf_line;
     static int _i;
     static int _n;
-
+    static char _ch;
     template <class T>
     inline bool read(T &x)
     {
@@ -17,16 +17,18 @@ namespace FAST_IO
         x = 0;
         if (_i >= _n)
             return false;
-        char ch = buf_line[_i++];
-        while (ch < '0' || ch > '9')
+        _ch = buf_line[_i++];
+        while (_ch < '0' || _ch > '9')
         {
-            if (ch == '-')
+            if (_ch == '-')
                 flag = -1;
-            ch = buf_line[_i++];
+            _ch = buf_line[_i++];
         }
-        while (ch >= '0' && ch <= '9')
+        if (_i >= _n)
+            return false;
+        while (_ch >= '0' && _ch <= '9')
         {
-            x = (x << 3) + (x << 1) + (ch ^ 48), ch = buf_line[_i++];
+            x = (x << 3) + (x << 1) + (_ch ^ 48), _ch = buf_line[_i++];
         }
         x *= flag;
         return true;
@@ -58,6 +60,20 @@ namespace FAST_IO
         cout << "]";
     }
 
+    bool endofl()
+    {
+        if (_i >= _n)
+            return true;
+        if (_i == 0)
+            return false;
+        if (buf_line[_i - 1] == ']')
+        {
+            _i++;
+            return true;
+        }
+        return false;
+    }
+
     template <class T, std::size_t Num>
     inline void show(T a[][Num], int n, int m)
     {
@@ -70,6 +86,7 @@ namespace FAST_IO
         }
         cout << "]";
     }
+
 } // namespace FAST_IO
 using namespace FAST_IO;
 
@@ -77,32 +94,40 @@ int init = []
 {
     /*********** fast_read ***************/
     freopen("user.out", "w", stdout);
+    freopen("in.txt", "r", stdin);
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     cout.tie(nullptr);
     /*************************************/
-
-    int dp[100000][2] = {};
-    int v, ans;
-    string s;
-    for (; getline();)
+    int nums[300][500];
+    while (true)
     {
-        for (int i = 0; read(v); ++i)
+        if (!getline())
+            break;
+
+        int n, m;
+        for (n = 0; !endofl(); ++n)
         {
-            if (i == 0)
+            for (m = 0; !endofl(); ++m)
             {
-                dp[0][0] = v;
-                dp[0][1] = 0;
-                ans = v;
-            }
-            else
-            {
-                dp[i][0] = max(dp[i - 1][0] + v, v);
-                dp[i][1] = max(dp[i - 1][0], dp[i - 1][1] + v);
-                ans = max(ans, max(dp[i][0], dp[i][1]));
+                read(nums[n][m]);
             }
         }
-        cout << ans << endl;
+        for (int i = 0; i < n; ++i)
+        {
+            sort(nums[i], nums[i] + m);
+        }
+        int ans = 0;
+        for (int j = 0; j < m; ++j)
+        {
+            int maxx = 0;
+            for (int i = 0; i < n; ++i)
+            {
+                maxx = max(maxx, nums[i][j]);
+            }
+            ans += maxx;
+        }
+        cout << ans << "\n";
     }
     exit(0);
     return 0;
@@ -121,8 +146,9 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    int matrixSum(vector<vector<int>> &nums)
     {
+        return 0;
     }
 };
 

@@ -24,6 +24,8 @@ namespace FAST_IO
                 flag = -1;
             _ch = buf_line[_i++];
         }
+        if (_i >= _n)
+            return false;
         while (_ch >= '0' && _ch <= '9')
         {
             x = (x << 3) + (x << 1) + (_ch ^ 48), _ch = buf_line[_i++];
@@ -101,8 +103,33 @@ int init = []
     {
         if (!getline())
             break;
+        long long finalSum;
+        read(finalSum);
+        long long i = 2;
+        long long sum = 0;
+        if (finalSum & 1)
+        {
+            cout << "[]\n";
+            continue;
+        }
+        cout << "[";
 
-        getline();
+        for (i = 2; finalSum - i >= 0; i += 2)
+        {
+            if (i != 2)
+            {
+                cout << ",";
+            }
+            cout << i;
+            finalSum -= i;
+        }
+        if (i != 2)
+            cout << ",";
+        if (finalSum != 0)
+        {
+            cout << finalSum;
+        }
+        cout << "]\n";
     }
     exit(0);
     return 0;
@@ -121,11 +148,25 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    vector<long long> maximumEvenSplit(long long finalSum)
     {
+        vector<long long> ans;
+        long long i = 2;
+        long long sum = 0;
+        if (finalSum & 1)
+            return ans;
+        while (finalSum - i >= 0)
+        {
+            ans.emplace_back(i);
+            sum += i;
+            finalSum -= i;
+            i += 2;
+        }
+        if (finalSum != 0)
+            ans.back() += finalSum;
+        return ans;
     }
 };
-
 int t, n, m, k;
 int main()
 {

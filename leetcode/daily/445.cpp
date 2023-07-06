@@ -9,7 +9,7 @@ namespace FAST_IO
     static string buf_line;
     static int _i;
     static int _n;
-    static char _ch;
+
     template <class T>
     inline bool read(T &x)
     {
@@ -17,16 +17,16 @@ namespace FAST_IO
         x = 0;
         if (_i >= _n)
             return false;
-        _ch = buf_line[_i++];
-        while (_ch < '0' || _ch > '9')
+        char ch = buf_line[_i++];
+        while (ch < '0' || ch > '9')
         {
-            if (_ch == '-')
+            if (ch == '-')
                 flag = -1;
-            _ch = buf_line[_i++];
+            ch = buf_line[_i++];
         }
-        while (_ch >= '0' && _ch <= '9')
+        while (ch >= '0' && ch <= '9')
         {
-            x = (x << 3) + (x << 1) + (_ch ^ 48), _ch = buf_line[_i++];
+            x = (x << 3) + (x << 1) + (ch ^ 48), ch = buf_line[_i++];
         }
         x *= flag;
         return true;
@@ -58,20 +58,6 @@ namespace FAST_IO
         cout << "]";
     }
 
-    bool endofl()
-    {
-        if (_i >= _n)
-            return true;
-        if (_i == 0)
-            return false;
-        if (buf_line[_i - 1] == ']')
-        {
-            _i++;
-            return true;
-        }
-        return false;
-    }
-
     template <class T, std::size_t Num>
     inline void show(T a[][Num], int n, int m)
     {
@@ -84,7 +70,6 @@ namespace FAST_IO
         }
         cout << "]";
     }
-
 } // namespace FAST_IO
 using namespace FAST_IO;
 
@@ -96,13 +81,50 @@ int init = []
     cin.tie(nullptr);
     cout.tie(nullptr);
     /*************************************/
-
+    static const int maxn = 100 + 1;
+    int a[maxn];
+    int b[maxn];
+    int l1, l2;
     while (true)
     {
         if (!getline())
             break;
+        int x;
 
+        while (read(x))
+        {
+            a[l1++] = x;
+        }
         getline();
+        while (read(x))
+        {
+            b[l2++] = x;
+        }
+        int i = l1 - 1, j = l2 - 1;
+        int val = 0, add = 0;
+        int aa, bb;
+        cout << "[";
+        while (i >= 0 || j >= 0 || add)
+        {
+            if (i != l1 - 1 && j != l2 - 1)
+                cout << ",";
+            if (i >= 0)
+                aa = a[i];
+            else
+                aa = 0;
+            if (j >= 0)
+                bb = b[j];
+            else
+                bb = 0;
+            val = aa + bb + add;
+            cout << val % 10;
+            add = val / 10;
+            if (i >= 0)
+                --i;
+            if (j >= 0)
+                --j;
+        }
+        cout << "]\n";
     }
     exit(0);
     return 0;
@@ -121,8 +143,43 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    ListNode *addTwoNumbers(ListNode *l1, ListNode *l2)
     {
+        stack<int> s1, s2;
+        while (l1)
+        {
+            s1.push(l1->val);
+            l1 = l1->next;
+        }
+        while (l2)
+        {
+            s2.push(l2->val);
+            l2 = l2->next;
+        }
+        ListNode *virhead = new ListNode;
+        int a = 0, b = 0, add = 0, val;
+        while (s1.size() || s2.size() || add)
+        {
+            if (s1.size())
+            {
+                a = s1.top();
+                s1.pop();
+            }
+            else
+                a = 0;
+            if (s2.size())
+            {
+                b = s2.top();
+                s2.pop();
+            }
+            else
+                b = 0;
+            val = a + b + add;
+            add = val / 10;
+            val = val % 10;
+            virhead->next = new ListNode(val, virhead->next);
+        }
+        return virhead->next;
     }
 };
 

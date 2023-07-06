@@ -9,7 +9,7 @@ namespace FAST_IO
     static string buf_line;
     static int _i;
     static int _n;
-    static char _ch;
+
     template <class T>
     inline bool read(T &x)
     {
@@ -17,16 +17,16 @@ namespace FAST_IO
         x = 0;
         if (_i >= _n)
             return false;
-        _ch = buf_line[_i++];
-        while (_ch < '0' || _ch > '9')
+        char ch = buf_line[_i++];
+        while (ch < '0' || ch > '9')
         {
-            if (_ch == '-')
+            if (ch == '-')
                 flag = -1;
-            _ch = buf_line[_i++];
+            ch = buf_line[_i++];
         }
-        while (_ch >= '0' && _ch <= '9')
+        while (ch >= '0' && ch <= '9')
         {
-            x = (x << 3) + (x << 1) + (_ch ^ 48), _ch = buf_line[_i++];
+            x = (x << 3) + (x << 1) + (ch ^ 48), ch = buf_line[_i++];
         }
         x *= flag;
         return true;
@@ -58,20 +58,6 @@ namespace FAST_IO
         cout << "]";
     }
 
-    bool endofl()
-    {
-        if (_i >= _n)
-            return true;
-        if (_i == 0)
-            return false;
-        if (buf_line[_i - 1] == ']')
-        {
-            _i++;
-            return true;
-        }
-        return false;
-    }
-
     template <class T, std::size_t Num>
     inline void show(T a[][Num], int n, int m)
     {
@@ -84,7 +70,6 @@ namespace FAST_IO
         }
         cout << "]";
     }
-
 } // namespace FAST_IO
 using namespace FAST_IO;
 
@@ -118,14 +103,32 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    const static int maxn = 1e5 + 10;
+    const static int maxn = 1e3 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    int dp[maxn][maxn];
+    int numDistinct(string s, string t)
     {
+        int n = s.length(), m = t.length();
+        for (int i = 0; i < n; ++i)
+        {
+            dp[i][0] = 1;
+        }
+        for (int i = 1; i <= n; ++i)
+        {
+            for (int j = 1; j <= m; ++j)
+            {
+                if (s[i - 1] == t[j - 1])
+                {
+                    dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j];
+                }
+                else
+                    dp[i][j] = dp[i - 1][j];
+            }
+        }
+        return dp[n][m];
     }
 };
-
 int t, n, m, k;
 int main()
 {
