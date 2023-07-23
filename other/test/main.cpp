@@ -77,6 +77,20 @@ enum TYPE
     POLY = 1,
     SEG = 2
 };
+
+struct Node
+{
+    int x;
+    Node(int _x) : x(_x) {}
+    bool operator==(const Node &p) { return x == p.x; }
+    bool operator==(const Node *p) { return x == p->x; }
+};
+
+void fun(Node *a, Node *b)
+{
+    swap(a, b);
+    a->x = 100;
+}
 int main()
 {
 // #define COMP_DATA
@@ -85,22 +99,14 @@ int main()
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
-    // double pi = acos(-1);
-    // Point a(0.05, 782.87);
-    // Point b(3.94, 786.76);
-    // Point c = a.rotate(b, -pi / 4);
-    // cout << c.x << ", " << c.y << endl;
-    char type = 3;
-    switch (type)
+    bool a = true, b = true;
+    bool c, d;
+    if (!(a ^ b))
     {
-    case TYPE::POLY:
-        cout << "poly" << endl;
-        break;
-    case TYPE::SEG:
-        cout << "seg" << endl;
-        break;
-    default:
-        break;
+        c = d = !a;
     }
+    cout << bitset<8>(~a) << endl;
+    cout << bitset<8>(!a) << endl;
+    cout << c << ", " << d << endl;
     return 0;
 }
