@@ -176,6 +176,24 @@ struct Point
       else
          return angle;
    }
+
+   double radABBC(Point a, Point c)
+   {
+      Point &b = *this;
+      Point v1 = b - a;
+      Point v2 = c - b;
+      double chaji = v1 ^ v2;
+      double dianji = v1 * v2;
+      double angle = fabs(atan2(fabs(chaji), dianji));
+      // (-pi, 0) [0, pi]
+      // (0, pi)
+      // (2pi, pi)
+      // [0, 2pi)
+      if (chaji < 0)
+         return pi + angle;
+      else
+         return pi - angle;
+   }
    // 向量夹角
    double rad(Point a)
    {
@@ -306,11 +324,13 @@ int main()
 #endif
    ios::sync_with_stdio(false);
    cin.tie(0);
-   Point a(7, 3), b(4, 3), c(2, 5), d(9, 3);
-   cout << b.radABC(a, d) / pi << endl;
-   cout << b.radABC(a, c) / pi << endl;
+   Point a(7, 3), b(4, 3), c(2, 5), d(2, 1);
+   Point e(9, 3), f(13, 3), g(15, 5), h(15, 1);
+   cout << b.radABBC(a, c) / pi << endl;
+   cout << b.radABBC(a, d) / pi << endl;
 
-   Point a1(2, 0), b1(1, 0), c1(3, 0);
-   cout << a1.rad(b1, c1) / pi << endl;
+   cout << "-------------------" << endl;
+   cout << f.radABBC(e, g) / pi << endl;
+   cout << f.radABBC(e, h) / pi << endl;
    return 0;
 }
