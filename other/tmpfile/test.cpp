@@ -62,6 +62,8 @@ set<int> mp;
 struct Node
 {
    int u, delta;
+   vector<int> a;
+   Node() : a(10) {}
 };
 
 struct OP : Node
@@ -320,7 +322,7 @@ int main()
 {
 // #define COMP_DATA
 #ifndef ONLINE_JUDGE
-   freopen("out.out", "rb", stdin);
+   freopen("in.txt", "r", stdin);
 #endif
    ios::sync_with_stdio(false);
    cin.tie(0);
