@@ -182,8 +182,8 @@ struct Point
    double radABBC(Point a, Point c)
    {
       Point &b = *this;
-      Point v1 = b - a;
-      Point v2 = c - b;
+      Point v1 = a - b; // ba
+      Point v2 = c - b; // bc
       double chaji = v1 ^ v2;
       double dianji = v1 * v2;
       double angle = fabs(atan2(fabs(chaji), dianji));
@@ -191,10 +191,12 @@ struct Point
       // (0, pi)
       // (2pi, pi)
       // [0, 2pi)
-      if (chaji < 0)
-         return pi + angle;
-      else
-         return pi - angle;
+      // <-
+      //   -
+      //    -<------
+      if (chaji > 0)
+         angle = 2 * pi - angle;
+      return angle;
    }
    // 向量夹角
    double rad(Point a)
@@ -334,5 +336,13 @@ int main()
    cout << "-------------------" << endl;
    cout << f.radABBC(e, g) / pi << endl;
    cout << f.radABBC(e, h) / pi << endl;
+
+   cout << "-------------------" << endl;
+   Point ba = a - b;
+   Point bc = c - b;
+   cout << (ba ^ bc) << endl;
+   cout << "-------------------" << endl;
+   cout << b.radABBC(a, a) / pi << endl;
+   cout << b.radABBC(d, d) / pi << endl;
    return 0;
 }
