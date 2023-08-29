@@ -344,5 +344,12 @@ int main()
    cout << "-------------------" << endl;
    cout << b.radABBC(a, a) / pi << endl;
    cout << b.radABBC(d, d) / pi << endl;
+
+   cout << "-------------------" << endl;
+   cout << b.radABC(a, d) / pi << endl;
+
+   Point front(3, 0), t(2, 0), nex(1, 0);
+   cout << "-------------------" << endl;
+   cout << t.radABBC(front, nex) / pi << endl;
    return 0;
 }
