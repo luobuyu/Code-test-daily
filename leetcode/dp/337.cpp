@@ -121,8 +121,21 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    unordered_map<TreeNode *, int[2]> mp;
+    void dfs(TreeNode *root)
     {
+        if (root == nullptr)
+            return;
+        dfs(root->left);
+        dfs(root->right);
+        mp[root][0] = max(mp[root->left][0], mp[root->left][1]) + max(mp[root->right][0], mp[root->right][1]);
+        mp[root][1] = mp[root->left][0] + mp[root->right][0] + root->val;
+    }
+    int rob(TreeNode *root)
+    {
+        // dp[i][0|1] 表示偷或不偷这个节点所能达到的最大值。
+        dfs(root);
+        return max(mp[root][0], mp[root][1]);
     }
 };
 
@@ -136,6 +149,9 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    unordered_map<int, int> mp;
+    if (mp.count(0))
+        cout << "存在" << endl;
+    cout << mp[0] << endl;
     return 0;
 }

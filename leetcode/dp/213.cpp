@@ -88,25 +88,25 @@ namespace FAST_IO
 } // namespace FAST_IO
 using namespace FAST_IO;
 
-// int init = []
-// {
-//     /*********** fast_read ***************/
-//     freopen("user.out", "w", stdout);
-//     ios_base::sync_with_stdio(false);
-//     cin.tie(nullptr);
-//     cout.tie(nullptr);
-//     /*************************************/
+int init = []
+{
+    /*********** fast_read ***************/
+    freopen("user.out", "w", stdout);
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+    cout.tie(nullptr);
+    /*************************************/
 
-//     while (true)
-//     {
-//         if (!getline())
-//             break;
+    while (true)
+    {
+        if (!getline())
+            break;
 
-//         getline();
-//     }
-//     exit(0);
-//     return 0;
-// }();
+        getline();
+    }
+    exit(0);
+    return 0;
+}();
 
 auto optimize_cpp_stdio = []()
 {
@@ -121,8 +121,21 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    int rob1(vector<int> nums)
     {
+        int n = nums.size();
+        vector<int> dp(n + 1);
+        dp[1] = nums[0];
+        for (int i = 2; i <= n; ++i)
+        {
+            dp[i] = max(dp[i - 1], dp[i - 2] + nums[i - 1]);
+        }
+        return dp[n];
+    }
+    int rob(vector<int> &nums)
+    {
+
+        return max(rob1(vector<int>(nums.begin(), nums.end() - 1)), rob1(vector<int>(nums.begin() + 1, nums.end())));
     }
 };
 

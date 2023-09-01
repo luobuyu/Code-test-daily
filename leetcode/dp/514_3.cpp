@@ -88,25 +88,25 @@ namespace FAST_IO
 } // namespace FAST_IO
 using namespace FAST_IO;
 
-// int init = []
-// {
-//     /*********** fast_read ***************/
-//     freopen("user.out", "w", stdout);
-//     ios_base::sync_with_stdio(false);
-//     cin.tie(nullptr);
-//     cout.tie(nullptr);
-//     /*************************************/
+int init = []
+{
+    /*********** fast_read ***************/
+    freopen("user.out", "w", stdout);
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+    cout.tie(nullptr);
+    /*************************************/
 
-//     while (true)
-//     {
-//         if (!getline())
-//             break;
+    while (true)
+    {
+        if (!getline())
+            break;
 
-//         getline();
-//     }
-//     exit(0);
-//     return 0;
-// }();
+        getline();
+    }
+    exit(0);
+    return 0;
+}();
 
 auto optimize_cpp_stdio = []()
 {
@@ -121,8 +121,9 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    int findRotateSteps(string ring, string key)
     {
+        // dp[i][j], 第 i 个key[i]对应ring[j]
     }
 };
 

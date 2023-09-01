@@ -121,8 +121,43 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    bool check(int mid, vector<int> &nums, int n, int k)
     {
+        int pre = -2;
+        for (int i = 0; i < n && k; ++i)
+        {
+            if (nums[i] < k && i - 1 != pre)
+            {
+                k--;
+                pre = i;
+            }
+        }
+        return k == 0;
+    }
+    int minCapability(vector<int> &nums, int k)
+    {
+        // 最大值最小。
+        int r = -1, l = INT_MAX, n = nums.size();
+        for (auto &x : nums)
+        {
+            r = max(r, x);
+            l = min(l, x);
+        }
+        int mid, ans;
+        while (l <= r)
+        {
+            mid = l + ((r - l) >> 1);
+            if (check(mid, nums, n, k))
+            {
+                ans = mid;
+                r = mid - 1;
+            }
+            else
+            {
+                l = mid + 1;
+            }
+        }
+        return ans;
     }
 };
 
@@ -136,6 +171,8 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<int> a = {2, 3, 5, 9};
+    int k = 2;
+    solution.minCapability(a, k);
     return 0;
 }
