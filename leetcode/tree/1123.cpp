@@ -88,25 +88,25 @@ namespace FAST_IO
 } // namespace FAST_IO
 using namespace FAST_IO;
 
-int init = []
-{
-    /*********** fast_read ***************/
-    freopen("user.out", "w", stdout);
-    ios_base::sync_with_stdio(false);
-    cin.tie(nullptr);
-    cout.tie(nullptr);
-    /*************************************/
+// int init = []
+// {
+//     /*********** fast_read ***************/
+//     freopen("user.out", "w", stdout);
+//     ios_base::sync_with_stdio(false);
+//     cin.tie(nullptr);
+//     cout.tie(nullptr);
+//     /*************************************/
 
-    while (true)
-    {
-        if (!getline())
-            break;
+//     while (true)
+//     {
+//         if (!getline())
+//             break;
 
-        getline();
-    }
-    exit(0);
-    return 0;
-}();
+//         getline();
+//     }
+//     exit(0);
+//     return 0;
+// }();
 
 auto optimize_cpp_stdio = []()
 {
@@ -121,35 +121,26 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int findRotateSteps(string ring, string key)
+    int max_dep = -1;
+    TreeNode *ans;
+    int dfs(TreeNode *root, int dep)
     {
-        // dp[i][j], 第 i 个key[i]对应ring[j]
-        int n = key.size(), m = ring.size();
-        vector<vector<int>> dp(n + 1, vector<int>(m + 1, INF));
-        // dp[i][j] = dp[i-1][k] + |j-|
-        // k = pos[key[i-1]][p]
-        vector<vector<int>> pos(26);
-        for (int i = 0; i < m; ++i)
-            pos[ring[i] - 'a'].emplace_back(i);
-        // 初始化 dp[0][k]
-        for (auto &k : pos[key[0] - 'a'])
+        if (root == nullptr)
         {
-            dp[0][k] = min(k, m - k) + 1;
+            max_dep = max(max_dep, dep);
+            return dep;
         }
-        int ans = INT_MAX;
-        for (int i = 1; i < m; ++i)
-        {
-            for (auto &j : pos[key[i] - 'a'])
-            {
-                for (auto &k : pos[key[i - 1] - 'a'])
-                {
-                    dp[i][j] = min(dp[i][j], dp[i - 1][k] + min(abs(j - k), m - abs(j - k)) + 1);
-                }
-                if (i == m - 1)
-                    ans = min(ans, dp[i][j]);
-            }
-        }
-        return ans;
+        int left_dep = dfs(root->left, dep + 1);
+        int right_dep = dfs(root->right, dep + 1);
+        if (left_dep == max_dep && right_dep == max_dep)
+            ans = root;
+        return max(left_dep, right_dep);
+    }
+    TreeNode *lcaDeepestLeaves(TreeNode *root)
+    {
+        dfs(root, 0);
+        cout << max_dep << endl;
+        return root;
     }
 };
 

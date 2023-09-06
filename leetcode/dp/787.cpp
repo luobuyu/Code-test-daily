@@ -9,7 +9,7 @@ namespace FAST_IO
     static string buf_line;
     static int _i;
     static int _n;
-
+    static char _ch;
     template <class T>
     inline bool read(T &x)
     {
@@ -17,16 +17,16 @@ namespace FAST_IO
         x = 0;
         if (_i >= _n)
             return false;
-        char ch = buf_line[_i++];
-        while (ch < '0' || ch > '9')
+        _ch = buf_line[_i++];
+        while (_ch < '0' || _ch > '9')
         {
-            if (ch == '-')
+            if (_ch == '-')
                 flag = -1;
-            ch = buf_line[_i++];
+            _ch = buf_line[_i++];
         }
-        while (ch >= '0' && ch <= '9')
+        while (_ch >= '0' && _ch <= '9')
         {
-            x = (x << 3) + (x << 1) + (ch ^ 48), ch = buf_line[_i++];
+            x = (x << 3) + (x << 1) + (_ch ^ 48), _ch = buf_line[_i++];
         }
         x *= flag;
         return true;
@@ -58,6 +58,20 @@ namespace FAST_IO
         cout << "]";
     }
 
+    bool endofl()
+    {
+        if (_i >= _n)
+            return true;
+        if (_i == 0)
+            return false;
+        if (buf_line[_i - 1] == ']')
+        {
+            _i++;
+            return true;
+        }
+        return false;
+    }
+
     template <class T, std::size_t Num>
     inline void show(T a[][Num], int n, int m)
     {
@@ -70,43 +84,29 @@ namespace FAST_IO
         }
         cout << "]";
     }
+
 } // namespace FAST_IO
 using namespace FAST_IO;
 
-int init = []
-{
-    /*********** fast_read ***************/
-    freopen("user.out", "w", stdout);
-    ios_base::sync_with_stdio(false);
-    cin.tie(nullptr);
-    cout.tie(nullptr);
-    /*************************************/
+// int init = []
+// {
+//     /*********** fast_read ***************/
+//     freopen("user.out", "w", stdout);
+//     ios_base::sync_with_stdio(false);
+//     cin.tie(nullptr);
+//     cout.tie(nullptr);
+//     /*************************************/
 
-    int dp[100000][2] = {};
-    int v, ans;
-    string s;
-    for (; getline();)
-    {
-        for (int i = 0; read(v); ++i)
-        {
-            if (i == 0)
-            {
-                dp[0][0] = v;
-                dp[0][1] = 0;
-                ans = v;
-            }
-            else
-            {
-                dp[i][0] = max(dp[i - 1][0] + v, v);
-                dp[i][1] = max(dp[i - 1][0], dp[i - 1][1] + v);
-                ans = max(ans, max(dp[i][0], dp[i][1]));
-            }
-        }
-        cout << ans << endl;
-    }
-    exit(0);
-    return 0;
-}();
+//     while (true)
+//     {
+//         if (!getline())
+//             break;
+
+//         getline();
+//     }
+//     exit(0);
+//     return 0;
+// }();
 
 auto optimize_cpp_stdio = []()
 {
@@ -121,36 +121,31 @@ public:
     const static int maxn = 1e2 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int dp[maxn][maxn] = {};
-    vector<vector<int>> pos;
-    int findRotateSteps(string ring, string key)
+    int dp[maxn][maxn];
+    int findCheapestPrice(int n, vector<vector<int>> &flights, int src, int dst, int k)
     {
-        pos.resize(26);
-        int n = key.size(), m = ring.size();
-        for (int i = 0; i < m; ++i)
-            pos[ring[i] - 'a'].emplace_back(i);
         memset(dp, 0x3f, sizeof(dp));
-        for (int i = 0; i < pos[key[0] - 'a'].size(); ++i)
+        dp[src][0] = 0;
+        // i --> j
+        // dp[j][k] = dp[i][k-1]
+        for (int i = 1; i <= k; ++i)
         {
-            int j = pos[key[0] - 'a'][i];
-            dp[0][j] = min(j, m - j) + 1;
-        }
-        if (n == 1)
-            return dp[0][pos[key[0] - 'a'][0]];
-        int ans = INF;
-        for (int i = 1; i < n; ++i)
-        {
-            for (auto &j : pos[key[i] - 'a'])
+            for (auto &flight : flights)
             {
-                for (auto &k : pos[key[i - 1] - 'a'])
-                {
-                    dp[i][j] = min(dp[i][j], dp[i - 1][k] + min(abs(j - k), m - abs(j - k)) + 1);
-                }
-                if (i == n - 1)
-                    ans = min(ans, dp[i][j]);
+                int from = flight[0], to = flight[1], w = flight[2];
+                dp[to][k] = min(dp[to][k], dp[from][k - 1] + w);
             }
         }
-        return ans;
+        int ans = INF;
+        for (int i = 0; i <= k; ++i)
+        {
+            ans = min(ans, dp[dst][i]);
+        }
+        return ans == INF ? -1 : ans;
+
+        // dp[dst][k]
+        // dp[src][0]=0,
+        // dp[]
     }
 };
 
