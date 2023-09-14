@@ -352,7 +352,7 @@ int main()
    cout << "-------------------" << endl;
    cout << t.radABBC(front, nex) / pi << endl;
 
-   Point a1(2, 0), b1(2, -2);
-   cout << (a1 ^ b1) << endl;
+   Point a1(0, 0), b1(2, -2), c1(2, 0);
+   cout << a1.radABBC(c1, b1) / pi << endl;
    return 0;
 }
