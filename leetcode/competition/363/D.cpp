@@ -108,21 +108,41 @@ using namespace FAST_IO;
 //     return 0;
 // }();
 
-auto optimize_cpp_stdio = []()
-{
-    std::ios::sync_with_stdio(false);
-    std::cin.tie(nullptr);
-    std::cout.tie(nullptr);
-    return 0;
-}();
+// auto optimize_cpp_stdio = []()
+// {
+//     std::ios::sync_with_stdio(false);
+//     std::cin.tie(nullptr);
+//     std::cout.tie(nullptr);
+//     return 0;
+// }();
 class Solution
 {
 public:
-    const static int maxn = 1e5 + 10;
+    const static int maxn = 1e4 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    long long dp[maxn];
+    long long maximumSum(vector<int> &nums)
     {
+        int n = nums.size();
+        long long ans = 0;
+        for (int i = 1; i <= n; ++i)
+        {
+            dp[i] = nums[i - 1];
+        }
+        for (int i = 1; i <= n; ++i)
+        {
+            for (int j = 1; j < i; ++j)
+            {
+                int tmp = sqrt(i * j);
+                if (tmp * tmp == i * j)
+                {
+                    dp[i] = max(dp[i], dp[j] + nums[i - 1]);
+                }
+            }
+            ans = max(ans, dp[i]);
+        }
+        return ans;
     }
 };
 
@@ -136,6 +156,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<int> a = {8, 7, 3, 5, 7, 2, 4, 9};
+    solution.maximumSum(a);
     return 0;
 }

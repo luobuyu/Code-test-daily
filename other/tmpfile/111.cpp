@@ -74,35 +74,22 @@ struct MyVector
         return this->size;
     }
 };
-
+struct pair_hash
+{
+    int operator()(const pair<int, int> &pair) const
+    {
+        return pair.first ^ pair.second;
+    }
+} tmp;
 int main()
 {
 // #define COMP_DATA
 #ifndef ONLINE_JUDGE
     freopen("in.txt", "r", stdin);
 #endif
-    MyVector aa;
-    int b[5] = {1, 3, -1, 2, 1};
-    for (int i = 0; i < 5; i++)
-    {
-        aa[i] = b[i];
-    }
-    aa.size = 5;
-    for (int i = aa.size; i >= 0; --i)
-    {
-        if (aa[i] == -1)
-        {
-            aa.erase(i);
-        }
-    }
-    cout << endl
-         << endl;
-    cout << aa.sizes() << endl;
-    for (int i = 0; i < aa.size; ++i)
-    {
-        cout << aa[i] << " ";
-    }
-    cout << endl;
+    unordered_map<pair<int, int>, int, pair_hash> mp;
+    pair<int, int> a = {7, 4};
+    cout << tmp(a) << endl;
 
     return 0;
 }

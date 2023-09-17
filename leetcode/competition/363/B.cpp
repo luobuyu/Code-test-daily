@@ -121,8 +121,30 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    int countWays(vector<int> &nums)
     {
+        int n = nums.size();
+        int cnt = 0;
+        int ans = 0;
+        sort(nums.begin(), nums.end());
+        int last = -1;
+        int pre = -1;
+        if (cnt < nums[0])
+            ans++;
+        for (int i = 0; i < n; ++i)
+        {
+            if (cnt + 1 > nums[i])
+            {
+                if (i + 1 < n && cnt + 1 >= nums[i + 1])
+                {
+                    cnt++;
+                    continue;
+                }
+                ans++;
+            }
+            cnt++;
+        }
+        return ans;
     }
 };
 
@@ -136,6 +158,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<int> a = {1, 1, 0, 1};
+    solution.countWays(a);
     return 0;
 }

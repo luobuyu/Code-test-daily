@@ -121,8 +121,41 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    bool check(long long mid, long long n, long long budget, vector<int> nums, vector<int> &stock, vector<int> &cost)
     {
+        for (int i = 0; i < n; ++i)
+        {
+            long long need = 1ll * mid * nums[i] - stock[i];
+            if (need > 0)
+                budget -= 1ll * need * cost[i];
+            if (budget < 0)
+                return false;
+        }
+        return true;
+    }
+    int maxNumberOfAlloys(int n, int k, int budget, vector<vector<int>> &composition, vector<int> &stock, vector<int> &cost)
+    {
+        long long ans = 0;
+        for (int i = 0; i < k; ++i)
+        {
+            long long l = 0, r = 1e8;
+            long long tmp = 0;
+            while (l <= r)
+            {
+                long long mid = (l + r) / 2;
+                if (check(mid, 1ll * n, 1ll * budget, composition[i], stock, cost))
+                {
+                    l = mid + 1;
+                    tmp = mid;
+                }
+                else
+                {
+                    r = mid - 1;
+                }
+            }
+            ans = max(ans, tmp);
+        }
+        return ans;
     }
 };
 
@@ -136,6 +169,12 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<vector<int>> composition = {{10, 10, 1, 5},
+                                       {9, 7, 7, 1},
+                                       {6, 3, 5, 9},
+                                       {2, 10, 2, 7}};
+    vector<int> st = {9, 8, 2, 7};
+    vector<int> cost = {9, 2, 6, 10};
+    cout << solution.maxNumberOfAlloys(4, 4, 17, composition, st, cost) << endl;
     return 0;
 }

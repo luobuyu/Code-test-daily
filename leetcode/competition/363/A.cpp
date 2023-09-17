@@ -1,6 +1,6 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
-using namespace std;
+#include "head.h"
 #define ll long long
 #define lll long long
 #define PII pair<int, int>
@@ -121,8 +121,29 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    int sol(int num)
     {
+        int cnt = 0;
+        while (num)
+        {
+            cnt += num % 2;
+            num >>= 1;
+        }
+        return cnt;
+    }
+    int sumIndicesWithKSetBits(vector<int> &nums, int k)
+    {
+        int n = nums.size();
+        int sum = 0;
+        for (int i = 0; i < n; ++i)
+        {
+
+            if (sol(i) == k)
+            {
+                sum += nums[i];
+            }
+        }
+        return sum;
     }
 };
 
