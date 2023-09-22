@@ -53,16 +53,52 @@ const ll mod = 1e9 + 7;
 const int INF = 0x3f3f3f3f;
 const ll INF_LL = 0x3f3f3f3f3f3f3f3f;
 const double eps = 1e-5;
-const int maxn = 1e3 + 10;
-const int maxm = 2e4 + 10;
+const int maxn = 2e3 + 10;
+const int maxm = 1e5 + 10;
 int t, n, m, k;
-struct Node
+int matrix[maxn][maxn];
+int lef[maxn][maxn];
+int righ[maxn][maxn];
+int heigh[maxn][maxn];
+void solve()
 {
-    int v, w, s;
-};
-Node a[maxn];
-int dp[maxn][maxm];
-int q[maxm];
+    int ans1 = 0, ans2 = 0;
+    for (int i = 1; i <= n; ++i)
+    {
+        lef[i][1] = 1;
+        for (int j = 2; j <= m; ++j)
+        {
+            if (matrix[i][j] == !matrix[i][j - 1])
+                lef[i][j] = lef[i][j - 1] + 1;
+            else
+                lef[i][j] = 1;
+        }
+        righ[i][m] = 1;
+        for (int j = m - 1; j >= 1; --j)
+        {
+            if (matrix[i][j] == !matrix[i][j + 1])
+                righ[i][j] = righ[i][j + 1] + 1;
+            else
+                righ[i][j] = 1;
+        }
+        for (int j = 1; j <= m; ++j)
+        {
+            heigh[i][j] = 1;
+            if (i >= 2 && matrix[i][j] == !matrix[i - 1][j])
+            {
+                heigh[i][j] = heigh[i - 1][j] + 1;
+                lef[i][j] = min(lef[i][j], lef[i - 1][j]);
+                righ[i][j] = min(righ[i][j], righ[i - 1][j]);
+            }
+            int w = righ[i][j] + lef[i][j] - 1;
+            int h = heigh[i][j];
+            ans1 = max(ans1, min(w, h) * min(w, h));
+            ans2 = max(ans2, w * h);
+        }
+    }
+    cout << ans1 << endl;
+    cout << ans2 << endl;
+}
 int main()
 {
 // #define COMP_DATA
@@ -72,31 +108,13 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     read(n, m);
-    for (int i = 1, v, w, s; i <= n; ++i)
-    {
-        read(a[i].v, a[i].w, a[i].s);
-    }
-    memset(dp, 0, sizeof(dp));
     for (int i = 1; i <= n; ++i)
     {
-        // 枚举余数
-        for (int r = 0; r < a[i].v; ++r)
+        for (int j = 1; j <= m; ++j)
         {
-            int hh = 0, tt = -1;
-            // 单调减队列
-            for (int j = r; j <= m; j += a[i].v)
-            {
-                // 如果队列长度大于了 s，弹出队首
-                while (hh <= tt && j - q[hh] > a[i].s * a[i].v)
-                    hh++;
-                while (hh <= tt && dp[i - 1][q[tt]] + (j - q[tt]) / a[i].v * a[i].w <= dp[i - 1][j])
-                    --tt;
-                q[++tt] = j;
-                // 计算需要加多少倍的 w
-                dp[i][j] = dp[i - 1][q[hh]] + (j - q[hh]) / a[i].v * a[i].w;
-            }
+            read(matrix[i][j]);
         }
     }
-    cout << dp[n][m] << endl;
+    solve();
     return 0;
 }

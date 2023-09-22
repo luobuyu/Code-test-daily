@@ -53,16 +53,15 @@ const ll mod = 1e9 + 7;
 const int INF = 0x3f3f3f3f;
 const ll INF_LL = 0x3f3f3f3f3f3f3f3f;
 const double eps = 1e-5;
-const int maxn = 1e3 + 10;
-const int maxm = 2e4 + 10;
+const int maxn = 5e3 + 10;
+const int maxm = 6e3 + 10;
 int t, n, m, k;
 struct Node
 {
-    int v, w, s;
+    int v, w;
 };
 Node a[maxn];
-int dp[maxn][maxm];
-int q[maxm];
+int dp[maxm];
 int main()
 {
 // #define COMP_DATA
@@ -72,31 +71,26 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     read(n, m);
+    int cnt = 1;
     for (int i = 1, v, w, s; i <= n; ++i)
     {
-        read(a[i].v, a[i].w, a[i].s);
-    }
-    memset(dp, 0, sizeof(dp));
-    for (int i = 1; i <= n; ++i)
-    {
-        // 枚举余数
-        for (int r = 0; r < a[i].v; ++r)
+        read(v, w, s);
+        int k = 1;
+        while (s >= k)
         {
-            int hh = 0, tt = -1;
-            // 单调减队列
-            for (int j = r; j <= m; j += a[i].v)
-            {
-                // 如果队列长度大于了 s，弹出队首
-                while (hh <= tt && j - q[hh] > a[i].s * a[i].v)
-                    hh++;
-                while (hh <= tt && dp[i - 1][q[tt]] + (j - q[tt]) / a[i].v * a[i].w <= dp[i - 1][j])
-                    --tt;
-                q[++tt] = j;
-                // 计算需要加多少倍的 w
-                dp[i][j] = dp[i - 1][q[hh]] + (j - q[hh]) / a[i].v * a[i].w;
-            }
+            s -= k;
+            k <<= 1;
+            a[cnt++] = {v * k, w * k};
         }
     }
-    cout << dp[n][m] << endl;
+    n = cnt;
+    for (int i = 1; i <= n; ++i)
+    {
+        for (int j = m; j >= a[i].v; --j)
+        {
+            dp[j] = max(dp[j], dp[j - a[i].v] + a[i].w);
+        }
+    }
+    cout << dp[m] << endl;
     return 0;
 }
