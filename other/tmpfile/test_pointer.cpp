@@ -56,6 +56,13 @@ const double eps = 1e-5;
 const int maxn = 1e3 + 10;
 const int maxm = 1e5 + 10;
 int t, n, m, k;
+struct Node
+{
+    int val;
+    Node *pre;
+    Node *next;
+    Node(int v) : val(v) {}
+};
 int main()
 {
 // #define COMP_DATA
@@ -64,11 +71,21 @@ int main()
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
-    int *a = new int(10);
-    int *b = nullptr;
-    if(b == a)
-        cout << "true" << endl;
-    else
-        cout << "false" << endl;
+    vector<Node *> nodes;
+    n = 10;
+    for (int i = 0; i < n; ++i)
+    {
+        Node *p = new Node(i + 1);
+        nodes.push_back(p);
+    }
+    for (int i = 0; i < n; ++i)
+    {
+        nodes[i]->pre = nodes[(i - 1 + n) % n];
+        nodes[i]->next = nodes[(i + 1) % n];
+    }
+    for (auto &p : nodes)
+    {
+        delete p;
+    }
     return 0;
 }
