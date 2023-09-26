@@ -118,82 +118,26 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    const static int maxn = 1e5 + 10;
+    const static int maxn = 1e2 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    vector<int> prime;
-    int cnt;
-    vector<bool> notPrime; // true 不是质数，false是质数
-    vector<vector<long long>> dp;
-    vector<vector<int>> g;
-    long long ans;
-    void sieve(int n)
+    int dp[maxn][maxn];
+    int uniquePaths(int m, int n)
     {
-        notPrime[1] = true;
-        for (int i = 2; i <= n; i++)
+        for (int i = 0; i < m; ++i)
+            dp[i][0] = 1;
+        for (int j = 0; j < n; ++j)
+            dp[0][j] = 1;
+        for (int i = 1; i < m; ++i)
         {
-            if (!notPrime[i])
-                prime[++cnt] = i;
-
-            for (int j = 1; prime[j] * i <= n && j <= cnt; j++)
+            for (int j = 1; j < n; ++j)
             {
-                notPrime[i * prime[j]] = 1;
-                if (i % prime[j] == 0)
-                    break;
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
             }
         }
-    }
-    void dfs(int u, int fa)
-    {
-        if (!notPrime[u])
-        {
-            dp[u][1] = 1;
-        }
-        else
-        {
-            dp[u][0] = 1;
-        }
-        for (int i = 0; i < g[u].size(); ++i)
-        {
-            int v = g[u][i];
-            if (v == fa)
-                continue;
-            dfs(v, u);
-            // 以u为终点的
-            ans += dp[v][1] * dp[u][0];
-            ans += dp[v][0] * dp[u][1];
-            if (!notPrime[u])
-            {
-                dp[u][1] += dp[v][0];
-            }
-            else
-            {
-                dp[u][1] += dp[v][1];
-                dp[u][0] += dp[v][0];
-            }
-        }
-    }
-    long long countPaths(int n, vector<vector<int>> &edges)
-    {
-        cnt = 0;
-        prime.resize(n);
-        notPrime.resize(n + 1, false);
-        sieve(n);
-        dp.resize(n + 1, vector<long long>(cnt + 1, 0));
-        g.resize(n + 1);
-        for (auto &edge : edges)
-        {
-            int u = edge[0];
-            int v = edge[1];
-            g[u].emplace_back(v);
-            g[v].emplace_back(u);
-        }
-        ans = 0;
-        dfs(1, 0);
-        return ans;
+        return dp[m - 1][n - 1];
     }
 };
-
 int t, n, m, k;
 int main()
 {

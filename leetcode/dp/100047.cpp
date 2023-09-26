@@ -118,26 +118,26 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    const static int maxn = 1e5 + 10;
+    const static int maxn = 1e1 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    vector<int> prime;
+    vector<int> g[maxn];
+    int dp[maxn][2];
+    bool notPrime[maxn]; // true 不是素数，false是素数
+    int prime[maxn];
     int cnt;
-    vector<bool> notPrime; // true 不是质数，false是质数
-    vector<vector<long long>> dp;
-    vector<vector<int>> g;
     long long ans;
     void sieve(int n)
     {
+        cnt = 0;
         notPrime[1] = true;
-        for (int i = 2; i <= n; i++)
+        for (int i = 2; i <= n; ++i)
         {
             if (!notPrime[i])
                 prime[++cnt] = i;
-
-            for (int j = 1; prime[j] * i <= n && j <= cnt; j++)
+            for (int j = 1; j <= cnt && prime[j] * i <= n; ++j)
             {
-                notPrime[i * prime[j]] = 1;
+                notPrime[prime[j] * i] = true;
                 if (i % prime[j] == 0)
                     break;
             }
@@ -145,13 +145,15 @@ public:
     }
     void dfs(int u, int fa)
     {
-        if (!notPrime[u])
+        if (notPrime[u] == false) // 素数
         {
             dp[u][1] = 1;
+            dp[u][0] = 0;
         }
         else
         {
             dp[u][0] = 1;
+            dp[u][1] = 0;
         }
         for (int i = 0; i < g[u].size(); ++i)
         {
@@ -159,28 +161,21 @@ public:
             if (v == fa)
                 continue;
             dfs(v, u);
-            // 以u为终点的
-            ans += dp[v][1] * dp[u][0];
-            ans += dp[v][0] * dp[u][1];
-            if (!notPrime[u])
+            ans += dp[u][0] * dp[v][1];
+            ans += dp[u][1] * dp[v][0];
+            if (notPrime[u] == false) // 素数
             {
                 dp[u][1] += dp[v][0];
             }
             else
             {
-                dp[u][1] += dp[v][1];
                 dp[u][0] += dp[v][0];
+                dp[u][1] += dp[v][1];
             }
         }
     }
     long long countPaths(int n, vector<vector<int>> &edges)
     {
-        cnt = 0;
-        prime.resize(n);
-        notPrime.resize(n + 1, false);
-        sieve(n);
-        dp.resize(n + 1, vector<long long>(cnt + 1, 0));
-        g.resize(n + 1);
         for (auto &edge : edges)
         {
             int u = edge[0];
@@ -188,7 +183,8 @@ public:
             g[u].emplace_back(v);
             g[v].emplace_back(u);
         }
-        ans = 0;
+        memset(notPrime, false, sizeof(notPrime));
+        sieve(n);
         dfs(1, 0);
         return ans;
     }
@@ -204,6 +200,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<vector<int>> a = {{1, 2}, {1, 3}, {2, 4}, {2, 5}};
+    solution.countPaths(5, a);
     return 0;
 }

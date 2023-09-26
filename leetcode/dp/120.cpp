@@ -118,79 +118,21 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const int INF = 0x3f3f3f3f;
-    vector<int> prime;
-    int cnt;
-    vector<bool> notPrime; // true 不是质数，false是质数
-    vector<vector<long long>> dp;
-    vector<vector<int>> g;
-    long long ans;
-    void sieve(int n)
+    int minimumTotal(vector<vector<int>> &triangle)
     {
-        notPrime[1] = true;
-        for (int i = 2; i <= n; i++)
+        int n = triangle.size();
+        vector<vector<int>> f(n, vector<int>(n));
+        f[0][0] = triangle[0][0];
+        for (int i = 1; i < n; ++i)
         {
-            if (!notPrime[i])
-                prime[++cnt] = i;
-
-            for (int j = 1; prime[j] * i <= n && j <= cnt; j++)
+            f[i][0] = f[i - 1][0] + triangle[i][0];
+            for (int j = 1; j < i; ++j)
             {
-                notPrime[i * prime[j]] = 1;
-                if (i % prime[j] == 0)
-                    break;
+                f[i][j] = min(f[i - 1][j - 1], f[i - 1][j]) + triangle[i][j];
             }
+            f[i][i] = f[i - 1][i - 1] + triangle[i][i];
         }
-    }
-    void dfs(int u, int fa)
-    {
-        if (!notPrime[u])
-        {
-            dp[u][1] = 1;
-        }
-        else
-        {
-            dp[u][0] = 1;
-        }
-        for (int i = 0; i < g[u].size(); ++i)
-        {
-            int v = g[u][i];
-            if (v == fa)
-                continue;
-            dfs(v, u);
-            // 以u为终点的
-            ans += dp[v][1] * dp[u][0];
-            ans += dp[v][0] * dp[u][1];
-            if (!notPrime[u])
-            {
-                dp[u][1] += dp[v][0];
-            }
-            else
-            {
-                dp[u][1] += dp[v][1];
-                dp[u][0] += dp[v][0];
-            }
-        }
-    }
-    long long countPaths(int n, vector<vector<int>> &edges)
-    {
-        cnt = 0;
-        prime.resize(n);
-        notPrime.resize(n + 1, false);
-        sieve(n);
-        dp.resize(n + 1, vector<long long>(cnt + 1, 0));
-        g.resize(n + 1);
-        for (auto &edge : edges)
-        {
-            int u = edge[0];
-            int v = edge[1];
-            g[u].emplace_back(v);
-            g[v].emplace_back(u);
-        }
-        ans = 0;
-        dfs(1, 0);
-        return ans;
+        return *min_element(f[n - 1].begin(), f[n - 1].end());
     }
 };
 
@@ -204,6 +146,8 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<vector<int>> a = {{2}, {3, 4}, {6, 5, 7}, {4, 1, 8, 3}};
+    vector<vector<int>> b = {{-10}};
+    solution.minimumTotal(a);
     return 0;
 }

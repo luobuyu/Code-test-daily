@@ -115,82 +115,86 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-class Solution
+class LRUCache
 {
 public:
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const int INF = 0x3f3f3f3f;
-    vector<int> prime;
-    int cnt;
-    vector<bool> notPrime; // true 不是质数，false是质数
-    vector<vector<long long>> dp;
-    vector<vector<int>> g;
-    long long ans;
-    void sieve(int n)
+    struct Node
     {
-        notPrime[1] = true;
-        for (int i = 2; i <= n; i++)
+        Node *pre;
+        Node *next;
+        int val;
+        int key;
+        Node(int _key, int _val)
         {
-            if (!notPrime[i])
-                prime[++cnt] = i;
-
-            for (int j = 1; prime[j] * i <= n && j <= cnt; j++)
-            {
-                notPrime[i * prime[j]] = 1;
-                if (i % prime[j] == 0)
-                    break;
-            }
+            val = _val;
+            key = _key;
+            pre = next = nullptr;
         }
-    }
-    void dfs(int u, int fa)
-    {
-        if (!notPrime[u])
+        Node()
         {
-            dp[u][1] = 1;
+            pre = next = nullptr;
+        }
+    };
+    Node *head, *tail;
+    unordered_map<int, Node *> mp;
+    int size;
+    LRUCache(int capacity)
+    {
+        size = capacity;
+        head = new Node();
+        tail = new Node();
+        head->next = tail;
+        tail->pre = head;
+    }
+
+    void insert(Node *p)
+    {
+        // 头插
+        p->next = head->next;
+        p->pre = head;
+        head->next = p;
+        p->next->pre = p;
+    }
+    void erase(Node *p)
+    {
+        p->pre->next = p->next;
+        p->next->pre = p->pre;
+    }
+
+    int get(int key)
+    {
+        if (mp.count(key))
+        {
+            Node *p = mp[key];
+            erase(p);
+            insert(p);
+            return p->val;
+        }
+        return -1;
+    }
+
+    void put(int key, int value)
+    {
+        if (mp.count(key))
+        {
+            Node *p = mp[key];
+            erase(p);
+            insert(p);
+            p->val = value;
         }
         else
         {
-            dp[u][0] = 1;
-        }
-        for (int i = 0; i < g[u].size(); ++i)
-        {
-            int v = g[u][i];
-            if (v == fa)
-                continue;
-            dfs(v, u);
-            // 以u为终点的
-            ans += dp[v][1] * dp[u][0];
-            ans += dp[v][0] * dp[u][1];
-            if (!notPrime[u])
+            Node *p = new Node(key, value);
+            mp[key] = p;
+            insert(p);
+            if (mp.size() > size)
             {
-                dp[u][1] += dp[v][0];
-            }
-            else
-            {
-                dp[u][1] += dp[v][1];
-                dp[u][0] += dp[v][0];
+                Node *q = tail->pre;
+                mp.erase(q->key);
+                erase(q);
+                delete q;
             }
         }
-    }
-    long long countPaths(int n, vector<vector<int>> &edges)
-    {
-        cnt = 0;
-        prime.resize(n);
-        notPrime.resize(n + 1, false);
-        sieve(n);
-        dp.resize(n + 1, vector<long long>(cnt + 1, 0));
-        g.resize(n + 1);
-        for (auto &edge : edges)
-        {
-            int u = edge[0];
-            int v = edge[1];
-            g[u].emplace_back(v);
-            g[v].emplace_back(u);
-        }
-        ans = 0;
-        dfs(1, 0);
-        return ans;
     }
 };
 
@@ -203,7 +207,7 @@ int main()
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
-    Solution solution;
+    LRUCache solution(2);
 
     return 0;
 }
