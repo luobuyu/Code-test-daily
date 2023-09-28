@@ -121,32 +121,51 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    vector<vector<int>> permute(vector<int> &nums)
+
+    bool canPartitionKSubsets(vector<int> &nums, int k)
     {
         int n = nums.size();
-        vector<vector<int>> ret;
-        vector<bool> vis(n, false);
-        vector<int> cur;
-        function<void(int)> dfs = [&](int step)
+        int sum = 0;
+        int maxx = 0;
+        for (auto &x : nums)
         {
+            sum += x;
+            maxx = max(maxx, x);
+        }
+        if (sum % k != 0 || maxx > sum / k)
+            return false;
+        unordered_map<int, bool> mp;
+        int vis = 0;
+        function<bool(int, int, int, int, int)>
+            dfs = [&](int step, int value, int k, int target, int state)
+        {
+            if (k == 0)
+                return true;
+            if (value == 0)
+            {
+                mp[state] = dfs(0, target, k - 1, target, state);
+                return mp[state];
+            }
+            if (value < 0)
+                return false;
             if (step == n)
+                return false;
+            if (mp.count(state))
+                return mp[state];
+            for (int i = step; i < n; ++i)
             {
-                ret.push_back(cur);
-                return;
-            }
-            for (int i = 0; i < n; ++i)
-            {
-                if (vis[i])
+                if (((state >> i) & 1) || value - nums[i] < 0)
                     continue;
-                vis[i] = true;
-                cur.push_back(nums[i]);
-                dfs(step + 1);
-                cur.pop_back();
-                vis[i] = false;
+                state |= 1 << i;
+                if (dfs(i + 1, value - nums[i], k, target, state))
+                {
+                    return true;
+                }
+                state ^= 1 << i;
             }
+            return false;
         };
-        dfs(0);
-        return ret;
+        return dfs(0, sum / k, k, sum / k, vis);
     }
 };
 
@@ -160,7 +179,5 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {1, 2, 3};
-    solution.permute(a);
     return 0;
 }

@@ -121,32 +121,48 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    vector<vector<int>> permute(vector<int> &nums)
+    int numEnclaves(vector<vector<int>> &grid)
     {
-        int n = nums.size();
-        vector<vector<int>> ret;
-        vector<bool> vis(n, false);
-        vector<int> cur;
-        function<void(int)> dfs = [&](int step)
+        int n = grid.size(), m = grid[0].size();
+        vector<int> dx = {-1, 0, 1, 0}, dy = {0, 1, 0, -1};
+        function<void(int, int)> dfs = [&](int x, int y)
         {
-            if (step == n)
+            grid[x][y] = 0;
+            for (int i = 0; i < 4; ++i)
             {
-                ret.push_back(cur);
-                return;
-            }
-            for (int i = 0; i < n; ++i)
-            {
-                if (vis[i])
+                int newx = dx[i] + x;
+                int newy = dy[i] + y;
+                if (newx < 0 || newy < 0 || newx >= n || newy >= m || grid[newx][newy] == 0)
                     continue;
-                vis[i] = true;
-                cur.push_back(nums[i]);
-                dfs(step + 1);
-                cur.pop_back();
-                vis[i] = false;
+                dfs(newx, newy);
             }
         };
-        dfs(0);
-        return ret;
+        for (int i = 0; i < n; ++i)
+        {
+            if (grid[i][0] == 1)
+                dfs(i, 0);
+            if (grid[i][m - 1] == 1)
+                dfs(i, m - 1);
+        }
+        for (int j = 0; j < m; ++j)
+        {
+            if (grid[0][j] == 1)
+                dfs(0, j);
+            if (grid[n - 1][j] == 1)
+                dfs(n - 1, j);
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i)
+        {
+            for (int j = 0; j < m; ++j)
+            {
+                if (grid[i][j] == 1)
+                {
+                    ans++;
+                }
+            }
+        }
+        return ans;
     }
 };
 
@@ -160,7 +176,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {1, 2, 3};
-    solution.permute(a);
+
     return 0;
 }

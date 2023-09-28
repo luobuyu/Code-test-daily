@@ -121,31 +121,32 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    vector<vector<int>> permute(vector<int> &nums)
+    vector<vector<int>> combinationSum2(vector<int> &candidates, int target)
     {
-        int n = nums.size();
         vector<vector<int>> ret;
-        vector<bool> vis(n, false);
         vector<int> cur;
-        function<void(int)> dfs = [&](int step)
+        int n = candidates.size();
+        sort(candidates.begin(), candidates.end(), [&](const int &x, const int &y)
+             { return x > y; });
+        function<void(int, int)> dfs = [&](int step, int value)
         {
-            if (step == n)
+            if (value == 0)
             {
-                ret.push_back(cur);
+                ret.emplace_back(cur);
                 return;
             }
-            for (int i = 0; i < n; ++i)
+            if (step == n || value < 0)
+                return;
+            for (int i = step; i < n; ++i)
             {
-                if (vis[i])
+                if (i > step && candidates[i] == candidates[i - 1])
                     continue;
-                vis[i] = true;
-                cur.push_back(nums[i]);
-                dfs(step + 1);
+                cur.emplace_back(candidates[i]);
+                dfs(i + 1, value - candidates[i]);
                 cur.pop_back();
-                vis[i] = false;
             }
         };
-        dfs(0);
+        dfs(0, target);
         return ret;
     }
 };
@@ -160,7 +161,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {1, 2, 3};
-    solution.permute(a);
+    vector<int> a = {10, 1, 2, 7, 6, 1, 5};
+    solution.combinationSum2(a, 8);
     return 0;
 }

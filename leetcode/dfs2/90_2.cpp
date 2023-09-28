@@ -121,28 +121,22 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    vector<vector<int>> permute(vector<int> &nums)
+    vector<vector<int>> subsetsWithDup(vector<int> &nums)
     {
-        int n = nums.size();
         vector<vector<int>> ret;
-        vector<bool> vis(n, false);
         vector<int> cur;
+        int n = nums.size();
+        sort(nums.begin(), nums.end());
         function<void(int)> dfs = [&](int step)
         {
-            if (step == n)
+            ret.emplace_back(cur);
+            for (int i = step; i < n; ++i)
             {
-                ret.push_back(cur);
-                return;
-            }
-            for (int i = 0; i < n; ++i)
-            {
-                if (vis[i])
+                if (i > step && nums[i] == nums[i - 1])
                     continue;
-                vis[i] = true;
-                cur.push_back(nums[i]);
-                dfs(step + 1);
+                cur.emplace_back(nums[i]);
+                dfs(i + 1);
                 cur.pop_back();
-                vis[i] = false;
             }
         };
         dfs(0);
@@ -160,7 +154,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {1, 2, 3};
-    solution.permute(a);
+
     return 0;
 }

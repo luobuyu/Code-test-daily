@@ -121,32 +121,44 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    vector<vector<int>> permute(vector<int> &nums)
+    vector<int> fullBloomFlowers(vector<vector<int>> &flowers, vector<int> &people)
     {
-        int n = nums.size();
-        vector<vector<int>> ret;
-        vector<bool> vis(n, false);
-        vector<int> cur;
-        function<void(int)> dfs = [&](int step)
+        unordered_map<int, int> mp;
+        vector<int> time;
+        for (auto &flower : flowers)
         {
-            if (step == n)
+            time.emplace_back(flower[0]);
+            time.emplace_back(flower[1] + 1);
+        }
+        for (auto &x : people)
+        {
+            time.emplace_back(x);
+        }
+        sort(time.begin(), time.end());
+        int size = 0;
+        for (auto &x : time)
+        {
+            if (!mp.count(x))
             {
-                ret.push_back(cur);
-                return;
+                mp[x] = ++size;
             }
-            for (int i = 0; i < n; ++i)
-            {
-                if (vis[i])
-                    continue;
-                vis[i] = true;
-                cur.push_back(nums[i]);
-                dfs(step + 1);
-                cur.pop_back();
-                vis[i] = false;
-            }
-        };
-        dfs(0);
-        return ret;
+        }
+        vector<int> q(size + 1);
+        for (auto &flower : flowers)
+        {
+            q[mp[flower[0]]]++;
+            q[mp[flower[1] + 1]]--;
+        }
+        for (int i = 1; i <= size; ++i)
+        {
+            q[i] += q[i - 1];
+        }
+        vector<int> ans;
+        for (auto &x : people)
+        {
+            ans.emplace_back(q[mp[x]]);
+        }
+        return ans;
     }
 };
 
@@ -160,7 +172,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {1, 2, 3};
-    solution.permute(a);
+
     return 0;
 }

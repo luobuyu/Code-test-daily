@@ -121,28 +121,29 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    vector<vector<int>> permute(vector<int> &nums)
+    vector<vector<int>> permuteUnique(vector<int> &nums)
     {
+        sort(nums.begin(), nums.end());
         int n = nums.size();
         vector<vector<int>> ret;
-        vector<bool> vis(n, false);
         vector<int> cur;
+        vector<bool> vis(n, false);
         function<void(int)> dfs = [&](int step)
         {
             if (step == n)
             {
-                ret.push_back(cur);
+                ret.emplace_back(cur);
                 return;
             }
             for (int i = 0; i < n; ++i)
             {
-                if (vis[i])
+                if (i > 0 && nums[i] == nums[i - 1] && vis[i - 1] || vis[i])
                     continue;
+                cur.emplace_back(nums[i]);
                 vis[i] = true;
-                cur.push_back(nums[i]);
-                dfs(step + 1);
-                cur.pop_back();
+                dfs(i + 1);
                 vis[i] = false;
+                cur.pop_back();
             }
         };
         dfs(0);
@@ -160,7 +161,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {1, 2, 3};
-    solution.permute(a);
+
     return 0;
 }
