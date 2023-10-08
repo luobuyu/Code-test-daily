@@ -1,7 +1,13 @@
+import re
 import sys
-
-sys.stdout = open("./in.txt", 'w')
-print(100000)
-print('a' * 100000)
-print(1000000)
-print('a' * 1000000)
+sys.stdin = open('in.txt', 'r')
+s = input()
+# Polygon((1, 1), (3, 0), (3, 2), (0, 4))
+s = s.strip().split(' ')
+ret = ''
+for i in range(len(s)):
+    if i != 0:
+        ret += ','
+    ret += '(' + s[i] + ')'
+ret = 'Polygon(' + ret + ')'
+print(ret)
