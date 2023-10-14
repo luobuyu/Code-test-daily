@@ -115,44 +115,59 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-class Solution
+class StockPrice
 {
 public:
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const int INF = 0x3f3f3f3f;
-    int maxSum(vector<int> &nums, int k)
+    unordered_map<int, int> mp; // time, price
+    int last_time;
+    priority_queue<pair<int, int>> maxq;
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> minq;
+    StockPrice()
     {
-        int n = nums.size();
-        vector<int> cnt(31);
-        for (auto &x : nums)
+        last_time = -1;
+    }
+
+    void update(int timestamp, int price)
+    {
+        maxq.push({price, timestamp});
+        minq.push({price, timestamp});
+        mp[timestamp] = price;
+        if (timestamp > last_time)
+            last_time = timestamp;
+    }
+
+    int current()
+    {
+        return mp[last_time];
+    }
+
+    int maximum()
+    {
+        while (maxq.size() && mp[maxq.top().second] != maxq.top().first)
         {
-            for (int i = 30; i >= 0; --i)
-            {
-                if (x & (1 << i))
-                    cnt[i]++;
-            }
+            auto top = maxq.top();
+            // cout << top.first << ", " << top.second << endl;
+            maxq.pop();
+            top.first = mp[top.second];
+            maxq.push(top);
         }
-        long long ans = 0;
-        long long mod = 1e9 + 7;
-        while (k)
+        return maxq.top().first;
+    }
+
+    int minimum()
+    {
+        cout << minq.top().first << ", " << mp[minq.top().second] << endl;
+        while (minq.size() && mp[minq.top().second] != minq.top().first)
         {
-            int x = 0;
-            for (int i = 30; i >= 0; --i)
-            {
-                if (cnt[i])
-                {
-                    x += (1 << i);
-                    cnt[i]--;
-                }
-            }
-            ans = (ans + x * x % mod) % mod;
-            k--;
+            auto top = minq.top();
+            cout << top.first << ", " << top.second << endl;
+            minq.pop();
+            top.first = mp[top.second];
+            minq.push(top);
         }
-        return ans;
+        return minq.top().first;
     }
 };
-
 int t, n, m, k;
 int main()
 {
@@ -162,7 +177,13 @@ int main()
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
-    Solution solution;
-
+    StockPrice solution;
+    solution.update(87, 9207);
+    solution.update(93, 4215);
+    solution.update(87, 2453);
+    solution.maximum();
+    solution.minimum();
+    solution.minimum();
+    solution.maximum();
     return 0;
 }

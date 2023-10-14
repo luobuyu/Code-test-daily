@@ -121,35 +121,23 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int maxSum(vector<int> &nums, int k)
+    vector<vector<int>> subsets(vector<int> &nums)
     {
+        vector<vector<int>> ret;
+        vector<int> cur;
         int n = nums.size();
-        vector<int> cnt(31);
-        for (auto &x : nums)
+        function<void(int)> dfs = [&](int step)
         {
-            for (int i = 30; i >= 0; --i)
+            ret.emplace_back(cur);
+            for (int i = step; i < n; ++i)
             {
-                if (x & (1 << i))
-                    cnt[i]++;
+                cur.emplace_back(nums[i]);
+                dfs(i + 1);
+                cur.pop_back();
             }
-        }
-        long long ans = 0;
-        long long mod = 1e9 + 7;
-        while (k)
-        {
-            int x = 0;
-            for (int i = 30; i >= 0; --i)
-            {
-                if (cnt[i])
-                {
-                    x += (1 << i);
-                    cnt[i]--;
-                }
-            }
-            ans = (ans + x * x % mod) % mod;
-            k--;
-        }
-        return ans;
+        };
+        dfs(0);
+        return ret;
     }
 };
 

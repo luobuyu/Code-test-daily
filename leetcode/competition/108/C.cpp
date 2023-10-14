@@ -121,35 +121,26 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int maxSum(vector<int> &nums, int k)
+    long long maxScore(vector<int> &nums, int x)
     {
         int n = nums.size();
-        vector<int> cnt(31);
-        for (auto &x : nums)
+        vector<vector<long long>> dp(n, vector<long long>(2)); // ou,ji
+        dp[0][nums[0] % 2] = nums[0];
+        for (int i = 1; i < n; ++i)
         {
-            for (int i = 30; i >= 0; --i)
+            if (nums[i] % 2)
             {
-                if (x & (1 << i))
-                    cnt[i]++;
+                // ji
+                dp[i][1] = max(dp[i - 1][1] + nums[i], dp[i - 1][0] + nums[i] - x);
+                dp[i][0] = dp[i - 1][0];
+            }
+            else
+            {
+                dp[i][0] = max(dp[i - 1][0] + nums[i], dp[i - 1][1] + nums[i] - x);
+                dp[i][1] = dp[i - 1][1];
             }
         }
-        long long ans = 0;
-        long long mod = 1e9 + 7;
-        while (k)
-        {
-            int x = 0;
-            for (int i = 30; i >= 0; --i)
-            {
-                if (cnt[i])
-                {
-                    x += (1 << i);
-                    cnt[i]--;
-                }
-            }
-            ans = (ans + x * x % mod) % mod;
-            k--;
-        }
-        return ans;
+        return max(dp[n - 1][0], dp[n - 1][1]);
     }
 };
 
@@ -163,6 +154,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<int> a = {8, 50, 65, 85, 8, 73, 55, 50, 29, 95, 5, 68, 52, 79};
+    solution.maxScore(a, 74);
     return 0;
 }

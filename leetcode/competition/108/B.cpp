@@ -115,40 +115,34 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
+
 class Solution
 {
 public:
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const int INF = 0x3f3f3f3f;
-    int maxSum(vector<int> &nums, int k)
+    vector<int> relocateMarbles(vector<int> &nums, vector<int> &moveFrom, vector<int> &moveTo)
     {
-        int n = nums.size();
-        vector<int> cnt(31);
+        unordered_map<int, int> mp;
         for (auto &x : nums)
         {
-            for (int i = 30; i >= 0; --i)
-            {
-                if (x & (1 << i))
-                    cnt[i]++;
-            }
+            mp[x] = 1;
         }
-        long long ans = 0;
-        long long mod = 1e9 + 7;
-        while (k)
+        for (int i = 0; i < moveFrom.size(); ++i)
         {
-            int x = 0;
-            for (int i = 30; i >= 0; --i)
-            {
-                if (cnt[i])
-                {
-                    x += (1 << i);
-                    cnt[i]--;
-                }
-            }
-            ans = (ans + x * x % mod) % mod;
-            k--;
+            int fromx = moveFrom[i], tox = moveTo[i];
+            if (fromx == tox)
+                continue;
+            mp[tox] += mp[fromx];
+            mp[fromx] = 0;
         }
+        vector<int> ans;
+        for (auto &[key, value] : mp)
+        {
+            if (value != 0)
+            {
+                ans.emplace_back(key);
+            }
+        }
+        sort(ans.begin(), ans.end());
         return ans;
     }
 };

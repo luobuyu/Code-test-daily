@@ -121,35 +121,33 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int maxSum(vector<int> &nums, int k)
+    vector<vector<int>> combinationSum3(int k, int n)
     {
-        int n = nums.size();
-        vector<int> cnt(31);
-        for (auto &x : nums)
+        vector<vector<int>> ret;
+        vector<int> cur;
+        vector<bool> vis(10);
+        function<void(int, int)> dfs = [&](int step, int sum)
         {
-            for (int i = 30; i >= 0; --i)
+            if (sum == n && cur.size() == k)
             {
-                if (x & (1 << i))
-                    cnt[i]++;
+                ret.emplace_back(cur);
+                return;
             }
-        }
-        long long ans = 0;
-        long long mod = 1e9 + 7;
-        while (k)
-        {
-            int x = 0;
-            for (int i = 30; i >= 0; --i)
+            if (sum > n || step == 10)
+                return;
+            for (int i = step; i <= 9; ++i)
             {
-                if (cnt[i])
-                {
-                    x += (1 << i);
-                    cnt[i]--;
-                }
+                if (vis[i])
+                    continue;
+                vis[i] = true;
+                cur.emplace_back(i);
+                dfs(step + 1, sum + i);
+                vis[i] = false;
+                cur.pop_back();
             }
-            ans = (ans + x * x % mod) % mod;
-            k--;
-        }
-        return ans;
+        };
+        dfs(0, 0);
+        return ret;
     }
 };
 

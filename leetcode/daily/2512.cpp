@@ -121,33 +121,54 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int maxSum(vector<int> &nums, int k)
+    struct Node
     {
-        int n = nums.size();
-        vector<int> cnt(31);
-        for (auto &x : nums)
+        int id, score;
+        bool operator<(const Node &p) const
         {
-            for (int i = 30; i >= 0; --i)
-            {
-                if (x & (1 << i))
-                    cnt[i]++;
-            }
+            return score == p.score ? id > p.id : score > p.score;
         }
-        long long ans = 0;
-        long long mod = 1e9 + 7;
-        while (k)
+    };
+    vector<int> topStudents(vector<string> &positive_feedback, vector<string> &negative_feedback, vector<string> &report, vector<int> &student_id, int k)
+    {
+        int n = student_id.size();
+        priority_queue<Node> q; // score, id
+        unordered_map<string, int> mp;
+        for (auto &s : positive_feedback)
+            mp[s] = 3;
+        for (auto &s : negative_feedback)
+            mp[s] = -1;
+        for (int i = 0; i < n; ++i)
         {
-            int x = 0;
-            for (int i = 30; i >= 0; --i)
+            int score = 0;
+            int id = student_id[i];
+            string &ss = report[i];
+            int start = 0, len = 0;
+            for (int i = 0; i < ss.length(); ++i)
             {
-                if (cnt[i])
+                if (ss[i] == ' ' || i == ss.length() - 1)
                 {
-                    x += (1 << i);
-                    cnt[i]--;
+                    if (i == ss.length() - 1)
+                        ++len;
+                    string s = ss.substr(start, len);
+                    cout << s << endl;
+                    start = i + 1;
+                    len = 0;
+                    if (mp.count(s))
+                    {
+                        score += mp[s];
+                    }
                 }
+                else
+                    ++len;
             }
-            ans = (ans + x * x % mod) % mod;
-            k--;
+            q.push({id, score});
+        }
+        vector<int> ans;
+        while (ans.size() < k)
+        {
+            ans.emplace_back(q.top().id);
+            q.pop();
         }
         return ans;
     }

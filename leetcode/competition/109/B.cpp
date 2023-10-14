@@ -115,41 +115,38 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
+
 class Solution
 {
 public:
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const int INF = 0x3f3f3f3f;
-    int maxSum(vector<int> &nums, int k)
+    string sortVowels(string s)
     {
-        int n = nums.size();
-        vector<int> cnt(31);
-        for (auto &x : nums)
+        string ss = "aeiouAEIOU";
+        vector<char> tmp;
+        for (auto &ch : s)
         {
-            for (int i = 30; i >= 0; --i)
+            for (auto &tt : ss)
             {
-                if (x & (1 << i))
-                    cnt[i]++;
-            }
-        }
-        long long ans = 0;
-        long long mod = 1e9 + 7;
-        while (k)
-        {
-            int x = 0;
-            for (int i = 30; i >= 0; --i)
-            {
-                if (cnt[i])
+                if (ch == tt)
                 {
-                    x += (1 << i);
-                    cnt[i]--;
+                    tmp.emplace_back(ch);
+                    ch = '0';
+                    break;
                 }
             }
-            ans = (ans + x * x % mod) % mod;
-            k--;
         }
-        return ans;
+        if (tmp.size() == 0)
+            return s;
+        sort(tmp.begin(), tmp.end());
+        int index = 0;
+        for (auto &ch : s)
+        {
+            if (ch == '0')
+            {
+                ch = tmp[index++];
+            }
+        }
+        return s;
     }
 };
 

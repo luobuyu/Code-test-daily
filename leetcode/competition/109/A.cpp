@@ -121,35 +121,21 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int maxSum(vector<int> &nums, int k)
+    bool isGood(vector<int> &nums)
     {
-        int n = nums.size();
-        vector<int> cnt(31);
+        int n = nums.size() - 1;
+        int tmp = 0;
+        unordered_map<int, int> mp;
         for (auto &x : nums)
         {
-            for (int i = 30; i >= 0; --i)
-            {
-                if (x & (1 << i))
-                    cnt[i]++;
-            }
+            mp[x]++;
         }
-        long long ans = 0;
-        long long mod = 1e9 + 7;
-        while (k)
+        for (int i = 1; i < n; ++i)
         {
-            int x = 0;
-            for (int i = 30; i >= 0; --i)
-            {
-                if (cnt[i])
-                {
-                    x += (1 << i);
-                    cnt[i]--;
-                }
-            }
-            ans = (ans + x * x % mod) % mod;
-            k--;
+            if (!mp.count(i) || mp[i] != 1)
+                return false;
         }
-        return ans;
+        return mp.count(n) && mp[n] == 2;
     }
 };
 

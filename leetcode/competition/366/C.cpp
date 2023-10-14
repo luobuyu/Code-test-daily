@@ -121,9 +121,6 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    void dfs(int l, int r)
-    {
-    }
     int minOperations(string s1, string s2, int x)
     {
         int n = s1.size();
@@ -148,12 +145,7 @@ public:
         {
             for (int j = i + 1; j < m; ++j)
             {
-                int sum = 0;
-                for (int k = i; k <= j; k += 2)
-                {
-                    sum += min(a[k + 1] - a[k], x);
-                }
-                dp[i][j] = sum;
+                dp[i][j] = 1000000;
             }
         }
         for (int len = 2; len <= m; len += 2)

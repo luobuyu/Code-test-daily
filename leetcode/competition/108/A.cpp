@@ -118,41 +118,38 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const int INF = 0x3f3f3f3f;
-    int maxSum(vector<int> &nums, int k)
+    bool check(int s, int e, vector<int> &nums)
+    {
+        int pre = nums[s + 1] - nums[s];
+        if (pre != 1 && pre != -1)
+            return false;
+        for (int i = s; i < e; ++i)
+        {
+            if (nums[i + 1] - nums[i] != pre)
+            {
+                return false;
+            }
+            pre *= -1;
+        }
+        return true;
+    }
+    int alternatingSubarray(vector<int> &nums)
     {
         int n = nums.size();
-        vector<int> cnt(31);
-        for (auto &x : nums)
+        int ans = -1;
+        for (int i = 0; i < n; ++i)
         {
-            for (int i = 30; i >= 0; --i)
+            for (int j = i + 1; j < n; ++j)
             {
-                if (x & (1 << i))
-                    cnt[i]++;
-            }
-        }
-        long long ans = 0;
-        long long mod = 1e9 + 7;
-        while (k)
-        {
-            int x = 0;
-            for (int i = 30; i >= 0; --i)
-            {
-                if (cnt[i])
+                if (check(i, j, nums))
                 {
-                    x += (1 << i);
-                    cnt[i]--;
+                    ans = max(ans, j - i + 1);
                 }
             }
-            ans = (ans + x * x % mod) % mod;
-            k--;
         }
         return ans;
     }
 };
-
 int t, n, m, k;
 int main()
 {

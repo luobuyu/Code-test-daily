@@ -121,35 +121,36 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int maxSum(vector<int> &nums, int k)
+    int minOperations(string s1, string s2, int x)
     {
-        int n = nums.size();
-        vector<int> cnt(31);
-        for (auto &x : nums)
+        int n = s1.size();
+        int sum = 0;
+        vector<int> a;
+        vector<bool> vis(n);
+        for (int i = 0; i < n; ++i)
         {
-            for (int i = 30; i >= 0; --i)
+            if (s1[i] != s2[i])
             {
-                if (x & (1 << i))
-                    cnt[i]++;
+                a.emplace_back(i);
+                sum++;
             }
         }
-        long long ans = 0;
-        long long mod = 1e9 + 7;
-        while (k)
+        if (sum & 1)
+            return -1;
+        if (sum == 0)
+            return 0;
+        int m = a.size();
+        vector<int> dp(m, INT_MAX);
+        dp[0] = 0;
+        dp[1] = min(x, a[1] - a[0]);
+        for (int i = 2; i < m; ++i)
         {
-            int x = 0;
-            for (int i = 30; i >= 0; --i)
-            {
-                if (cnt[i])
-                {
-                    x += (1 << i);
-                    cnt[i]--;
-                }
-            }
-            ans = (ans + x * x % mod) % mod;
-            k--;
+            if (i & 1) // 偶数
+                dp[i] = min(dp[i], min(dp[i - 2] + a[i] - a[i - 1], dp[i - 1] + x));
+            else // 奇数
+                dp[i] = min(dp[i], min(dp[i - 2] + a[i] - a[i - 1], dp[i - 1]));
         }
-        return ans;
+        return dp[m - 1];
     }
 };
 
@@ -163,6 +164,8 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    string s1 = "100010010100111100001110101111100001001101011010100111101011100100011111110001011001001";
+    string s2 = "000001100010010011111101100101111011101110010001001010100101011100011110000111010011010";
+    solution.minOperations(s1, s2, 6);
     return 0;
 }

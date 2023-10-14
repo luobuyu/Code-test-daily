@@ -121,35 +121,24 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int maxSum(vector<int> &nums, int k)
+    const long long mod = 1e9 + 7;
+    int numberOfWays(int n, int x)
     {
-        int n = nums.size();
-        vector<int> cnt(31);
-        for (auto &x : nums)
+        vector<long long> dp(n + 1);
+        // dp[i][j] = dp[i - 1][j], dp[i - 1][j - v] + a[i].w
+        // dp[i]
+        dp[0] = 1;
+        for (int i = 1; i <= n; ++i)
         {
-            for (int i = 30; i >= 0; --i)
+            for (int j = n; j >= 0; --j)
             {
-                if (x & (1 << i))
-                    cnt[i]++;
+                long long v = pow(1ll * i, 1ll * x);
+                if (v > j)
+                    break;
+                dp[j] = (dp[j] + dp[j - v]) % mod;
             }
         }
-        long long ans = 0;
-        long long mod = 1e9 + 7;
-        while (k)
-        {
-            int x = 0;
-            for (int i = 30; i >= 0; --i)
-            {
-                if (cnt[i])
-                {
-                    x += (1 << i);
-                    cnt[i]--;
-                }
-            }
-            ans = (ans + x * x % mod) % mod;
-            k--;
-        }
-        return ans;
+        return dp[n];
     }
 };
 
