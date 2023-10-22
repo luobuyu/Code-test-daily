@@ -328,31 +328,35 @@ int main()
 #endif
    ios::sync_with_stdio(false);
    cin.tie(0);
-   Point a(7, 3), b(4, 3), c(2, 5), d(2, 1);
-   Point e(9, 3), f(13, 3), g(15, 5), h(15, 1);
-   cout << b.radABBC(a, c) / pi << endl;
-   cout << b.radABBC(a, d) / pi << endl;
+   // Point a(7, 3), b(4, 3), c(2, 5), d(2, 1);
+   // Point e(9, 3), f(13, 3), g(15, 5), h(15, 1);
+   // cout << b.radABBC(a, c) / pi << endl;
+   // cout << b.radABBC(a, d) / pi << endl;
 
-   cout << "-------------------" << endl;
-   cout << f.radABBC(e, g) / pi << endl;
-   cout << f.radABBC(e, h) / pi << endl;
+   // cout << "-------------------" << endl;
+   // cout << f.radABBC(e, g) / pi << endl;
+   // cout << f.radABBC(e, h) / pi << endl;
 
-   cout << "-------------------" << endl;
-   Point ba = a - b;
-   Point bc = c - b;
-   cout << (ba ^ bc) << endl;
-   cout << "-------------------" << endl;
-   cout << b.radABBC(a, a) / pi << endl;
-   cout << b.radABBC(d, d) / pi << endl;
+   // cout << "-------------------" << endl;
+   // Point ba = a - b;
+   // Point bc = c - b;
+   // cout << (ba ^ bc) << endl;
+   // cout << "-------------------" << endl;
+   // cout << b.radABBC(a, a) / pi << endl;
+   // cout << b.radABBC(d, d) / pi << endl;
 
-   cout << "-------------------" << endl;
-   cout << b.radABC(a, d) / pi << endl;
+   // cout << "-------------------" << endl;
+   // cout << b.radABC(a, d) / pi << endl;
 
-   Point front(3, 0), t(2, 0), nex(1, 0);
-   cout << "-------------------" << endl;
-   cout << t.radABBC(front, nex) / pi << endl;
+   // Point front(3, 0), t(2, 0), nex(1, 0);
+   // cout << "-------------------" << endl;
+   // cout << t.radABBC(front, nex) / pi << endl;
 
-   Point a1(0, 0), b1(2, -2), c1(2, 0);
-   cout << a1.radABBC(c1, b1) / pi << endl;
+   // Point a1(0, 0), b1(2, -2), c1(2, 0);
+   // cout << a1.radABBC(c1, b1) / pi << endl;
+   double ax1 = 1104.74, ay1 = 610.384;
+   double bx1 = 1106.3, by1 = 609.763;
+   double dis = hypot(ax1 - bx1, ay1 - by1);
+   cout << dis << endl;
    return 0;
 }
