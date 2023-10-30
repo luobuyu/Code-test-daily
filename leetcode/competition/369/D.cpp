@@ -115,66 +115,93 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
+// class Solution
+// {
+// public:
+//     const static int maxn = 1e5 + 10;
+//     const static int maxm = 1e5 + 10;
+//     const int INF = 0x3f3f3f3f;
+//     vector<vector<int>> g;
+//     vector<vector<int>> dp;
+//     int dfs(int u, int fa, int upper, vector<int> &coins, int k)
+//     {
+//         dp[u][0] = min(coins[u], upper) - k;
+//         dp[u][1] = min(coins[u], upper);
+//         int ret = 0;
+//         for (int i = 0; i < g[u].size(); ++i)
+//         {
+//             int v = g[u][i];
+//             if (v == fa)
+//                 continue;
+//             dp[u][0] += dfs(v, u, INF, coins, k);
+//             dp[u][1] += dfs(v, u, floor(coins[u] / 2), coins, k);
+//         }
+//         return max(dp[u][0], dp[u][1]);
+//     }
+//     int maximumPoints(vector<vector<int>> &edges, vector<int> &coins, int k)
+//     {
+//         int n = coins.size();
+//         g.resize(n);
+//         dp.resize(n, vector<int>(2));
+//         for (auto &edge : edges)
+//         {
+//             int u = edge[0];
+//             int v = edge[1];
+//             g[u].emplace_back(v);
+//             g[v].emplace_back(u);
+//         }
+//         for (int i = 0; i < n; ++i)
+//         {
+//             cout << dp[i][0] << ", " << dp[i][1] << endl;
+//         }
+//         int ret = dfs(0, -1, INF, coins, k);
+//         return max(dp[0][0], dp[0][1]);
+//     }
+// };
 class Solution
 {
 public:
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const int INF = 0x3f3f3f3f;
-    int slidingPuzzle(vector<vector<int>> &board)
+    vector<vector<int>> memo; // -1 表示没有计算过
+    int dfs(int i, int j, int fa, int k, vector<int> &coins, vector<vector<int>> &g)
     {
-        int n = board.size(), m = board[0].size();
-        int sx, sy;
-        string s;
-        for (int i = 0; i < n; ++i)
+        auto &res = memo[i][j]; // 注意这里是引用
+        if (res != -1)
+        { // 之前计算过
+            return res;
+        }
+        int res1 = (coins[i] >> j) - k;
+        int res2 = coins[i] >> (j + 1);
+        for (int ch : g[i])
         {
-            for (int j = 0; j < m; ++j)
-            {
-                if (board[i][j] == 0)
-                {
-                    sx = i, sy = j;
-                }
-                s += board[i][j] + '0';
+            if (ch == fa)
+                continue;
+            res1 += dfs(ch, j, i, k, coins, g); // 不右移
+            if (j < 13)
+            {                                           // j+1 >= 14 相当于 res2 += 0，无需递归
+                res2 += dfs(ch, j + 1, i, k, coins, g); // 右移
             }
         }
-        unordered_map<string, pair<int, int>> vis;
-        string target = "123450";
-        queue<string> q;
-        q.push(s);
-        vis[s] = {sx, sy};
-        vector<int> dx = {-1, 0, 1, 0}, dy = {0, 1, 0, -1};
-        int ans = 0;
-        while (q.size())
+        return res = max(res1, res2); // 记忆化
+    }
+    int maximumPoints(vector<vector<int>> &edges, vector<int> &coins, int k)
+    {
+        int n = coins.size();
+        vector<vector<int>> g(n);
+        for (auto &e : edges)
         {
-            int size = q.size();
-            for (int i = 0; i < size; ++i)
-            {
-                auto s = q.front();
-                q.pop();
-                if (s == target)
-                    return ans;
-                int x = vis[s].first, y = vis[s].second;
-                for (int i = 0; i < 4; ++i)
-                {
-                    int newx = x + dx[i], newy = y + dy[i];
-                    if (newx < 0 || newx >= n || newy < 0 || newy >= m)
-                        continue;
-                    int old_index = x * 3 + y;
-                    int new_index = newx * 3 + newy;
-                    auto tmp = s;
-                    swap(tmp[old_index], tmp[new_index]);
-                    if (vis.count(tmp))
-                        continue;
-                    vis[tmp] = {newx, newy};
-                }
-            }
-            ans++;
+            int x = e[0], y = e[1];
+            g[x].push_back(y);
+            g[y].push_back(x);
         }
-        return ans;
+        memo.resize(n, vector<int>(14, -1));
+        return dfs(0, 0, -1, k, coins, g);
     }
 };
 
-int t, n, m, k;
+int t,
+    n,
+    m,
+    k;
 int main()
 {
 // #define COMP_DATA
@@ -184,7 +211,8 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<vector<int>> a = {{1, 2, 3}, {4, 0, 5}};
-    solution.slidingPuzzle(a);
+    vector<vector<int>> a = {{0, 1}, {0, 2}, {0, 4}, {2, 3}};
+    vector<int> b = {5, 6, 8, 7, 4};
+    cout << solution.maximumPoints(a, b, 7) << endl;
     return 0;
 }

@@ -1,9 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
+using namespace std;
 #define ll long long
 #define lll long long
 #define PII pair<int, int>
-using namespace std;
 namespace FAST_IO
 {
     static string buf_line;
@@ -88,6 +88,26 @@ namespace FAST_IO
 } // namespace FAST_IO
 using namespace FAST_IO;
 
+// int init = []
+// {
+//     /*********** fast_read ***************/
+//     freopen("user.out", "w", stdout);
+//     ios_base::sync_with_stdio(false);
+//     cin.tie(nullptr);
+//     cout.tie(nullptr);
+//     /*************************************/
+
+//     while (true)
+//     {
+//         if (!getline())
+//             break;
+
+//         getline();
+//     }
+//     exit(0);
+//     return 0;
+// }();
+
 auto optimize_cpp_stdio = []()
 {
     std::ios::sync_with_stdio(false);
@@ -101,28 +121,42 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int calculateMinimumHP(vector<vector<int>> &dungeon)
+    string shortestBeautifulSubstring(string s, int k)
     {
-        int n = dungeon.size(), m = dungeon[0].size();
-        vector<vector<int>> dp(n + 1, vector<int>(m + 1, INF));
-        dp[n - 1][m - 1] = dungeon[n - 1][m - 1];
-        dp[n][m - 1] = 1, dp[n - 1][m] = 1;
-        for (int i = n - 1; i >= 0; --i)
+        vector<string> ans;
+        int n = s.length();
+        int len = INF;
+        for (int i = 0; i < n; ++i)
         {
-            for (int j = m - 1; j >= 0; --j)
+            for (int j = i; j < n; ++j)
             {
-                dp[i][j] = max(min(dp[i + 1][j], dp[i][j + 1]) - dungeon[i][j], 1);
+                int tmp = 0;
+                for (int k = i; k <= j; ++k)
+                {
+                    if (s[k] == '1')
+                        tmp++;
+                }
+                if (tmp != k)
+                    continue;
+                if (j - i + 1 < len)
+                {
+                    len = j - i + 1;
+                    ans.clear();
+                    ans.emplace_back(s.substr(i, len));
+                }
+                else if (j - i + 1 == len)
+                {
+                    ans.emplace_back(s.substr(i, len));
+                }
             }
         }
-        return dp[0][0];
+        sort(ans.begin(), ans.end());
+        if (ans.size() == 0)
+            return "";
+        return ans.front();
     }
 };
-
 int t, n, m, k;
-struct Node
-{
-    int a = 1, b = 2, c = 3;
-};
 int main()
 {
 // #define COMP_DATA
@@ -132,7 +166,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<vector<int>> a = {{-2, -3, 3}, {-5, -10, 1}, {10, 30, -5}};
-    cout << solution.calculateMinimumHP(a) << endl;
+    solution.shortestBeautifulSubstring("100011001", 3);
     return 0;
 }

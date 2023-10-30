@@ -1,9 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
+using namespace std;
 #define ll long long
 #define lll long long
 #define PII pair<int, int>
-using namespace std;
 namespace FAST_IO
 {
     static string buf_line;
@@ -88,41 +88,79 @@ namespace FAST_IO
 } // namespace FAST_IO
 using namespace FAST_IO;
 
-auto optimize_cpp_stdio = []()
-{
-    std::ios::sync_with_stdio(false);
-    std::cin.tie(nullptr);
-    std::cout.tie(nullptr);
-    return 0;
-}();
+// int init = []
+// {
+//     /*********** fast_read ***************/
+//     freopen("user.out", "w", stdout);
+//     ios_base::sync_with_stdio(false);
+//     cin.tie(nullptr);
+//     cout.tie(nullptr);
+//     /*************************************/
+
+//     while (true)
+//     {
+//         if (!getline())
+//             break;
+
+//         getline();
+//     }
+//     exit(0);
+//     return 0;
+// }();
+
 class Solution
 {
 public:
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const int INF = 0x3f3f3f3f;
-    int calculateMinimumHP(vector<vector<int>> &dungeon)
+    int minimumChanges(string s, int K)
     {
-        int n = dungeon.size(), m = dungeon[0].size();
-        vector<vector<int>> dp(n + 1, vector<int>(m + 1, INF));
-        dp[n - 1][m - 1] = dungeon[n - 1][m - 1];
-        dp[n][m - 1] = 1, dp[n - 1][m] = 1;
-        for (int i = n - 1; i >= 0; --i)
-        {
-            for (int j = m - 1; j >= 0; --j)
+        int n = s.size();
+
+        const int INF = 1e9;
+        int g[n + 1][n + 1];
+        for (int i = 0; i <= n; i++)
+            for (int j = 0; j <= n; j++)
+                g[i][j] = INF;
+        // 枚举每个子串，计算变成半回文串要修改几次
+        for (int i = 1; i <= n; i++)
+            for (int j = i; j <= n; j++)
             {
-                dp[i][j] = max(min(dp[i + 1][j], dp[i][j + 1]) - dungeon[i][j], 1);
+                int len = j - i + 1;
+                // 枚举因数 d
+                for (int d = 1; d < len; d++)
+                    if (len % d == 0)
+                    {
+                        int cnt = 0;
+                        // 枚举每个字符，并检查它对应的字符
+                        for (int k = 0; k < len; k++)
+                        {
+                            int kk = (len / d - 1 - k / d) * d + k % d;
+                            if (k >= kk)
+                                break;
+                            if (s[i - 1 + k] != s[i - 1 + kk])
+                                cnt++;
+                        }
+                        g[i][j] = min(g[i][j], cnt);
+                    }
             }
-        }
-        return dp[0][0];
+
+        // 套 dp 方程
+        int f[n + 1][K + 1];
+        for (int i = 0; i <= n; i++)
+            for (int j = 0; j <= K; j++)
+                f[i][j] = INF;
+        f[0][0] = 0;
+        for (int i = 1; i <= n; i++)
+            for (int j = 1; j <= K; j++)
+                for (int ii = i - 1; ii >= 0; ii--)
+                    f[i][j] = min(f[i][j], f[ii][j - 1] + g[ii + 1][i]);
+        return f[n][K];
     }
 };
 
-int t, n, m, k;
-struct Node
-{
-    int a = 1, b = 2, c = 3;
-};
+int t,
+    n,
+    m,
+    k;
 int main()
 {
 // #define COMP_DATA
@@ -132,7 +170,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<vector<int>> a = {{-2, -3, 3}, {-5, -10, 1}, {10, 30, -5}};
-    cout << solution.calculateMinimumHP(a) << endl;
+    cout << solution.minimumChanges("abcc", 1) << endl;
     return 0;
 }

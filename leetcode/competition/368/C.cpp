@@ -1,9 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
+using namespace std;
 #define ll long long
 #define lll long long
 #define PII pair<int, int>
-using namespace std;
 namespace FAST_IO
 {
     static string buf_line;
@@ -88,6 +88,26 @@ namespace FAST_IO
 } // namespace FAST_IO
 using namespace FAST_IO;
 
+// int init = []
+// {
+//     /*********** fast_read ***************/
+//     freopen("user.out", "w", stdout);
+//     ios_base::sync_with_stdio(false);
+//     cin.tie(nullptr);
+//     cout.tie(nullptr);
+//     /*************************************/
+
+//     while (true)
+//     {
+//         if (!getline())
+//             break;
+
+//         getline();
+//     }
+//     exit(0);
+//     return 0;
+// }();
+
 auto optimize_cpp_stdio = []()
 {
     std::ios::sync_with_stdio(false);
@@ -95,34 +115,84 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
+
 class Solution
 {
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int calculateMinimumHP(vector<vector<int>> &dungeon)
+    int check(int mid, vector<int> &a)
     {
-        int n = dungeon.size(), m = dungeon[0].size();
-        vector<vector<int>> dp(n + 1, vector<int>(m + 1, INF));
-        dp[n - 1][m - 1] = dungeon[n - 1][m - 1];
-        dp[n][m - 1] = 1, dp[n - 1][m] = 1;
-        for (int i = n - 1; i >= 0; --i)
+        // 每组都为 mid + 1，或 mid
+        int ret = 0;
+        for (auto &x : a)
         {
-            for (int j = m - 1; j >= 0; --j)
+            int p = x / mid;
+            int r = x % mid;
+            if (p < r)
+                return -1;
+            // p >= r;
+            if ((p - r) >= (mid + 1))
             {
-                dp[i][j] = max(min(dp[i + 1][j], dp[i][j + 1]) - dungeon[i][j], 1);
+                ret += p - (p - r) / (mid + 1);
+            }
+            else
+            {
+                ret += p;
             }
         }
-        return dp[0][0];
+        return ret;
+    }
+
+    int check2(int mid, vector<int> &a)
+    {
+        int ret = 0;
+        for (auto &x : a)
+        {
+            int p = x / (mid + 1);
+            int r = x % (mid + 1);
+            if (r == 0)
+                ret += p;
+            else
+            {
+                if (p < mid - r)
+                    return -1;
+                ret += p + 1;
+            }
+        }
+        return ret;
+    }
+    int minGroupsForValidAssignment(vector<int> &nums)
+    {
+        unordered_map<int, int> cnt;
+        int minx = INF;
+        for (auto &x : nums)
+        {
+            cnt[x]++;
+        }
+        vector<int> a;
+        for (auto &[key, value] : cnt)
+        {
+            a.emplace_back(value);
+            minx = min(minx, value);
+        }
+        if (a.size() == 1)
+            return 1;
+        // 每组至少的数量
+        for (int i = minx; i >= 1; --i)
+        {
+            int ret = check2(i, a);
+            if (ret != -1)
+            {
+                return ret;
+            }
+        }
+        return 1;
     }
 };
 
 int t, n, m, k;
-struct Node
-{
-    int a = 1, b = 2, c = 3;
-};
 int main()
 {
 // #define COMP_DATA
@@ -132,7 +202,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<vector<int>> a = {{-2, -3, 3}, {-5, -10, 1}, {10, 30, -5}};
-    cout << solution.calculateMinimumHP(a) << endl;
+    vector<int> a = {3, 2, 3, 2, 3};
+    cout << solution.minGroupsForValidAssignment(a) << endl;
     return 0;
 }

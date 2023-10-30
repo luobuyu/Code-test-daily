@@ -1,9 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
+using namespace std;
 #define ll long long
 #define lll long long
 #define PII pair<int, int>
-using namespace std;
 namespace FAST_IO
 {
     static string buf_line;
@@ -88,6 +88,26 @@ namespace FAST_IO
 } // namespace FAST_IO
 using namespace FAST_IO;
 
+// int init = []
+// {
+//     /*********** fast_read ***************/
+//     freopen("user.out", "w", stdout);
+//     ios_base::sync_with_stdio(false);
+//     cin.tie(nullptr);
+//     cout.tie(nullptr);
+//     /*************************************/
+
+//     while (true)
+//     {
+//         if (!getline())
+//             break;
+
+//         getline();
+//     }
+//     exit(0);
+//     return 0;
+// }();
+
 auto optimize_cpp_stdio = []()
 {
     std::ios::sync_with_stdio(false);
@@ -101,28 +121,40 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int calculateMinimumHP(vector<vector<int>> &dungeon)
+    int lengthOfLongestSubsequence(vector<int> &nums, int target)
     {
-        int n = dungeon.size(), m = dungeon[0].size();
-        vector<vector<int>> dp(n + 1, vector<int>(m + 1, INF));
-        dp[n - 1][m - 1] = dungeon[n - 1][m - 1];
-        dp[n][m - 1] = 1, dp[n - 1][m] = 1;
-        for (int i = n - 1; i >= 0; --i)
+        int n = nums.size();
+        // unordered_map<int, int> mp; // sum, len;
+        vector<vector<int>> dp(n, vector<int>(target + 1, -1));
+        dp[0][0] = 0;
+        if (nums[0] <= target)
+            dp[0][nums[0]] = 1;
+        int sum = nums[0];
+        for (int i = 1; i < n; ++i)
         {
-            for (int j = m - 1; j >= 0; --j)
+            sum += nums[i];
+            for (int j = 0; j <= min(target, sum); ++j)
             {
-                dp[i][j] = max(min(dp[i + 1][j], dp[i][j + 1]) - dungeon[i][j], 1);
+                if (j - nums[i] >= 0)
+                {
+                    if (dp[i - 1][j - nums[i]] != -1)
+                        dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - nums[i]] + 1);
+                    else
+                        dp[i][j] = dp[i - 1][j];
+                }
+                else
+                {
+                    dp[i][j] = dp[i - 1][j];
+                }
             }
         }
-        return dp[0][0];
+        if (dp[n - 1][target] == 0)
+            return -1;
+        return dp[n - 1][target];
     }
 };
 
 int t, n, m, k;
-struct Node
-{
-    int a = 1, b = 2, c = 3;
-};
 int main()
 {
 // #define COMP_DATA
@@ -132,7 +164,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<vector<int>> a = {{-2, -3, 3}, {-5, -10, 1}, {10, 30, -5}};
-    cout << solution.calculateMinimumHP(a) << endl;
+    vector<int> a = {13, 12, 14, 6, 12, 7, 3, 3, 13};
+    solution.lengthOfLongestSubsequence(a, 48);
     return 0;
 }

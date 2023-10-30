@@ -241,6 +241,62 @@ struct Line
         return (d1 == 0 || d2 == 0);
     }
 
+    // 两线段相交判断
+    // -1 规范相交
+    // 1 非规范相交
+    // 0 不相交
+    int segcrossseg(Line v)
+    {
+        int d1 = sgn((e - s) ^ (v.s - s));
+        int d2 = sgn((e - s) ^ (v.e - s));
+        int d3 = sgn((v.e - v.s) ^ (s - v.s));
+        int d4 = sgn((v.e - v.s) ^ (e - v.s));
+        if ((d1 ^ d2) == -2 && (d3 ^ d4) == -2)
+            return -1;
+        return (d1 == 0 && sgn((v.s - s) * (v.s - e)) <= 0) ||
+               (d2 == 0 && sgn((v.e - s) * (v.e - e)) <= 0) ||
+               (d3 == 0 && sgn((s - v.s) * (s - v.e)) <= 0) ||
+               (d4 == 0 && sgn((e - v.s) * (e - v.e)) <= 0);
+    }
+
+    bool pointOnSeg(Point p)
+    {
+        return sgn((p - s) ^ (e - s)) == 0 && sgn((p - s) ^ (p - e)) <= 0;
+    }
+
+    bool towSide(Point a, Point b)
+    {
+        return sgn((e - s) ^ (a - s)) * sgn((e - s) ^ (b - s)) < 0;
+    }
+
+    bool segcrossseg2(Line v)
+    {
+        if (pointOnSeg(v.s) || pointOnSeg(v.e))
+            return true;
+        if (v.pointOnSeg(s) || v.pointOnSeg(e))
+            return true;
+        return towSide(v.s, v.e) && v.towSide(s, e);
+    }
+
+    // 先判断两线段是否相交，才能调用这个
+    int segInterSegPoint(Line v, Point &p, Point &q)
+    {
+        if (!parallel(v))
+        {
+            p = crossPoint(v);
+            return 0;
+        }
+        vector<Point> a = {s, e, v.s, v.e};
+        sort(a.begin(), a.end());
+        if (a[1] == a[2])
+        {
+            p = a[1];
+            return 0;
+        }
+        p = a[1], q = a[2];
+        return 1;
+    }
+
     // 直线向量平行
     bool parallel(Line v)
     {
@@ -252,3 +308,29 @@ struct Line
         return sgn((e - s) * (v.e - v.s));
     }
 };
+int main()
+{
+// #define COMP_DATA
+#ifndef ONLINE_JUDGE
+    freopen("in.txt", "r", stdin);
+#endif
+    ios::sync_with_stdio(false);
+    cin.tie(0);
+    vector<Point> points = {Point(1, 0), Point(2, 0), Point(3, 0), Point(4, 0)};
+    Line v1(points[0], points[2]);
+    Line v2(points[1], points[3]);
+    cout << "segCrossSeg1: " << v1.segcrossseg(v2) << endl;
+    cout << "segCrossSeg2: " << v1.segcrossseg2(v2) << endl;
+    Point c = v1.crossPoint(v2), d;
+    cout << c.x << ", " << c.y << endl;
+    int ret = v1.segInterSegPoint(v2, c, d);
+    if (ret == 0)
+    {
+        cout << "point:" << c.x << ", " << c.y << endl;
+    }
+    else
+    {
+        cout << "seg:" << c.x << ", " << c.y << "\t" << d.x << ", " << d.y << endl;
+    }
+    return 0;
+}

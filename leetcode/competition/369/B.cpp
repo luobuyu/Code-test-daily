@@ -1,9 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
+using namespace std;
 #define ll long long
 #define lll long long
 #define PII pair<int, int>
-using namespace std;
 namespace FAST_IO
 {
     static string buf_line;
@@ -88,6 +88,26 @@ namespace FAST_IO
 } // namespace FAST_IO
 using namespace FAST_IO;
 
+// int init = []
+// {
+//     /*********** fast_read ***************/
+//     freopen("user.out", "w", stdout);
+//     ios_base::sync_with_stdio(false);
+//     cin.tie(nullptr);
+//     cout.tie(nullptr);
+//     /*************************************/
+
+//     while (true)
+//     {
+//         if (!getline())
+//             break;
+
+//         getline();
+//     }
+//     exit(0);
+//     return 0;
+// }();
+
 auto optimize_cpp_stdio = []()
 {
     std::ios::sync_with_stdio(false);
@@ -101,28 +121,31 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int calculateMinimumHP(vector<vector<int>> &dungeon)
+    long long minSum(vector<int> &nums1, vector<int> &nums2)
     {
-        int n = dungeon.size(), m = dungeon[0].size();
-        vector<vector<int>> dp(n + 1, vector<int>(m + 1, INF));
-        dp[n - 1][m - 1] = dungeon[n - 1][m - 1];
-        dp[n][m - 1] = 1, dp[n - 1][m] = 1;
-        for (int i = n - 1; i >= 0; --i)
+        long long sum1 = 0, cnt1 = 0;
+        long long sum2 = 0, cnt2 = 0;
+        for (auto &x : nums1)
         {
-            for (int j = m - 1; j >= 0; --j)
-            {
-                dp[i][j] = max(min(dp[i + 1][j], dp[i][j + 1]) - dungeon[i][j], 1);
-            }
+            if (x == 0)
+                cnt1++;
+            sum1 += x;
         }
-        return dp[0][0];
+        for (auto &x : nums2)
+        {
+            if (x == 0)
+                cnt2++;
+            sum2 += x;
+        }
+        if (sum1 != sum2 && (cnt1 == 0 || cnt2 == 0))
+        {
+            return -1;
+        }
+        return max(sum1 + cnt1, sum2 + cnt2);
     }
 };
 
 int t, n, m, k;
-struct Node
-{
-    int a = 1, b = 2, c = 3;
-};
 int main()
 {
 // #define COMP_DATA
@@ -132,7 +155,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<vector<int>> a = {{-2, -3, 3}, {-5, -10, 1}, {10, 30, -5}};
-    cout << solution.calculateMinimumHP(a) << endl;
+
     return 0;
 }

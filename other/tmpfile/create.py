@@ -14,10 +14,23 @@ def parserLine(s):
     return ret
 
 
+def parserInterPoints(s):
+    s = s.strip().split(' ')
+    ret = ''
+    for i in range(len(s)):
+        if i != 0:
+            ret += ','
+        ret += '{' + s[i] + '}'
+    ret = 'PointList[{' + ret + '}]'
+    return ret
+
+
 def parserTag(html):
     l = []
     for i in re.findall(r'polygon points="(.*?)"', html):
         l.append(parserLine(i))
+    for i in re.findall(r'[in|out]Points=[\'|"](.*?)[\'|"]', html):
+        l.append(parserInterPoints(i))
     return l
 
 

@@ -121,56 +121,75 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int slidingPuzzle(vector<vector<int>> &board)
+    vector<vector<int>> div;
+    vector<vector<int>> cost;
+    vector<vector<int>> dp;
+    int n;
+    void init()
     {
-        int n = board.size(), m = board[0].size();
-        int sx, sy;
-        string s;
-        for (int i = 0; i < n; ++i)
+        div.resize(n + 1);
+        for (int i = 2; i <= n; ++i)
         {
-            for (int j = 0; j < m; ++j)
+            for (int j = 1; j * j <= i; ++j)
             {
-                if (board[i][j] == 0)
+                if (i % j == 0)
                 {
-                    sx = i, sy = j;
-                }
-                s += board[i][j] + '0';
-            }
-        }
-        unordered_map<string, pair<int, int>> vis;
-        string target = "123450";
-        queue<string> q;
-        q.push(s);
-        vis[s] = {sx, sy};
-        vector<int> dx = {-1, 0, 1, 0}, dy = {0, 1, 0, -1};
-        int ans = 0;
-        while (q.size())
-        {
-            int size = q.size();
-            for (int i = 0; i < size; ++i)
-            {
-                auto s = q.front();
-                q.pop();
-                if (s == target)
-                    return ans;
-                int x = vis[s].first, y = vis[s].second;
-                for (int i = 0; i < 4; ++i)
-                {
-                    int newx = x + dx[i], newy = y + dy[i];
-                    if (newx < 0 || newx >= n || newy < 0 || newy >= m)
-                        continue;
-                    int old_index = x * 3 + y;
-                    int new_index = newx * 3 + newy;
-                    auto tmp = s;
-                    swap(tmp[old_index], tmp[new_index]);
-                    if (vis.count(tmp))
-                        continue;
-                    vis[tmp] = {newx, newy};
+                    int a = i / j;
+                    int b = i / a;
+                    div[i].emplace_back(b);
+                    if (b != a && a < i)
+                        div[i].emplace_back(a);
                 }
             }
-            ans++;
         }
-        return ans;
+    }
+
+    void get_cost(string &s)
+    {
+        cost.resize(n + 1, vector<int>(n + 1, INF));
+        for (int i = 1; i <= n; ++i)
+        {
+            for (int j = i + 1; j <= n; ++j)
+            {
+                int len = j - i + 1;
+                for (auto &d : div[len])
+                {
+                    // 枚举余数
+                    int tmp = 0;
+                    for (int ii = 0; ii < d; ++ii)
+                    {
+                        for (int p = i + ii, q = j - d + ii + 1; p <= q; p += d, q -= d)
+                        {
+                            tmp += s[p - 1] != s[q - 1];
+                        }
+                    }
+                    cost[i][j] = min(cost[i][j], tmp);
+                }
+            }
+        }
+    }
+
+    int minimumChanges(string s, int k)
+    {
+        n = s.length();
+        init();
+        // 首先需要预处理出来，所有的 g[i][j] 需要修改的次数
+        // 枚举所有的子串，然后枚举因子，可以先预处理所有数的因子
+        get_cost(s);
+        dp.resize(n + 1, vector<int>(k + 1, INF));
+        // dp[i][j] = dp[p][k - 1] + cost[p + 1][j];
+        dp[0][0] = 0;
+        for (int i = 1; i <= n; ++i)
+        {
+            for (int j = 1; j <= k; ++j)
+            {
+                for (int p = 0; p < i; ++p)
+                {
+                    dp[i][j] = min(dp[i][j], dp[p][j - 1] + cost[p + 1][i]);
+                }
+            }
+        }
+        return dp[n][k];
     }
 };
 
@@ -184,7 +203,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<vector<int>> a = {{1, 2, 3}, {4, 0, 5}};
-    solution.slidingPuzzle(a);
+    cout << solution.minimumChanges("abcc", 1) << endl;
     return 0;
 }

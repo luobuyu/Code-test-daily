@@ -1,9 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
+using namespace std;
 #define ll long long
 #define lll long long
 #define PII pair<int, int>
-using namespace std;
 namespace FAST_IO
 {
     static string buf_line;
@@ -88,6 +88,26 @@ namespace FAST_IO
 } // namespace FAST_IO
 using namespace FAST_IO;
 
+// int init = []
+// {
+//     /*********** fast_read ***************/
+//     freopen("user.out", "w", stdout);
+//     ios_base::sync_with_stdio(false);
+//     cin.tie(nullptr);
+//     cout.tie(nullptr);
+//     /*************************************/
+
+//     while (true)
+//     {
+//         if (!getline())
+//             break;
+
+//         getline();
+//     }
+//     exit(0);
+//     return 0;
+// }();
+
 auto optimize_cpp_stdio = []()
 {
     std::ios::sync_with_stdio(false);
@@ -101,28 +121,46 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int calculateMinimumHP(vector<vector<int>> &dungeon)
+    vector<int> ret;
+    bool check(string s, int target, int l)
     {
-        int n = dungeon.size(), m = dungeon[0].size();
-        vector<vector<int>> dp(n + 1, vector<int>(m + 1, INF));
-        dp[n - 1][m - 1] = dungeon[n - 1][m - 1];
-        dp[n][m - 1] = 1, dp[n - 1][m] = 1;
-        for (int i = n - 1; i >= 0; --i)
+        if (l == s.size())
+            return target == 0;
+        if (target < 0)
+            return false;
+        int tmp = 0;
+        for (int i = l; i < s.length(); ++i)
         {
-            for (int j = m - 1; j >= 0; --j)
+            tmp = tmp * 10 + s[i] - '0';
+            if (tmp > target)
+                break;
+            if (check(s, target - tmp, i + 1))
             {
-                dp[i][j] = max(min(dp[i + 1][j], dp[i][j + 1]) - dungeon[i][j], 1);
+                return true;
             }
         }
-        return dp[0][0];
+        return false;
+    }
+    Solution()
+    {
+        ret.resize(1001);
+        int tmp = 0;
+        for (int i = 1; i <= 1000; ++i)
+        {
+            if (check(to_string(i * i), i, 0))
+            {
+                tmp += i * i;
+            }
+            ret[i] = tmp;
+        }
+    }
+    int punishmentNumber(int n)
+    {
+        return ret[n];
     }
 };
 
 int t, n, m, k;
-struct Node
-{
-    int a = 1, b = 2, c = 3;
-};
 int main()
 {
 // #define COMP_DATA
@@ -132,7 +170,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<vector<int>> a = {{-2, -3, 3}, {-5, -10, 1}, {10, 30, -5}};
-    cout << solution.calculateMinimumHP(a) << endl;
+    solution.punishmentNumber(45);
     return 0;
 }

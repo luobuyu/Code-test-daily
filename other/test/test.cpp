@@ -115,6 +115,18 @@ struct Node
 {
     int a = 1, b = 2, c = 3;
 };
+string to_bin(int x)
+{
+    string s;
+    for (int i = 31; i >= 0; --i)
+    {
+        if (x >> i & 1)
+            s += '1';
+        else
+            s += '0';
+    }
+    return s;
+}
 int main()
 {
 // #define COMP_DATA
@@ -123,13 +135,9 @@ int main()
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
-    Solution solution;
-    Node d;
-    unordered_map<int, int> mp = {{1, 2}, {2, 3}};
-    cout << "hello world" << endl;
-    for (auto [key, value] : mp)
-    {
-        cout << key << ", " << value << endl;
-    }
+    cout << to_bin(-1) << endl;
+    cout << to_bin(-2) << endl;
+    cout << (-1 ^ 1) << endl;
+    cout << "中文" << endl;
     return 0;
 }
