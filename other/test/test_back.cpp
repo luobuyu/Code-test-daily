@@ -1,6 +1,5 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
-#include "head.h"
 #define ll long long
 #define lll long long
 #define PII pair<int, int>
@@ -54,40 +53,21 @@ const ll mod = 1e9 + 7;
 const int INF = 0x3f3f3f3f;
 const ll INF_LL = 0x3f3f3f3f3f3f3f3f;
 const double eps = 1e-5;
+const int maxn = 1e3 + 10;
+const int maxm = 1e5 + 10;
 int t, n, m, k;
-class Solution
+struct Node
 {
-public:
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    static void optimize_cpp_stdio() { ios::sync_with_stdio(false), cin.tie(0); }
-    // 维护单调递减栈
-    stack<int> st;
-    int trap(vector<int> &height)
-    {
-        optimize_cpp_stdio();
-        int n = height.size();
-        int ans = 0;
-        for (int i = 0; i < n; ++i)
-        {
-            int pre = 0;
-            while (st.size() && height[st.top()] <= height[i])
-            {
-                ans += (height[st.top()] - pre) * (i - st.top() - 1);
-                pre = height[st.top()];
-                st.pop();
-            }
-            if (st.size())
-                ans += (height[i] - pre) * (i - st.top() - 1);
-            st.push(i);
-            // cout << i << ", " << ans << endl;
-        }
-
-        return ans;
-    }
+    int x, y;
+    Node(int _x, int _y) : x(_x), y(_y) {}
+    Node() {}
 };
-
+vector<Node> a;
+void solve()
+{
+    Node tmp(10, 11);
+    a.emplace_back(tmp);
+}
 int main()
 {
 // #define COMP_DATA
@@ -96,8 +76,17 @@ int main()
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
-    Solution solution;
-    vector<int> a = {4, 2, 0, 3, 2, 5};
-    cout << solution.trap(a) << endl;
+    a.emplace_back(Node(0, 0));
+    for (int i = 0; i <= 210; ++i)
+    {
+        int old_cap = a.capacity();
+        auto &back = a.back();
+        a.emplace_back(i, i + 100);
+        int new_cap = a.capacity();
+        if (new_cap > old_cap)
+        {
+            cout << back.x << ", " << back.y << endl;
+        }
+    }
     return 0;
 }

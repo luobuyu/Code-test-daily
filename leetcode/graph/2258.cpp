@@ -1,6 +1,7 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
 #define lll long long
 #define PII pair<int, int>
 namespace FAST_IO
@@ -106,60 +107,6 @@ using namespace FAST_IO;
 //     exit(0);
 //     return 0;
 // }();
-const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-struct SegTree
-{
-    struct TreeNode
-    {
-        long long val;
-        long long tag;
-        int l, r;
-    };
-    vector<TreeNode> tree;
-    SegTree(int n) : tree(n << 2) {}
-    void build(int cur, int l, int r)
-    {
-        tree[cur].l = l, tree[cur].r = r;
-        tree[cur].tag = 0;
-        if (l == r)
-        {
-            tree[cur].val = 0;
-            return;
-        }
-        int mid = (l + r) >> 1;
-        build(cur << 1, l, mid);
-        build(cur << 1 | 1, mid + 1, r);
-        tree[cur].val = max(tree[cur << 1].val, tree[cur << 1 | 1].val);
-    }
-    // 单点更新
-    void update(int cur, int pos, long long k) // 修改pos 为 k
-    {
-        if (tree[cur].l == pos && tree[cur].r == pos)
-        {
-            tree[cur].val = max(k, tree[cur].val);
-            return;
-        }
-        int mid = (tree[cur].l + tree[cur].r) >> 1;
-        if (pos <= mid)
-            update(cur << 1, pos, k);
-        if (pos >= mid + 1)
-            update(cur << 1 | 1, pos, k);
-        tree[cur].val = max(tree[cur << 1].val, tree[cur << 1 | 1].val);
-    }
-
-    long long query(int cur, int l, int r)
-    {
-        if (l <= tree[cur].l && tree[cur].r <= r)
-            return tree[cur].val;
-        int mid = (tree[cur].l + tree[cur].r) >> 1;
-        long long maxx = 0;
-        if (l <= mid)
-            maxx = max(maxx, query(cur << 1, l, r));
-        if (mid + 1 <= r)
-            maxx = max(maxx, query(cur << 1 | 1, l, r));
-        return maxx;
-    }
-};
 
 auto optimize_cpp_stdio = []()
 {
@@ -174,38 +121,87 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    // 线段树维护 [-INF, nums[i] - i] 区间内最大值。
-    long long maxBalancedSubsequenceSum(vector<int> &nums)
+    vector<int> dx = {-1, 0, 1, 0}, dy = {0, 1, 0, -1};
+    bool check(int mid, vector<vector<int>> &grid)
     {
-        // 首先离散化。
-        int n = nums.size();
+        if (grid[0][0] <= mid)
+            return false;
+        int n = grid.size(), m = grid[0].size();
+        queue<pair<int, int>> q;
+        vector<vector<bool>> vis(n, vector<bool>(m, false));
+        q.push({0, mid});
+        vis[0][0] = true;
+        while (q.size())
+        {
+            auto out = q.front();
+            q.pop();
+            int x = out.first / m;
+            int y = out.first % m;
+            int dis = out.second;
+            if (x == n - 1 && y == m - 1)
+                return true;
+            for (int i = 0; i < 4; ++i)
+            {
+                int newx = x + dx[i];
+                int newy = y + dy[i];
+                if (newx == n - 1 && newy == m - 1 && grid[newx][newy] >= dis + 1)
+                    return true;
+                if (newx < 0 || newx >= n || newy < 0 || newy >= m || grid[newx][newy] <= 0 ||
+                    grid[newx][newy] <= dis + 1 || vis[newx][newy])
+                    continue;
+                q.push({newx * m + newy, dis + 1});
+                vis[newx][newy] = true;
+            }
+        }
+        return false;
+    }
+    int maximumMinutes(vector<vector<int>> &grid)
+    {
+        int n = grid.size(), m = grid[0].size();
+        queue<pair<int, int>> q;
+
         for (int i = 0; i < n; ++i)
         {
-            nums[i] -= i;
+            for (int j = 0; j < m; ++j)
+            {
+                if (grid[i][j] == 2)
+                    grid[i][j] = -2;
+                if (grid[i][j] == 0)
+                    grid[i][j] = INF;
+                if (grid[i][j] == 1)
+                {
+                    grid[i][j] = 0;
+                    q.push({i, j});
+                }
+            }
         }
-        auto b = nums;
-        sort(b.begin(), b.end());
-        // [-INF_LL, nums[i] - i] => [1, mp[nums[i] - i]]
-        int size = 1;
-        unordered_map<int, int> mp;
-        mp[-INF_LL] = size++;
-        for (auto &x : b)
+        while (q.size())
         {
-            if (!mp.count(x))
-                mp[x] = size++;
+            auto out = q.front();
+            q.pop();
+            for (int i = 0; i < 4; ++i)
+            {
+                int newx = out.first + dx[i];
+                int newy = out.second + dy[i];
+                if (newx < 0 || newx >= n || newy < 0 || newy >= m || grid[newx][newy] <= 0 || grid[newx][newy] != INF)
+                    continue;
+                grid[newx][newy] = min(grid[newx][newy], grid[out.first][out.second] + 1);
+                q.push({newx, newy});
+            }
         }
-        SegTree segTree(size);
-        segTree.build(1, 1, size);
-        long long ans = -INF_LL;
-        for (int i = 0; i < n; ++i)
+        int l = 0, r = m * n, ans = -1;
+        while (l <= r)
         {
-            int x = mp[nums[i]];
-            long long pre = segTree.query(1, 1, x);
-            ans = max(ans, pre + nums[i] + i);
-            segTree.update(1, x, pre + nums[i] + i);
+            int mid = (l + r) >> 1;
+            if (check(mid, grid))
+            {
+                ans = mid;
+                l = mid + 1;
+            }
+            else
+                r = mid - 1;
         }
-        return ans;
+        return ans == m * n ? 1e9 : ans;
     }
 };
 
@@ -219,7 +215,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {3, 3, 5, 6};
-    cout << solution.maxBalancedSubsequenceSum(a) << endl;
+    vector<vector<int>> a = {{0, 2, 0, 0, 0, 0, 0}, {0, 0, 0, 2, 2, 1, 0}, {0, 2, 0, 0, 1, 2, 0}, {0, 0, 2, 2, 2, 0, 2}, {0, 0, 0, 0, 0, 0, 0}};
+    cout << solution.maximumMinutes(a) << endl;
     return 0;
 }

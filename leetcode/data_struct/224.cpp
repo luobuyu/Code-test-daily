@@ -121,47 +121,108 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    vector<vector<int>> g;
-    vector<vector<int>> dp; // dp[u][j] 表示子树 u，上面有j个除2，最大分数
-    int dfs(int u, int fa, int cnt, vector<int> &coins, int k)
+    stack<char> op;
+    stack<int> nums;
+    int level(char ch)
     {
-        if (cnt >= 14)
+        switch (ch)
+        {
+        case '#':
             return 0;
-        if (dp[u][cnt] != -1)
-            return dp[u][cnt];
-        int tmp1 = floor(coins[u] >> cnt) - k;
-        int tmp2 = floor(coins[u] >> (cnt + 1));
-        for (int i = 0; i < g[u].size(); ++i)
-        {
-            int v = g[u][i];
-            if (v == fa)
-                continue;
-            tmp1 += dfs(v, u, cnt, coins, k);
-            tmp2 += dfs(v, u, cnt + 1, coins, k);
+        case '+':
+        case '-':
+            return 1;
+        case '*':
+        case '/':
+            return 2;
         }
-        dp[u][cnt] = max(tmp1, tmp2);
-        return dp[u][cnt];
+        return -1;
     }
-    int maximumPoints(vector<vector<int>> &edges, vector<int> &coins, int k)
+    int cal(int a, int b, char op)
     {
-        int n = coins.size();
-        g.resize(n);
-        dp.resize(n, vector<int>(14, -1));
-        for (auto &edge : edges)
+        switch (op)
         {
-            int u = edge[0];
-            int v = edge[1];
-            g[u].emplace_back(v);
-            g[v].emplace_back(u);
+        case '+':
+            return a + b;
+        case '-':
+            return a - b;
+        case '*':
+            return a * b;
+        case '/':
+            return a / b;
         }
-        return dfs(0, -1, 0, coins, k);
+        return -1;
+    }
+    int calculate(string s)
+    {
+        // 去除所有空格
+        string ss;
+        for (auto &x : s)
+        {
+            if (x != ' ')
+                ss += x;
+        }
+        s = ss;
+        s += '#';
+        int tmp = 0;
+        if (s[0] == '-')
+            s = '0' + s;
+        for (int i = 0; i < s.length(); ++i)
+        {
+            if (s[i] == '-' && s[i - 1] == '(')
+            {
+                nums.push(0);
+                op.push('-');
+                continue;
+            }
+            if (isdigit(s[i]))
+            {
+                tmp = tmp * 10 + (s[i] - '0');
+                if (!isdigit(s[i + 1]))
+                {
+                    nums.push(tmp);
+                    tmp = 0;
+                }
+            }
+            else if (s[i] == ')')
+            {
+                while (op.top() != '(')
+                {
+                    int b = nums.top();
+                    nums.pop();
+                    int a = nums.top();
+                    nums.pop();
+                    char type = op.top();
+                    op.pop();
+                    nums.push(cal(a, b, type));
+                }
+                op.pop();
+            }
+            else
+            {
+                if (s[i] == '(')
+                {
+                    op.push(s[i]);
+                    continue;
+                }
+                while (op.size() && op.top() != '(' && level(op.top()) >= level(s[i]))
+                {
+                    int b = nums.top();
+                    nums.pop();
+                    int a = nums.top();
+                    nums.pop();
+                    char type = op.top();
+                    op.pop();
+                    nums.push(cal(a, b, type));
+                }
+                op.push(s[i]);
+            }
+        }
+        return nums.top();
     }
 };
 
-int t,
-    n,
-    m,
-    k;
+int t, n, m, k;
 int main()
 {
 // #define COMP_DATA
@@ -171,8 +232,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<vector<int>> a = {{0, 1}, {1, 2}, {2, 3}};
-    vector<int> b = {10, 10, 3, 3};
-    cout << solution.maximumPoints(a, b, 5) << endl;
+    cout << solution.calculate("- (3 - (- (4 + 5) ) )") << endl;
     return 0;
 }

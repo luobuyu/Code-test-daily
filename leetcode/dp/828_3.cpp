@@ -1,6 +1,7 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
 #define lll long long
 #define PII pair<int, int>
 namespace FAST_IO
@@ -106,60 +107,6 @@ using namespace FAST_IO;
 //     exit(0);
 //     return 0;
 // }();
-const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-struct SegTree
-{
-    struct TreeNode
-    {
-        long long val;
-        long long tag;
-        int l, r;
-    };
-    vector<TreeNode> tree;
-    SegTree(int n) : tree(n << 2) {}
-    void build(int cur, int l, int r)
-    {
-        tree[cur].l = l, tree[cur].r = r;
-        tree[cur].tag = 0;
-        if (l == r)
-        {
-            tree[cur].val = 0;
-            return;
-        }
-        int mid = (l + r) >> 1;
-        build(cur << 1, l, mid);
-        build(cur << 1 | 1, mid + 1, r);
-        tree[cur].val = max(tree[cur << 1].val, tree[cur << 1 | 1].val);
-    }
-    // 单点更新
-    void update(int cur, int pos, long long k) // 修改pos 为 k
-    {
-        if (tree[cur].l == pos && tree[cur].r == pos)
-        {
-            tree[cur].val = max(k, tree[cur].val);
-            return;
-        }
-        int mid = (tree[cur].l + tree[cur].r) >> 1;
-        if (pos <= mid)
-            update(cur << 1, pos, k);
-        if (pos >= mid + 1)
-            update(cur << 1 | 1, pos, k);
-        tree[cur].val = max(tree[cur << 1].val, tree[cur << 1 | 1].val);
-    }
-
-    long long query(int cur, int l, int r)
-    {
-        if (l <= tree[cur].l && tree[cur].r <= r)
-            return tree[cur].val;
-        int mid = (tree[cur].l + tree[cur].r) >> 1;
-        long long maxx = 0;
-        if (l <= mid)
-            maxx = max(maxx, query(cur << 1, l, r));
-        if (mid + 1 <= r)
-            maxx = max(maxx, query(cur << 1 | 1, l, r));
-        return maxx;
-    }
-};
 
 auto optimize_cpp_stdio = []()
 {
@@ -168,44 +115,129 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
+struct SegTree
+{
+    struct TreeNode
+    {
+        int l, r;
+        int sum;
+        int lazy;
+    };
+    vector<TreeNode> tree;
+    SegTree(int n) : tree(n << 2) {}
+    void build(int cur, int l, int r)
+    {
+        tree[cur].l = l, tree[cur].r = r;
+        tree[cur].sum = tree[cur].lazy = 0;
+        if (l == r)
+            return;
+        int mid = (l + r) >> 1;
+        build(cur << 1, l, mid);
+        build(cur << 1 | 1, mid + 1, r);
+    }
+    void update(int cur, int l, int r, int k)
+    {
+        if (l <= tree[cur].l && tree[cur].r <= r)
+        {
+            tree[cur].lazy += k;
+            tree[cur].sum += k * (tree[cur].r - tree[cur].l + 1);
+            return;
+        }
+        if (tree[cur].lazy)
+            pushdown(cur);
+        int mid = (tree[cur].l + tree[cur].r) >> 1;
+        if (l <= mid)
+            update(cur << 1, l, r, k);
+        if (mid + 1 <= r)
+            update(cur << 1 | 1, l, r, k);
+        tree[cur].sum = tree[cur << 1].sum + tree[cur << 1 | 1].sum;
+    }
+
+    void pushdown(int cur)
+    {
+        tree[cur << 1].lazy += tree[cur].lazy;
+        tree[cur << 1].sum += (tree[cur << 1].r - tree[cur << 1].l + 1) * tree[cur].lazy;
+        tree[cur << 1 | 1].lazy += tree[cur].lazy;
+        tree[cur << 1 | 1].sum += (tree[cur << 1 | 1].r - tree[cur << 1 | 1].l + 1) * tree[cur].lazy;
+        tree[cur].lazy = 0;
+    }
+
+    int query(int cur, int l, int r)
+    {
+        if (l <= tree[cur].l && tree[cur].r <= r)
+            return tree[cur].sum;
+        if (tree[cur].lazy)
+            pushdown(cur);
+        int mid = (tree[cur].l + tree[cur].r) >> 1;
+        int sum = 0;
+        if (l <= mid)
+            sum += query(cur << 1, l, r);
+        if (mid + 1 <= r)
+            sum += query(cur << 1 | 1, l, r);
+        return sum;
+    }
+};
 class Solution
 {
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    // 线段树维护 [-INF, nums[i] - i] 区间内最大值。
-    long long maxBalancedSubsequenceSum(vector<int> &nums)
+    int uniqueLetterString(string s)
     {
-        // 首先离散化。
-        int n = nums.size();
+        int n = s.length();
+        unordered_map<char, int> pre1, pre2;
+        // dp[i] = [0, i] 价值
+        // dp[i] = dp[i - 1] + sum(0, pre) +
+        // AB 1 + 1 + 2 = 4
+        // AB C = 4 + 3(ABC) + 2(BC) + 1(C) = 10
+
+        // AB 4
+        // AB A = 4 + 1(ABA) + 2(BA) + 1(A) = 8
+        // AB
+        // 1 + 2 + 1 = 4
+        // A B A
+        // 1 + (1+1 1)
+        // A B A
+        // 4 + (1+1 1+1 1)
+        // ABCAA
+
+        // 下标从 1 开始
+        // L
+        // 1
+        // L E
+        // 1 +( 2 1 ) = 4
+        // L E E
+        // 4 + (2-1 1-1 + 1)
+        // 4 + (1 0 1) = 6
+        // L E E E
+        // 6 + (1 0 1-1 1)
+
+        long long cur = 0;
+        long long sum = 0;
         for (int i = 0; i < n; ++i)
         {
-            nums[i] -= i;
+            if (pre1.count(s[i]))
+            {
+                cur += i + 1 - (pre1[s[i]] + 1 + 1);
+                if (pre2.count(s[i]))
+                    cur -= pre1[s[i]] + 1 - (pre2[s[i]] + 1 + 1);
+                else
+                    cur -= pre1[s[i]] + 1;
+            }
+            else
+                cur += i + 1;
+            sum += cur;
+            cout << sum << endl;
+            if (!pre1.count(s[i]))
+                pre1[s[i]] = i;
+            else
+            {
+                pre2[s[i]] = pre1[s[i]];
+                pre1[s[i]] = i;
+            }
         }
-        auto b = nums;
-        sort(b.begin(), b.end());
-        // [-INF_LL, nums[i] - i] => [1, mp[nums[i] - i]]
-        int size = 1;
-        unordered_map<int, int> mp;
-        mp[-INF_LL] = size++;
-        for (auto &x : b)
-        {
-            if (!mp.count(x))
-                mp[x] = size++;
-        }
-        SegTree segTree(size);
-        segTree.build(1, 1, size);
-        long long ans = -INF_LL;
-        for (int i = 0; i < n; ++i)
-        {
-            int x = mp[nums[i]];
-            long long pre = segTree.query(1, 1, x);
-            ans = max(ans, pre + nums[i] + i);
-            segTree.update(1, x, pre + nums[i] + i);
-        }
-        return ans;
+        return sum;
     }
 };
 
@@ -219,7 +251,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {3, 3, 5, 6};
-    cout << solution.maxBalancedSubsequenceSum(a) << endl;
+
     return 0;
 }

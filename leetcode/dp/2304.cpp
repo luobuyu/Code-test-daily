@@ -121,47 +121,33 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    vector<vector<int>> g;
-    vector<vector<int>> dp; // dp[u][j] 表示子树 u，上面有j个除2，最大分数
-    int dfs(int u, int fa, int cnt, vector<int> &coins, int k)
+    int minPathCost(vector<vector<int>> &grid, vector<vector<int>> &moveCost)
     {
-        if (cnt >= 14)
-            return 0;
-        if (dp[u][cnt] != -1)
-            return dp[u][cnt];
-        int tmp1 = floor(coins[u] >> cnt) - k;
-        int tmp2 = floor(coins[u] >> (cnt + 1));
-        for (int i = 0; i < g[u].size(); ++i)
+        int n = grid.size(), m = grid[0].size();
+        vector<vector<int>> dp(n + 1, vector<int>(m + 1, INF));
+        // dp[i][j] = min(dp[i-1][k])
+        for (int j = 1; j <= m; ++j)
+            dp[1][j] = grid[1 - 1][j - 1];
+        for (int i = 2; i <= n; ++i)
         {
-            int v = g[u][i];
-            if (v == fa)
-                continue;
-            tmp1 += dfs(v, u, cnt, coins, k);
-            tmp2 += dfs(v, u, cnt + 1, coins, k);
+            for (int j = 1; j <= m; ++j)
+            {
+                for (int k = 1; k <= m; ++k)
+                {
+                    dp[i][j] = min(dp[i - 1][k] + moveCost[grid[i - 1 - 1][k - 1]][j - 1], dp[i][j]) + grid[i - 1][j - 1];
+                }
+            }
         }
-        dp[u][cnt] = max(tmp1, tmp2);
-        return dp[u][cnt];
-    }
-    int maximumPoints(vector<vector<int>> &edges, vector<int> &coins, int k)
-    {
-        int n = coins.size();
-        g.resize(n);
-        dp.resize(n, vector<int>(14, -1));
-        for (auto &edge : edges)
+        int ans = INF;
+        for (int j = 1; j <= m; ++j)
         {
-            int u = edge[0];
-            int v = edge[1];
-            g[u].emplace_back(v);
-            g[v].emplace_back(u);
+            ans = min(ans, dp[n][j]);
         }
-        return dfs(0, -1, 0, coins, k);
+        return ans;
     }
 };
 
-int t,
-    n,
-    m,
-    k;
+int t, n, m, k;
 int main()
 {
 // #define COMP_DATA
@@ -171,8 +157,8 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<vector<int>> a = {{0, 1}, {1, 2}, {2, 3}};
-    vector<int> b = {10, 10, 3, 3};
-    cout << solution.maximumPoints(a, b, 5) << endl;
+    vector<vector<int>> a = {{5, 3}, {4, 0}, {2, 1}};
+    vector<vector<int>> b = {{9, 8}, {1, 5}, {10, 12}, {18, 6}, {2, 4}, {14, 3}};
+    cout << solution.minPathCost(a, b) << endl;
     return 0;
 }

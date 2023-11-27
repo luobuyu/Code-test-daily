@@ -269,6 +269,8 @@ struct Polygon
             l.emplace_back(Line(p[i], p[(i + 1) % n]));
     }
 
+    // 判断的是有向边穿过射线的方向。
+    // 假设顺时针
     bool relationPoint(Point q)
     {
         int counter = 0;
@@ -278,11 +280,89 @@ struct Polygon
             if (l[i].pointOnSeg(q))
                 return true;
             int x = sgn((q - a) ^ (b - a)), y = sgn(a.y - q.y), z = sgn(b.y - q.y);
+            // 向上，q在ab右侧，顺时针则是向左的射线，逆时针则是向右的射线。
             if (x > 0 && y <= 0 && z > 0)
                 ++counter;
+            // 向下，q在ab左侧，顺时针是向左的射线，逆时针是向右的射线。
             if (x < 0 && z <= 0 && y > 0)
                 --counter;
         }
         return counter != 0;
     }
+
+    // 判断两个轮廓的包含关系，如果不存在交点，
+    // 那么就需要判断某个点是否在另一个多边形内部
+    // 射线法判断点是否在多边形内部
+    bool isInside(Point q)
+    {
+        bool isInside = false;
+        for (int i = 0, j = n - 1; i < n; j = i, ++i)
+        {
+            Point s = p[i];
+            Point e = p[j];
+            if (s > e)
+                swap(s, e);
+            if (e < q)
+                continue; // 因为是向右的射线，在左侧的肯定不用考虑了
+            // 需要特判与顶点重合的
+            if (q == s || q == e)
+                return true;
+            // 需要特判一下，p在水平的边内部
+            if (sgn(s.y - e.y) == 0 && s < q && q < e)
+                return true;
+            // p 在 s.y e.y 的范围内
+            // 不确定加不加 sgn
+            if (sgn(s.y - q.y) <= 0 && sgn(e.y - q.y) > 0 || sgn(e.y - q.y) <= 0 && sgn(s.y - q.y) > 0)
+            // if ((s.y <= p.y && e.y > p.y) || (e.y <= p.y && s.y > p.y))
+            {
+                // 只有在这个范围里面才有可能会相交
+                double interX = s.x + 1.0 * (q.y - s.y) / (e.y - s.y) * (e.x - s.x);
+                if (sgn(q.x - interX) == 0)
+                    return true; // 点在边上
+                isInside ^= (interX > q.x);
+            }
+        }
+        return isInside;
+    }
+    // 标准射线法
+    // 判断两个轮廓的包含关系，如果不存在交点，
+    // 那么就需要判断某个点是否在另一个多边形内部
+    // 射线法判断点是否在多边形内部
+    bool isInside(Point q)
+    {
+        bool isInside = false;
+        for (int i = 0, j = n - 1; i < n; j = i, ++i)
+        {
+            Point s = p[i];
+            Point e = p[j];
+            if (s > e)
+                swap(s, e);
+            if (e < q)
+                continue; // 因为是向右的射线，在左侧的肯定不用考虑了
+            // 特判在线段上的
+            if (Line(s, e).pointOnSeg(q))
+                return true;
+            // p 在 s.y e.y 的范围内
+            // 不确定加不加 sgn
+            if (sgn(s.y - q.y) <= 0 && sgn(e.y - q.y) > 0 || sgn(e.y - q.y) <= 0 && sgn(s.y - q.y) > 0)
+            {
+                // 只有在这个范围里面才有可能会相交
+                double interX = s.x + 1.0 * (q.y - s.y) / (e.y - s.y) * (e.x - s.x);
+                // if (sgn(q.x - interX) == 0)
+                //     return true; // 点在边上
+                isInside ^= (interX > q.x);
+            }
+        }
+        return false;
+    }
 };
+
+int main()
+{
+    vector<Point> p = {Point(1, 3), Point(2, 6), Point(4, 4), Point(6, 6), Point(7, 3), Point(4, 1)};
+    // reverse(p.begin(), p.end());
+    Polygon poly(p);
+    Point a(3, 6);
+    cout << poly.relationPoint(a) << endl;
+    return 0;
+}

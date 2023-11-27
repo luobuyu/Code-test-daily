@@ -121,47 +121,76 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    vector<vector<int>> g;
-    vector<vector<int>> dp; // dp[u][j] 表示子树 u，上面有j个除2，最大分数
-    int dfs(int u, int fa, int cnt, vector<int> &coins, int k)
+
+    int calculate(string s)
     {
-        if (cnt >= 14)
-            return 0;
-        if (dp[u][cnt] != -1)
-            return dp[u][cnt];
-        int tmp1 = floor(coins[u] >> cnt) - k;
-        int tmp2 = floor(coins[u] >> (cnt + 1));
-        for (int i = 0; i < g[u].size(); ++i)
+        // 去除所有空格
+        stack<int> nums;
+        string ss;
+        for (auto &x : s)
+            if (x != ' ')
+                ss += x;
+        s = ss;
+        int n = s.length();
+        int i = 0;
+        int num = 0;
+        char sign = '+';
+        while (i < n)
         {
-            int v = g[u][i];
-            if (v == fa)
-                continue;
-            tmp1 += dfs(v, u, cnt, coins, k);
-            tmp2 += dfs(v, u, cnt + 1, coins, k);
+            if (s[i] == '(')
+            {
+                int left = 1;
+                int j = i + 1;
+                for (; j < n; ++j)
+                {
+                    if (s[j] == ')')
+                        --left;
+                    if (s[j] == '(')
+                        ++left;
+                    if (left == 0)
+                        break;
+                }
+                num = calculate(s.substr(i + 1, j - i - 1));
+                i = j;
+            }
+            if (isdigit(s[i]))
+            {
+                num = num * 10 + (s[i] - '0');
+            }
+            if (!isdigit(s[i]) || i == n - 1)
+            {
+                if (sign == '+')
+                    nums.push(num);
+                else if (sign == '-')
+                    nums.push(-num);
+                else if (sign == '*')
+                {
+                    int a = nums.top();
+                    nums.pop();
+                    nums.push(a * num);
+                }
+                else if (sign == '/')
+                {
+                    int a = nums.top();
+                    nums.pop();
+                    nums.push(a / num);
+                }
+                num = 0;
+                sign = s[i];
+            }
+            ++i;
         }
-        dp[u][cnt] = max(tmp1, tmp2);
-        return dp[u][cnt];
-    }
-    int maximumPoints(vector<vector<int>> &edges, vector<int> &coins, int k)
-    {
-        int n = coins.size();
-        g.resize(n);
-        dp.resize(n, vector<int>(14, -1));
-        for (auto &edge : edges)
+        int ans = 0;
+        while (nums.size())
         {
-            int u = edge[0];
-            int v = edge[1];
-            g[u].emplace_back(v);
-            g[v].emplace_back(u);
+            ans += nums.top();
+            nums.pop();
         }
-        return dfs(0, -1, 0, coins, k);
+        return ans;
     }
 };
 
-int t,
-    n,
-    m,
-    k;
+int t, n, m, k;
 int main()
 {
 // #define COMP_DATA
@@ -171,8 +200,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<vector<int>> a = {{0, 1}, {1, 2}, {2, 3}};
-    vector<int> b = {10, 10, 3, 3};
-    cout << solution.maximumPoints(a, b, 5) << endl;
+    cout << solution.calculate("(1+(4+5+2)-3)+(6+8)") << endl;
     return 0;
 }

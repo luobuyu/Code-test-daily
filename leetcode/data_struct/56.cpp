@@ -121,47 +121,36 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    vector<vector<int>> g;
-    vector<vector<int>> dp; // dp[u][j] 表示子树 u，上面有j个除2，最大分数
-    int dfs(int u, int fa, int cnt, vector<int> &coins, int k)
+    vector<vector<int>> merge(vector<vector<int>> &intervals)
     {
-        if (cnt >= 14)
-            return 0;
-        if (dp[u][cnt] != -1)
-            return dp[u][cnt];
-        int tmp1 = floor(coins[u] >> cnt) - k;
-        int tmp2 = floor(coins[u] >> (cnt + 1));
-        for (int i = 0; i < g[u].size(); ++i)
+        if (intervals.size() == 0)
+            return {};
+        sort(intervals.begin(), intervals.end(), [&](const vector<int> &a, const vector<int> &b)
+             { return a[0] == b[0] ? a[1] > b[1] : a[0] < b[0]; });
+        int i = 0;
+        vector<vector<int>> ans;
+        int n = intervals.size();
+        int maxx = intervals[0][1];
+        ans.emplace_back(intervals[0]);
+        i = 1;
+        while (i < n)
         {
-            int v = g[u][i];
-            if (v == fa)
-                continue;
-            tmp1 += dfs(v, u, cnt, coins, k);
-            tmp2 += dfs(v, u, cnt + 1, coins, k);
+            int &last = ans.back()[1];
+            if (intervals[i][0] <= last)
+            {
+                last = max(intervals[i][1], last);
+            }
+            else
+            {
+                ans.emplace_back(intervals[i]);
+            }
+            ++i;
         }
-        dp[u][cnt] = max(tmp1, tmp2);
-        return dp[u][cnt];
-    }
-    int maximumPoints(vector<vector<int>> &edges, vector<int> &coins, int k)
-    {
-        int n = coins.size();
-        g.resize(n);
-        dp.resize(n, vector<int>(14, -1));
-        for (auto &edge : edges)
-        {
-            int u = edge[0];
-            int v = edge[1];
-            g[u].emplace_back(v);
-            g[v].emplace_back(u);
-        }
-        return dfs(0, -1, 0, coins, k);
+        return ans;
     }
 };
 
-int t,
-    n,
-    m,
-    k;
+int t, n, m, k;
 int main()
 {
 // #define COMP_DATA
@@ -171,8 +160,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<vector<int>> a = {{0, 1}, {1, 2}, {2, 3}};
-    vector<int> b = {10, 10, 3, 3};
-    cout << solution.maximumPoints(a, b, 5) << endl;
+    vector<vector<int>> a = {{1, 4}, {4, 5}};
+    solution.merge(a);
     return 0;
 }

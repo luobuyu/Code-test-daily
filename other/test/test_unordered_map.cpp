@@ -1,6 +1,5 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
-#include "head.h"
 #define ll long long
 #define lll long long
 #define PII pair<int, int>
@@ -54,37 +53,18 @@ const ll mod = 1e9 + 7;
 const int INF = 0x3f3f3f3f;
 const ll INF_LL = 0x3f3f3f3f3f3f3f3f;
 const double eps = 1e-5;
+const int maxn = 1e3 + 10;
+const int maxm = 1e5 + 10;
 int t, n, m, k;
-class Solution
-{
-public:
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    static void optimize_cpp_stdio() { ios::sync_with_stdio(false), cin.tie(0); }
-    // 维护单调递减栈
-    stack<int> st;
-    int trap(vector<int> &height)
-    {
-        optimize_cpp_stdio();
-        int n = height.size();
-        int ans = 0;
-        for (int i = 0; i < n; ++i)
-        {
-            int pre = 0;
-            while (st.size() && height[st.top()] <= height[i])
-            {
-                ans += (height[st.top()] - pre) * (i - st.top() - 1);
-                pre = height[st.top()];
-                st.pop();
-            }
-            if (st.size())
-                ans += (height[i] - pre) * (i - st.top() - 1);
-            st.push(i);
-            // cout << i << ", " << ans << endl;
-        }
 
-        return ans;
+struct pair_hash
+{
+    template <class T1, class T2>
+    std::size_t operator()(const std::pair<T1, T2> &p) const
+    {
+        auto h1 = std::hash<T1>{}(p.first);
+        auto h2 = std::hash<T2>{}(p.second);
+        return h1 ^ h2;
     }
 };
 
@@ -96,8 +76,12 @@ int main()
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
-    Solution solution;
-    vector<int> a = {4, 2, 0, 3, 2, 5};
-    cout << solution.trap(a) << endl;
+    unordered_map<pair<int, int>, int, pair_hash> mp;
+    mp[{0, 1}] = 1;
+    mp[{1, 0}] = 100;
+    mp[{0, 0}] = 1000;
+    cout << mp[{1, 0}] << endl;
+    cout << mp[{0, 1}] << endl;
+    cout << mp[{0, 0}] << endl;
     return 0;
 }

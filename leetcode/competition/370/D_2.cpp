@@ -1,7 +1,6 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
-#define ll long long
 #define lll long long
 #define PII pair<int, int>
 namespace FAST_IO
@@ -107,6 +106,51 @@ using namespace FAST_IO;
 //     exit(0);
 //     return 0;
 // }();
+const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
+struct BIT
+{
+    vector<long long> tree;
+    int n;
+    BIT(int _n) : tree(_n + 1), n(_n) {}
+    int lowbit(int x)
+    {
+        return x & -x;
+    }
+    void build(int cur, int l, int r)
+    {
+        for (int i = 1; i <= n; ++i)
+        {
+            tree[i] = 0;
+            int j = i + lowbit(i);
+            if (j <= n)
+                tree[j] = max(tree[j], tree[i]);
+        }
+    }
+    // 单点更新
+    void update(int pos, long long k) // 修改pos 为 k
+    {
+        if (k < tree[pos])
+            return;
+        tree[pos] = k;
+        pos += lowbit(pos);
+        while (pos <= n)
+        {
+            tree[pos] = max(tree[pos], k);
+            pos += lowbit(pos);
+        }
+    }
+
+    long long query(int r)
+    {
+        long long maxx = 0;
+        while (r >= 1)
+        {
+            maxx = max(maxx, tree[r]);
+            r -= lowbit(r);
+        }
+        return maxx;
+    }
+};
 
 auto optimize_cpp_stdio = []()
 {
@@ -118,48 +162,41 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    long long maximumScoreAfterOperations(vector<vector<int>> &edges, vector<int> &values)
+    const static int maxn = 1e5 + 10;
+    const static int maxm = 1e5 + 10;
+    const int INF = 0x3f3f3f3f;
+    const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
+    // 线段树维护 [-INF, nums[i] - i] 区间内最大值。
+    long long maxBalancedSubsequenceSum(vector<int> &nums)
     {
-        int n = edges.size() + 1;
-        vector<vector<int>> g(n);
-        for (auto &edge : edges)
+        // 首先离散化。
+        int n = nums.size();
+        for (int i = 0; i < n; ++i)
         {
-            int x = edge[0], y = edge[1];
-            g[x].push_back(y);
-            g[y].push_back(x);
+            nums[i] -= i;
         }
-
-        function<long long(int, int, int, long long)> dfs = [&](int x, int fa, int select, long long preSum) -> long long
+        auto b = nums;
+        sort(b.begin(), b.end());
+        // [-INF_LL, nums[i] - i] => [1, mp[nums[i] - i]]
+        int size = 1;
+        unordered_map<int, int> mp;
+        mp[-INF_LL] = size++;
+        for (auto &x : b)
         {
-            long long res = 0;
-            if (x != 0 && g[x].size() == 1)
-            {
-                if (select && preSum == 0)
-                    return LONG_LONG_MIN;
-                else if (!select)
-                    return 0;
-                return values[x];
-            }
-            for (auto y : g[x])
-            {
-                if (y == fa)
-                    continue;
-                if (select == 0)
-                    res += dfs(y, x, 1, preSum + values[x]);
-                else
-                {
-                    if (preSum > 0)
-                        res += dfs(y, x, 1, preSum);
-                    else
-                        res += max(dfs(y, x, 1, preSum), dfs(y, x, 0, preSum));
-                }
-            }
-            if (select)
-                res += values[x];
-            return res;
-        };
-
-        return max(dfs(0, -1, 1, 0), dfs(0, -1, 0, 0));
+            if (!mp.count(x))
+                mp[x] = size++;
+        }
+        BIT bit(size);
+        bit.build(1, 1, size);
+        long long ans = -INF_LL;
+        for (int i = 0; i < n; ++i)
+        {
+            int x = mp[nums[i]];
+            long long pre = bit.query(x);
+            ans = max(ans, pre + nums[i] + i);
+            bit.update(x, pre + nums[i] + i);
+        }
+        return ans;
     }
 };
 
@@ -173,6 +210,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<int> a = {3, 3, 5, 6};
+    cout << solution.maxBalancedSubsequenceSum(a) << endl;
     return 0;
 }

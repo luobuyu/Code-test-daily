@@ -121,47 +121,82 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    vector<vector<int>> g;
-    vector<vector<int>> dp; // dp[u][j] 表示子树 u，上面有j个除2，最大分数
-    int dfs(int u, int fa, int cnt, vector<int> &coins, int k)
+    int maximumXorProduct(long long a, long long b, int n)
     {
-        if (cnt >= 14)
-            return 0;
-        if (dp[u][cnt] != -1)
-            return dp[u][cnt];
-        int tmp1 = floor(coins[u] >> cnt) - k;
-        int tmp2 = floor(coins[u] >> (cnt + 1));
-        for (int i = 0; i < g[u].size(); ++i)
+        long long mod = 1e9 + 7;
+        long long x = 0;
+        if (n == 0)
+            return (a % mod) * (b % mod) % mod;
+        if (a > b)
+            swap(a, b);
+        long long p = 0, q = 0;
+        // a < b;
+        int index = 0;
+        for (int i = 50; i >= 0; --i)
         {
-            int v = g[u][i];
-            if (v == fa)
-                continue;
-            tmp1 += dfs(v, u, cnt, coins, k);
-            tmp2 += dfs(v, u, cnt + 1, coins, k);
+            if (b >> i & 1 == 1)
+            {
+                index = i;
+                break;
+            }
         }
-        dp[u][cnt] = max(tmp1, tmp2);
-        return dp[u][cnt];
-    }
-    int maximumPoints(vector<vector<int>> &edges, vector<int> &coins, int k)
-    {
-        int n = coins.size();
-        g.resize(n);
-        dp.resize(n, vector<int>(14, -1));
-        for (auto &edge : edges)
+        bool flag = true; // 前面全相等
+        for (int i = index; i >= n; --i)
         {
-            int u = edge[0];
-            int v = edge[1];
-            g[u].emplace_back(v);
-            g[v].emplace_back(u);
+            if ((a >> i & 1) != (b >> i & 1))
+                flag = false;
+            if (a >> i & 1 == 1)
+                p |= (1ll << i);
+            if (b >> i & 1 == 1)
+                q |= (1ll << i);
         }
-        return dfs(0, -1, 0, coins, k);
+        if (flag)
+        {
+            bool ff = false;
+            for (int i = n - 1; i >= 0; --i)
+            {
+                if ((a >> i & 1) == (b >> i & 1))
+                {
+                    p |= (1ll << i);
+                    q |= (1ll << i);
+                }
+                else
+                {
+                    if (!ff)
+                    {
+                        p |= (1ll << i);
+                        ff = true;
+                    }
+                    else
+                    {
+                        q |= (1ll << i);
+                    }
+                }
+            }
+        }
+        else
+        {
+            // a < b
+            for (int i = n - 1; i >= 0; --i)
+            {
+                if ((a >> i & 1) != (b >> i & 1))
+                {
+                    p |= (1ll << i);
+                }
+                else
+                {
+                    p |= (1ll << i);
+                    q |= (1ll << i);
+                }
+            }
+        }
+        p %= mod;
+        q %= mod;
+        return p * q % mod;
     }
 };
 
-int t,
-    n,
-    m,
-    k;
+int t, n, m, k;
 int main()
 {
 // #define COMP_DATA
@@ -171,8 +206,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<vector<int>> a = {{0, 1}, {1, 2}, {2, 3}};
-    vector<int> b = {10, 10, 3, 3};
-    cout << solution.maximumPoints(a, b, 5) << endl;
+    solution.maximumXorProduct(8, 9, 1);
     return 0;
 }

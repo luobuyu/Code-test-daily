@@ -121,47 +121,31 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    vector<vector<int>> g;
-    vector<vector<int>> dp; // dp[u][j] 表示子树 u，上面有j个除2，最大分数
-    int dfs(int u, int fa, int cnt, vector<int> &coins, int k)
+    int uniqueLetterString(string s)
     {
-        if (cnt >= 14)
-            return 0;
-        if (dp[u][cnt] != -1)
-            return dp[u][cnt];
-        int tmp1 = floor(coins[u] >> cnt) - k;
-        int tmp2 = floor(coins[u] >> (cnt + 1));
-        for (int i = 0; i < g[u].size(); ++i)
+        int n = s.length();
+        vector<int> left(n), right(n);
+        vector<int> left_ch(26, -1), right_ch(26, n);
+        for (int i = 0; i < n; ++i)
         {
-            int v = g[u][i];
-            if (v == fa)
-                continue;
-            tmp1 += dfs(v, u, cnt, coins, k);
-            tmp2 += dfs(v, u, cnt + 1, coins, k);
+            left[i] = left_ch[s[i] - 'A'];
+            left_ch[s[i] - 'A'] = i;
         }
-        dp[u][cnt] = max(tmp1, tmp2);
-        return dp[u][cnt];
-    }
-    int maximumPoints(vector<vector<int>> &edges, vector<int> &coins, int k)
-    {
-        int n = coins.size();
-        g.resize(n);
-        dp.resize(n, vector<int>(14, -1));
-        for (auto &edge : edges)
+        for (int i = n - 1; i >= 0; --i)
         {
-            int u = edge[0];
-            int v = edge[1];
-            g[u].emplace_back(v);
-            g[v].emplace_back(u);
+            right[i] = right_ch[s[i] - 'A'];
+            right_ch[s[i] - 'A'] = i;
         }
-        return dfs(0, -1, 0, coins, k);
+        int ans = 0;
+        for (int i = 0; i < n; ++i)
+        {
+            ans += (i - left[i]) * (right[i] - i);
+        }
+        return ans;
     }
 };
 
-int t,
-    n,
-    m,
-    k;
+int t, n, m, k;
 int main()
 {
 // #define COMP_DATA
@@ -171,8 +155,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<vector<int>> a = {{0, 1}, {1, 2}, {2, 3}};
-    vector<int> b = {10, 10, 3, 3};
-    cout << solution.maximumPoints(a, b, 5) << endl;
+
     return 0;
 }
