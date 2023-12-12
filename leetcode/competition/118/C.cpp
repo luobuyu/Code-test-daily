@@ -121,24 +121,20 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    vector<int> dp;
-    int n;
-    int dfs(int step, int cnt)
-    {
-        if (step >= n)
-            return 0;
-        if (cnt >= step)
-        {
-            // 买， 不买
-            dp[step] = min(dfs(step + step, step + step), dfs(step + 1, step + step))
-        }
-    }
     int minimumCoins(vector<int> &prices)
     {
-        n = prices.size();
-        dp.resize(n, -1);
-        dfs(0, -1);
-        return dp[0];
+        int n = prices.size();
+        vector<int> dp(n + 2, INF);
+        dp[n] = prices[n - 1];
+        dp[n + 1] = 0;
+        for (int i = n - 1; i >= 1; --i)
+        {
+            for (int j = i + 1; j <= min(n + 1, 2 * i + 1); ++j)
+            {
+                dp[i] = min(dp[i], dp[j] + prices[i - 1]);
+            }
+        }
+        return dp[1];
     }
 };
 
@@ -152,6 +148,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<int> a = {3, 1, 2};
+    cout << solution.minimumCoins(a) << endl;
     return 0;
 }

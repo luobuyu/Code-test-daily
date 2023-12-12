@@ -56,18 +56,6 @@ const double eps = 1e-5;
 const int maxn = 1e3 + 10;
 const int maxm = 1e5 + 10;
 int t, n, m, k;
-
-struct pair_hash
-{
-    template <class T1, class T2>
-    std::size_t operator()(const std::pair<T1, T2> &p) const
-    {
-        auto h1 = std::hash<T1>{}(p.first);
-        auto h2 = std::hash<T2>{}(p.second);
-        return h1 ^ h2;
-    }
-};
-
 int main()
 {
 // #define COMP_DATA
@@ -76,14 +64,8 @@ int main()
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
-    unordered_map<pair<int, int>, int, pair_hash> mp;
-    mp[{0, 1}] = 1;
-    mp[{1, 0}] = 100;
-    mp[{0, 0}] = 1000;
-    cout << mp[{1, 0}] << endl;
-    cout << mp[{0, 1}] << endl;
-    cout << mp[{0, 0}] << endl;
-    mp[{2, 2}] ^= 12;
-    cout << mp[{2, 2}] << endl;
+    double tmp = 15.000000999999;
+    int t = ceil(tmp);
+    cout << t << endl;
     return 0;
 }

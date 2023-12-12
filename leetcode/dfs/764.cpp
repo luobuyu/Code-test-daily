@@ -115,68 +115,91 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-struct Node
-{
-    int index, heightx, y;
-};
 class Solution
 {
 public:
-    vector<int> leftmostBuildingQueries(vector<int> &heights, vector<vector<int>> &queries)
+    const static int maxn = 1e5 + 10;
+    const static int maxm = 5e2 + 10;
+    const int INF = 0x3f3f3f3f;
+    int dp[maxn][maxn][4];
+    int orderOfLargestPlusSign(int n, vector<vector<int>> &mines)
     {
-        int n = heights.size();
-        int m = queries.size();
-        vector<vector<Node>> l(n);
-        vector<int> ans(m);
-        for (int i = 0; i < m; ++i)
+        for (int i = 0; i < n; ++i)
         {
-            int x = queries[i][0], y = queries[i][1];
-            if (x > y)
-                swap(x, y);
-            if (x == y)
-                ans[i] = x;
-            else if (heights[x] < heights[y])
-                ans[i] = y;
-            else
+            int cnt = 0;
+            for (int j = 0; j < n; ++j)
             {
-                l[y].push_back({i, heights[x], y});
+                if (mines[i][j] == 0)
+                {
+                    cnt = 0;
+                }
+                else
+                {
+                    ++cnt;
+                    dp[i][j][0] = cnt;
+                }
+            }
+            cnt = 0;
+            for (int j = n - 1; j >= 0; --j)
+            {
+                if (mines[i][j] == 0)
+                {
+                    cnt = 0;
+                }
+                else
+                {
+                    ++cnt;
+                    dp[i][j][1] = cnt;
+                }
             }
         }
-        vector<int> st(n); // 单调减
-        int top = -1;
-        for (int i = n - 1; i >= 0; --i)
+        for (int j = 0; j < n; ++j)
         {
-            while (top >= 0 && heights[st[top]] <= heights[i])
+            int cnt = 0;
+            for (int i = 0; i < n; ++i)
             {
-                --top;
-            }
-            for (auto &item : l[i])
-            {
-                int limit = item.heightx;
-                int left = 0, right = top;
-                int index = -1;
-                while (left <= right)
+                if (mines[i][j] == 0)
                 {
-                    int mid = (left + right) >> 1;
-                    if (heights[st[mid]] > limit)
-                    {
-                        index = st[mid];
-                        left = mid + 1;
-                    }
-                    else
-                    {
-                        right = mid - 1;
-                    }
+                    cnt = 0;
                 }
-                ans[item.index] = index;
+                else
+                {
+                    ++cnt;
+                    dp[i][j][2] = cnt;
+                }
             }
-            st[++top] = i;
+            cnt = 0;
+            for (int i = n - 1; i >= 0; --i)
+            {
+                if (mines[i][j] == 0)
+                {
+                    cnt = 0;
+                }
+                else
+                {
+                    ++cnt;
+                    dp[i][j][3] = cnt;
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i)
+        {
+            for (int j = 0; j < n; ++j)
+            {
+                if (mines[i][j] == 0)
+                    continue;
+                int tmp = INF;
+                for (int k = 0; k < 4; ++k)
+                {
+                    tmp = min(tmp, dp[i][j][k]);
+                }
+                ans = max(ans, tmp);
+            }
         }
         return ans;
     }
 };
-
 int t, n, m, k;
 int main()
 {
@@ -187,8 +210,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {6, 4, 8, 5, 2, 7};
-    vector<vector<int>> b = {{0, 1}, {0, 3}, {2, 4}, {3, 4}, {2, 2}};
-    solution.leftmostBuildingQueries(a, b);
+
     return 0;
 }

@@ -115,65 +115,42 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-struct Node
-{
-    int index, heightx, y;
-};
 class Solution
 {
 public:
-    vector<int> leftmostBuildingQueries(vector<int> &heights, vector<vector<int>> &queries)
+    const int INF = 0x3f3f3f3f;
+    // 找大于等于 target 的
+    int getIndex(vector<int> &days, int start, int target)
     {
-        int n = heights.size();
-        int m = queries.size();
-        vector<vector<Node>> l(n);
-        vector<int> ans(m);
-        for (int i = 0; i < m; ++i)
+        int index = lower_bound(days.begin() + start, days.end(), target) - days.begin();
+        return index;
+    }
+    int getIndex2(vector<int> &days, int end, int target)
+    {
+        int index = lower_bound(days.begin(), days.begin() + end, target) - days.begin();
+        return index;
+    }
+    int mincostTickets(vector<int> &days, vector<int> &costs)
+    {
+        int n = days.size();
+        int m = costs.size();
+        // dp[i] i -> 最后
+        // dp[i] = dp[i + 1] dp[i + 7] dp[i + 30]
+        vector<vector<int>> dp(n + 1, vector<int>(4, INF));
+        dp[0][1] = costs[0];
+        dp[0][2] = costs[1];
+        dp[0][3] = costs[2];
+        for (int i = 1; i < n; ++i)
         {
-            int x = queries[i][0], y = queries[i][1];
-            if (x > y)
-                swap(x, y);
-            if (x == y)
-                ans[i] = x;
-            else if (heights[x] < heights[y])
-                ans[i] = y;
-            else
-            {
-                l[y].push_back({i, heights[x], y});
-            }
+            dp[i][0] = min(dp[i][0], dp[getIndex2(days, i, days[i] - 1)][1]);
+            dp[i][0] = min(dp[i][0], dp[getIndex2(days, i, days[i] - 7)][2]);
+            dp[i][0] = min(dp[i][0], dp[getIndex2(days, i, days[i] - 30)][3]);
+            int tmp = min(dp[i - 1][0], min(dp[i - 1][1], min(dp[i - 1][2], dp[i - 1][3])));
+            dp[i][1] = tmp + costs[0];
+            dp[i][2] = tmp + costs[1];
+            dp[i][3] = tmp + costs[2];
         }
-        vector<int> st(n); // 单调减
-        int top = -1;
-        for (int i = n - 1; i >= 0; --i)
-        {
-            while (top >= 0 && heights[st[top]] <= heights[i])
-            {
-                --top;
-            }
-            for (auto &item : l[i])
-            {
-                int limit = item.heightx;
-                int left = 0, right = top;
-                int index = -1;
-                while (left <= right)
-                {
-                    int mid = (left + right) >> 1;
-                    if (heights[st[mid]] > limit)
-                    {
-                        index = st[mid];
-                        left = mid + 1;
-                    }
-                    else
-                    {
-                        right = mid - 1;
-                    }
-                }
-                ans[item.index] = index;
-            }
-            st[++top] = i;
-        }
-        return ans;
+        return min(dp[n - 1][0], min(dp[n - 1][1], min(dp[n - 1][2], dp[n - 1][3])));
     }
 };
 
@@ -187,8 +164,9 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {6, 4, 8, 5, 2, 7};
-    vector<vector<int>> b = {{0, 1}, {0, 3}, {2, 4}, {3, 4}, {2, 2}};
-    solution.leftmostBuildingQueries(a, b);
+    vector<int> a = {1, 4, 6, 7, 8, 20};
+    vector<int> b = {2, 7, 15};
+    solution.mincostTickets(a, b);
+
     return 0;
 }

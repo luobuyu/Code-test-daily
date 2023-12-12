@@ -115,63 +115,34 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-struct Node
-{
-    int index, heightx, y;
-};
 class Solution
 {
 public:
-    vector<int> leftmostBuildingQueries(vector<int> &heights, vector<vector<int>> &queries)
+    const static int maxn = 1e5 + 10;
+    const static int maxm = 1e5 + 10;
+    const int INF = 0x3f3f3f3f;
+    int qpow(int a, int b, int mod)
     {
-        int n = heights.size();
-        int m = queries.size();
-        vector<vector<Node>> l(n);
-        vector<int> ans(m);
-        for (int i = 0; i < m; ++i)
+        int ans = 1, tmp = a;
+        while (b)
         {
-            int x = queries[i][0], y = queries[i][1];
-            if (x > y)
-                swap(x, y);
-            if (x == y)
-                ans[i] = x;
-            else if (heights[x] < heights[y])
-                ans[i] = y;
-            else
-            {
-                l[y].push_back({i, heights[x], y});
-            }
+            if (b & 1)
+                ans = ans * tmp % mod;
+            tmp = tmp * tmp % mod;
+            b >>= 1;
         }
-        vector<int> st(n); // 单调减
-        int top = -1;
-        for (int i = n - 1; i >= 0; --i)
+        return ans;
+    }
+    vector<int> getGoodIndices(vector<vector<int>> &variables, int target)
+    {
+        vector<int> ans;
+        for (int i = 0; i < n; ++i)
         {
-            while (top >= 0 && heights[st[top]] <= heights[i])
+            int a = variables[i][0], b = variables[i][1], c = variables[i][2], m = variables[i][3];
+            if (target == qpow(qpow(a, b, 10), c, m))
             {
-                --top;
+                ans.emplace_back(i);
             }
-            for (auto &item : l[i])
-            {
-                int limit = item.heightx;
-                int left = 0, right = top;
-                int index = -1;
-                while (left <= right)
-                {
-                    int mid = (left + right) >> 1;
-                    if (heights[st[mid]] > limit)
-                    {
-                        index = st[mid];
-                        left = mid + 1;
-                    }
-                    else
-                    {
-                        right = mid - 1;
-                    }
-                }
-                ans[item.index] = index;
-            }
-            st[++top] = i;
         }
         return ans;
     }
@@ -187,8 +158,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {6, 4, 8, 5, 2, 7};
-    vector<vector<int>> b = {{0, 1}, {0, 3}, {2, 4}, {3, 4}, {2, 2}};
-    solution.leftmostBuildingQueries(a, b);
+    vector<int> a = {15, 1, 12};
+    cout << solution.minimumAddedCoins(a, 43) << endl;
     return 0;
 }

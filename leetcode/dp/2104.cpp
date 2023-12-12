@@ -115,65 +115,71 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-struct Node
-{
-    int index, heightx, y;
-};
 class Solution
 {
 public:
-    vector<int> leftmostBuildingQueries(vector<int> &heights, vector<vector<int>> &queries)
+    const static int maxn = 1e5 + 10;
+    const static int maxm = 1e5 + 10;
+    const int INF = 0x3f3f3f3f;
+    long long subArrayRanges(vector<int> &nums)
     {
-        int n = heights.size();
-        int m = queries.size();
-        vector<vector<Node>> l(n);
-        vector<int> ans(m);
-        for (int i = 0; i < m; ++i)
+        // 所有子数组最大值的和，减去所有子数组最小值的和。
+        int top = -1, n = nums.size();
+        vector<int> st(n), left(n, -1), right(n, n);
+        // 找每个数两侧更小的。可以作为最小值
+        for (int i = 0; i < n; ++i)
         {
-            int x = queries[i][0], y = queries[i][1];
-            if (x > y)
-                swap(x, y);
-            if (x == y)
-                ans[i] = x;
-            else if (heights[x] < heights[y])
-                ans[i] = y;
-            else
+            while (top >= 0 && nums[st[top]] >= nums[i])
             {
-                l[y].push_back({i, heights[x], y});
-            }
-        }
-        vector<int> st(n); // 单调减
-        int top = -1;
-        for (int i = n - 1; i >= 0; --i)
-        {
-            while (top >= 0 && heights[st[top]] <= heights[i])
-            {
+                right[st[top]] = i;
                 --top;
-            }
-            for (auto &item : l[i])
-            {
-                int limit = item.heightx;
-                int left = 0, right = top;
-                int index = -1;
-                while (left <= right)
-                {
-                    int mid = (left + right) >> 1;
-                    if (heights[st[mid]] > limit)
-                    {
-                        index = st[mid];
-                        left = mid + 1;
-                    }
-                    else
-                    {
-                        right = mid - 1;
-                    }
-                }
-                ans[item.index] = index;
             }
             st[++top] = i;
         }
-        return ans;
+        top = -1;
+        for (int i = n - 1; i >= 0; --i)
+        {
+            while (top >= 0 && nums[st[top]] > nums[i])
+            {
+                left[st[top]] = i;
+                --top;
+            }
+            st[++top] = i;
+        }
+        long long ans1 = 0;
+        for (int i = 0; i < n; ++i)
+        {
+            ans1 += 1ll * (i - left[i]) * (right[i] - i) * nums[i];
+        }
+        // 找每个数两侧更大的。可以作为最大值
+        fill(left.begin(), left.end(), -1);
+        fill(right.begin(), right.end(), n);
+        top = -1;
+        for (int i = 0; i < n; ++i)
+        {
+            while (top >= 0 && nums[st[top]] <= nums[i])
+            {
+                right[st[top]] = i;
+                --top;
+            }
+            st[++top] = i;
+        }
+        top = -1;
+        for (int i = n - 1; i >= 0; --i)
+        {
+            while (top >= 0 && nums[st[top]] < nums[i])
+            {
+                left[st[top]] = i;
+                --top;
+            }
+            st[++top] = i;
+        }
+        long long ans2 = 0;
+        for (int i = 0; i < n; ++i)
+        {
+            ans2 += 1ll * (i - left[i]) * (right[i] - i) * nums[i];
+        }
+        return ans2 - ans1;
     }
 };
 
@@ -187,8 +193,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {6, 4, 8, 5, 2, 7};
-    vector<vector<int>> b = {{0, 1}, {0, 3}, {2, 4}, {3, 4}, {2, 2}};
-    solution.leftmostBuildingQueries(a, b);
+    vector<int> a = {1, 2, 3};
+    solution.subArrayRanges(a);
     return 0;
 }

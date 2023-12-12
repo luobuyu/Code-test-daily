@@ -115,63 +115,42 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-struct Node
-{
-    int index, heightx, y;
-};
 class Solution
 {
 public:
-    vector<int> leftmostBuildingQueries(vector<int> &heights, vector<vector<int>> &queries)
+    const static int maxn = 1e5 + 10;
+    const static int maxm = 1e5 + 10;
+    const int INF = 0x3f3f3f3f;
+    vector<int> secondGreaterElement(vector<int> &nums)
     {
-        int n = heights.size();
-        int m = queries.size();
-        vector<vector<Node>> l(n);
-        vector<int> ans(m);
-        for (int i = 0; i < m; ++i)
+        // 直接使用set
+        int n = nums.size();
+        vector<pair<int, int>> a;
+        for (int i = 0; i < n; ++i)
         {
-            int x = queries[i][0], y = queries[i][1];
-            if (x > y)
-                swap(x, y);
-            if (x == y)
-                ans[i] = x;
-            else if (heights[x] < heights[y])
-                ans[i] = y;
-            else
-            {
-                l[y].push_back({i, heights[x], y});
-            }
+            a.emplace_back(nums[i], i);
         }
-        vector<int> st(n); // 单调减
-        int top = -1;
-        for (int i = n - 1; i >= 0; --i)
+        sort(a.begin(), a.end(), [&](const pair<int, int> &x, const pair<int, int> &y)
+             { return x.first == y.first ? x.second < y.second : x.first > y.first; });
+        set<int> s;
+        vector<int> ans(n, -1);
+        for (int i = 0; i < a.size(); ++i)
         {
-            while (top >= 0 && heights[st[top]] <= heights[i])
+            // 先查第一大的
+            auto first = s.upper_bound(a[i].second);
+            if (first == s.end())
             {
-                --top;
+                s.insert(a[i].second);
+                continue;
             }
-            for (auto &item : l[i])
+            auto second = s.upper_bound(*first);
+            if (second == s.end())
             {
-                int limit = item.heightx;
-                int left = 0, right = top;
-                int index = -1;
-                while (left <= right)
-                {
-                    int mid = (left + right) >> 1;
-                    if (heights[st[mid]] > limit)
-                    {
-                        index = st[mid];
-                        left = mid + 1;
-                    }
-                    else
-                    {
-                        right = mid - 1;
-                    }
-                }
-                ans[item.index] = index;
+                s.insert(a[i].second);
+                continue;
             }
-            st[++top] = i;
+            ans[a[i].second] = nums[*second];
+            s.insert(a[i].second);
         }
         return ans;
     }
@@ -187,8 +166,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {6, 4, 8, 5, 2, 7};
-    vector<vector<int>> b = {{0, 1}, {0, 3}, {2, 4}, {3, 4}, {2, 2}};
-    solution.leftmostBuildingQueries(a, b);
+    vector<int> a = {2, 4, 0, 9, 6};
+    solution.secondGreaterElement(a);
     return 0;
 }

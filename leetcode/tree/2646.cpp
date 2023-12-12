@@ -115,65 +115,63 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-struct Node
-{
-    int index, heightx, y;
-};
 class Solution
 {
 public:
-    vector<int> leftmostBuildingQueries(vector<int> &heights, vector<vector<int>> &queries)
+    const static int maxn = 1e5 + 10;
+    const static int maxm = 1e5 + 10;
+    const int INF = 0x3f3f3f3f;
+    vector<vector<int>> g;
+    vector<int> freq;
+    vector<vector<int>> dp;
+    bool dfs(int u, int fa, int end)
     {
-        int n = heights.size();
-        int m = queries.size();
-        vector<vector<Node>> l(n);
-        vector<int> ans(m);
-        for (int i = 0; i < m; ++i)
+        freq[u]++;
+        if (u == end)
+            return true;
+        for (int i = 0; i < g[u].size(); ++i)
         {
-            int x = queries[i][0], y = queries[i][1];
-            if (x > y)
-                swap(x, y);
-            if (x == y)
-                ans[i] = x;
-            else if (heights[x] < heights[y])
-                ans[i] = y;
-            else
-            {
-                l[y].push_back({i, heights[x], y});
-            }
+            int v = g[u][i];
+            if (v == fa)
+                continue;
+            if (dfs(v, u, end))
+                return true;
         }
-        vector<int> st(n); // 单调减
-        int top = -1;
-        for (int i = n - 1; i >= 0; --i)
+        freq[u]--;
+        return false;
+    }
+    void dfs2(int u, int fa, vector<int> &price)
+    {
+        dp[u][0] = freq[u] * price[u];
+        dp[u][1] = dp[u][0] >> 1;
+        for (int i = 0; i < g[u].size(); ++i)
         {
-            while (top >= 0 && heights[st[top]] <= heights[i])
-            {
-                --top;
-            }
-            for (auto &item : l[i])
-            {
-                int limit = item.heightx;
-                int left = 0, right = top;
-                int index = -1;
-                while (left <= right)
-                {
-                    int mid = (left + right) >> 1;
-                    if (heights[st[mid]] > limit)
-                    {
-                        index = st[mid];
-                        left = mid + 1;
-                    }
-                    else
-                    {
-                        right = mid - 1;
-                    }
-                }
-                ans[item.index] = index;
-            }
-            st[++top] = i;
+            int v = g[u][i];
+            if (v == fa)
+                continue;
+            dfs2(v, u, price);
+            dp[u][0] += min(dp[v][0], dp[v][1]);
+            dp[u][1] += dp[v][0];
         }
-        return ans;
+    }
+    int minimumTotalPrice(int n, vector<vector<int>> &edges, vector<int> &price, vector<vector<int>> &trips)
+    {
+        g.resize(n);
+        freq.resize(n);
+        dp.resize(n, vector<int>(2));
+        // dp[u][0] 不减半，dp[u][1] u减半
+        for (auto &edge : edges)
+        {
+            int u = edge[0], v = edge[1];
+            g[u].emplace_back(v);
+            g[v].emplace_back(u);
+        }
+        for (auto &trip : trips)
+        {
+            dfs(trip[0], -1, trip[1]);
+        }
+        dfs2(0, -1, price);
+        return min(dp[0][0], dp[0][1]);
     }
 };
 
@@ -187,8 +185,9 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {6, 4, 8, 5, 2, 7};
-    vector<vector<int>> b = {{0, 1}, {0, 3}, {2, 4}, {3, 4}, {2, 2}};
-    solution.leftmostBuildingQueries(a, b);
+    vector<vector<int>> edges = {{0, 1}, {1, 2}, {1, 3}};
+    vector<int> price = {2, 2, 10, 6};
+    vector<vector<int>> trips = {{0, 3}, {2, 1}, {2, 3}};
+    cout << solution.minimumTotalPrice(4, edges, price, trips) << endl;
     return 0;
 }

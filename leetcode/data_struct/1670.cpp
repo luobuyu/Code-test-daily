@@ -115,67 +115,124 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-struct Node
-{
-    int index, heightx, y;
-};
-class Solution
+class FrontMiddleBackQueue
 {
 public:
-    vector<int> leftmostBuildingQueries(vector<int> &heights, vector<vector<int>> &queries)
+    deque<int> q1, q2;
+    FrontMiddleBackQueue()
     {
-        int n = heights.size();
-        int m = queries.size();
-        vector<vector<Node>> l(n);
-        vector<int> ans(m);
-        for (int i = 0; i < m; ++i)
+    }
+
+    void pushFront(int val)
+    {
+        q1.push_front(val);
+        check();
+    }
+
+    void pushMiddle(int val)
+    {
+        q1.push_back(val);
+        check();
+    }
+
+    void pushBack(int val)
+    {
+        q2.push_back(val);
+        check();
+    }
+
+    int popFront()
+    {
+        int ret;
+        if (q1.size() == 0)
         {
-            int x = queries[i][0], y = queries[i][1];
-            if (x > y)
-                swap(x, y);
-            if (x == y)
-                ans[i] = x;
-            else if (heights[x] < heights[y])
-                ans[i] = y;
+            if (q2.size() == 0)
+                return -1;
             else
             {
-                l[y].push_back({i, heights[x], y});
+                ret = q2.front();
+                q2.pop_front();
+                check();
             }
         }
-        vector<int> st(n); // 单调减
-        int top = -1;
-        for (int i = n - 1; i >= 0; --i)
+        else
         {
-            while (top >= 0 && heights[st[top]] <= heights[i])
-            {
-                --top;
-            }
-            for (auto &item : l[i])
-            {
-                int limit = item.heightx;
-                int left = 0, right = top;
-                int index = -1;
-                while (left <= right)
-                {
-                    int mid = (left + right) >> 1;
-                    if (heights[st[mid]] > limit)
-                    {
-                        index = st[mid];
-                        left = mid + 1;
-                    }
-                    else
-                    {
-                        right = mid - 1;
-                    }
-                }
-                ans[item.index] = index;
-            }
-            st[++top] = i;
+            ret = q1.front();
+            q1.pop_front();
+            check();
         }
-        return ans;
+        return ret;
+    }
+
+    int popMiddle()
+    {
+
+        int ret;
+        if (q1.size() == q2.size())
+        {
+            if (q1.size() == 0)
+                return -1;
+            ret = q1.back();
+            q1.pop_back();
+        }
+        else
+        {
+            if (q2.size() == 0)
+                return -1;
+            ret = q2.front();
+            q2.pop_front();
+        }
+        check();
+        return ret;
+    }
+
+    int popBack()
+    {
+        int ret;
+        if (q2.size() == 0)
+        {
+            if (q1.size() == 0)
+                return -1;
+            else
+            {
+                ret = q1.back();
+                q2.pop_back();
+                check();
+            }
+        }
+        else
+        {
+            ret = q2.back();
+            q2.pop_back();
+            check();
+        }
+        return ret;
+    }
+    void check()
+    {
+        if (q1.size() + 2 <= q2.size())
+        {
+            q1.push_back(q2.front());
+            q2.pop_front();
+        }
+        if (q1.size() >= q2.size() + 1)
+        {
+            q2.push_front(q1.back());
+            q1.pop_back();
+        }
     }
 };
+
+/**
+ * Your FrontMiddleBackQueue object will be instantiated and called as such:
+ * FrontMiddleBackQueue* obj = new FrontMiddleBackQueue();
+ * obj->pushFront(val);
+ * obj->pushMiddle(val);
+ * obj->pushBack(val);
+ * int param_4 = obj->popFront();
+ * int param_5 = obj->popMiddle();
+ * int param_6 = obj->popBack();
+ */
 
 int t, n, m, k;
 int main()
@@ -186,9 +243,7 @@ int main()
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
-    Solution solution;
-    vector<int> a = {6, 4, 8, 5, 2, 7};
-    vector<vector<int>> b = {{0, 1}, {0, 3}, {2, 4}, {3, 4}, {2, 2}};
-    solution.leftmostBuildingQueries(a, b);
+    FrontMiddleBackQueue solution;
+    solution.popMiddle();
     return 0;
 }

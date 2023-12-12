@@ -115,65 +115,32 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-struct Node
-{
-    int index, heightx, y;
-};
 class Solution
 {
 public:
-    vector<int> leftmostBuildingQueries(vector<int> &heights, vector<vector<int>> &queries)
+    const int INF = 0x3f3f3f3f;
+    // 找大于等于 target 的
+    int getIndex(vector<int> &days, int start, int target)
     {
-        int n = heights.size();
-        int m = queries.size();
-        vector<vector<Node>> l(n);
-        vector<int> ans(m);
-        for (int i = 0; i < m; ++i)
-        {
-            int x = queries[i][0], y = queries[i][1];
-            if (x > y)
-                swap(x, y);
-            if (x == y)
-                ans[i] = x;
-            else if (heights[x] < heights[y])
-                ans[i] = y;
-            else
-            {
-                l[y].push_back({i, heights[x], y});
-            }
-        }
-        vector<int> st(n); // 单调减
-        int top = -1;
+        int index = lower_bound(days.begin() + start, days.end(), target) - days.begin();
+        return index;
+    }
+    int mincostTickets(vector<int> &days, vector<int> &costs)
+    {
+        int n = days.size();
+        int m = costs.size();
+        // dp[i] i -> 最后
+        // dp[i] = dp[i + 1] dp[i + 7] dp[i + 30]
+        vector<int> dp(n + 1, INF);
+        dp[n] = 0;
         for (int i = n - 1; i >= 0; --i)
         {
-            while (top >= 0 && heights[st[top]] <= heights[i])
-            {
-                --top;
-            }
-            for (auto &item : l[i])
-            {
-                int limit = item.heightx;
-                int left = 0, right = top;
-                int index = -1;
-                while (left <= right)
-                {
-                    int mid = (left + right) >> 1;
-                    if (heights[st[mid]] > limit)
-                    {
-                        index = st[mid];
-                        left = mid + 1;
-                    }
-                    else
-                    {
-                        right = mid - 1;
-                    }
-                }
-                ans[item.index] = index;
-            }
-            st[++top] = i;
+            // 买
+            dp[i] = min(dp[i], costs[0] + dp[getIndex(days, i, days[i] + 1)]);
+            dp[i] = min(dp[i], costs[1] + dp[getIndex(days, i, days[i] + 7)]);
+            dp[i] = min(dp[i], costs[2] + dp[getIndex(days, i, days[i] + 30)]);
         }
-        return ans;
+        return dp[0];
     }
 };
 
@@ -187,8 +154,5 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {6, 4, 8, 5, 2, 7};
-    vector<vector<int>> b = {{0, 1}, {0, 3}, {2, 4}, {3, 4}, {2, 2}};
-    solution.leftmostBuildingQueries(a, b);
     return 0;
 }

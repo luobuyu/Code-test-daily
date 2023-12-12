@@ -122,20 +122,43 @@ public:
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
 
-    long long mostPoints(vector<vector<int>> &questions)
+    long long mostPoints1(vector<vector<int>> &questions)
     {
         int n = questions.size();
-        vector<int> dp(n);
+        vector<long long> dp(n);
+        // dp[i] i 到末尾的最大分数。
         dp[n - 1] = questions[n - 1][0];
         for (int i = n - 2; i >= 0; --i)
         {
+            int p = i + questions[i][1] + 1;
+            // 选
+            if (p <= n - 1)
+            {
+                dp[i] = max(dp[p] + questions[i][0], dp[i + 1]);
+            }
+            else
+            {
+                dp[i] = max(1ll * questions[i][0], dp[i + 1]);
+            }
+        }
+        return dp[0];
+    }
+    long long mostPoints(vector<vector<int>> &questions)
+    {
+        int n = questions.size();
+        vector<long long> dp(n + 1);
+        // dp[i] i 到末尾的最大分数。
+        dp[n] = 0;
+        for (int i = n - 1; i >= 0; --i)
+        {
+            int p = i + questions[i][1] + 1;
             // 不选
             dp[i] = dp[i + 1];
             // 选
-            if (i + questions[i][1] + 1 <= n)
-                dp[i] = max(dp[i], questions[i][0] + dp[i + questions[i][1] + 1]);
-            else
-                dp[i] = max(dp[i], questions[i][0]);
+            if (p <= n)
+            {
+                dp[i] = max(dp[p] + questions[i][0], dp[i + 1]);
+            }
         }
         return dp[0];
     }

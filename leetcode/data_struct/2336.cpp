@@ -115,65 +115,38 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-struct Node
-{
-    int index, heightx, y;
-};
-class Solution
+class SmallestInfiniteSet
 {
 public:
-    vector<int> leftmostBuildingQueries(vector<int> &heights, vector<vector<int>> &queries)
+    unordered_map<int, int> mp; // 不在集合中的数
+    priority_queue<int, vector<int>, greater<int>> q;
+    int left = 1;
+    SmallestInfiniteSet()
     {
-        int n = heights.size();
-        int m = queries.size();
-        vector<vector<Node>> l(n);
-        vector<int> ans(m);
-        for (int i = 0; i < m; ++i)
+    }
+
+    int popSmallest()
+    {
+        if (q.empty())
+            return left++;
+        else
         {
-            int x = queries[i][0], y = queries[i][1];
-            if (x > y)
-                swap(x, y);
-            if (x == y)
-                ans[i] = x;
-            else if (heights[x] < heights[y])
-                ans[i] = y;
-            else
-            {
-                l[y].push_back({i, heights[x], y});
-            }
+            int ret = q.top();
+            mp[ret] = false;
+            q.pop();
+            return ret;
         }
-        vector<int> st(n); // 单调减
-        int top = -1;
-        for (int i = n - 1; i >= 0; --i)
+    }
+
+    void addBack(int num)
+    {
+        if (num < left)
         {
-            while (top >= 0 && heights[st[top]] <= heights[i])
-            {
-                --top;
-            }
-            for (auto &item : l[i])
-            {
-                int limit = item.heightx;
-                int left = 0, right = top;
-                int index = -1;
-                while (left <= right)
-                {
-                    int mid = (left + right) >> 1;
-                    if (heights[st[mid]] > limit)
-                    {
-                        index = st[mid];
-                        left = mid + 1;
-                    }
-                    else
-                    {
-                        right = mid - 1;
-                    }
-                }
-                ans[item.index] = index;
-            }
-            st[++top] = i;
+            if (mp.count(num))
+                return;
+            q.push(num);
+            mp[num] = true;
         }
-        return ans;
     }
 };
 
@@ -186,9 +159,14 @@ int main()
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
-    Solution solution;
-    vector<int> a = {6, 4, 8, 5, 2, 7};
-    vector<vector<int>> b = {{0, 1}, {0, 3}, {2, 4}, {3, 4}, {2, 2}};
-    solution.leftmostBuildingQueries(a, b);
+    SmallestInfiniteSet solution;
+    solution.addBack(2);
+    solution.popSmallest();
+    solution.popSmallest();
+    solution.popSmallest();
+    solution.addBack(1);
+    solution.popSmallest();
+    solution.popSmallest();
+    solution.popSmallest();
     return 0;
 }

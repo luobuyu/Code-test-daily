@@ -116,63 +116,74 @@ auto optimize_cpp_stdio = []()
     return 0;
 }();
 
-struct Node
-{
-    int index, heightx, y;
-};
 class Solution
 {
 public:
-    vector<int> leftmostBuildingQueries(vector<int> &heights, vector<vector<int>> &queries)
+    const static int maxn = 1e5 + 10;
+    const static int maxm = 1e5 + 10;
+    const int INF = 0x3f3f3f3f;
+    int minimumEffortPath(vector<vector<int>> &heights)
     {
-        int n = heights.size();
-        int m = queries.size();
-        vector<vector<Node>> l(n);
-        vector<int> ans(m);
-        for (int i = 0; i < m; ++i)
+        int n = heights.size(), m = heights[0].size();
+        int l = INF, r = 0;
+        for (int i = 0; i < n; ++i)
         {
-            int x = queries[i][0], y = queries[i][1];
-            if (x > y)
-                swap(x, y);
-            if (x == y)
-                ans[i] = x;
-            else if (heights[x] < heights[y])
-                ans[i] = y;
+            for (int j = 0; j < m; ++j)
+            {
+                if (j + 1 < m)
+                {
+                    r = max(r, abs(heights[i][j + 1] - heights[i][j]));
+                    l = min(l, abs(heights[i][j + 1] - heights[i][j]));
+                }
+                if (i + 1 < n)
+                {
+                    r = max(r, abs(heights[i + 1][j] - heights[i][j]));
+                    l = min(l, abs(heights[i + 1][j] - heights[i][j]));
+                }
+            }
+        }
+        function<bool(int)> check = [&](int mid)
+        {
+            queue<int> q;
+            vector<int> vis(n * m);
+            q.push(0);
+            vis[0] = true;
+            vector<int> dx = {-1, 0, 1, 0}, dy = {0, 1, 0, -1};
+            while (q.size())
+            {
+                auto out = q.front();
+                q.pop();
+                if (out == (n * m - 1))
+                    return true;
+                for (int i = 0; i < 4; ++i)
+                {
+                    int newx = dx[i] + out / m;
+                    int newy = dy[i] + out % m;
+                    if (newx < 0 || newx >= n || newy < 0 || newy >= m || vis[newx * m + newy])
+                        continue;
+                    if (abs(heights[newx][newy] - heights[out / m][out % m]) > mid)
+                        continue;
+                    q.push({newx * m + newy});
+                    vis[newx * m + newy] = true;
+                }
+            }
+            return false;
+        };
+        int ans = -1;
+        while (l <= r)
+        {
+            int mid = (l + r) >> 1;
+            if (check(mid))
+            {
+                ans = mid;
+                r = mid - 1;
+            }
             else
             {
-                l[y].push_back({i, heights[x], y});
+                l = mid + 1;
             }
         }
-        vector<int> st(n); // 单调减
-        int top = -1;
-        for (int i = n - 1; i >= 0; --i)
-        {
-            while (top >= 0 && heights[st[top]] <= heights[i])
-            {
-                --top;
-            }
-            for (auto &item : l[i])
-            {
-                int limit = item.heightx;
-                int left = 0, right = top;
-                int index = -1;
-                while (left <= right)
-                {
-                    int mid = (left + right) >> 1;
-                    if (heights[st[mid]] > limit)
-                    {
-                        index = st[mid];
-                        left = mid + 1;
-                    }
-                    else
-                    {
-                        right = mid - 1;
-                    }
-                }
-                ans[item.index] = index;
-            }
-            st[++top] = i;
-        }
+
         return ans;
     }
 };
@@ -187,8 +198,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {6, 4, 8, 5, 2, 7};
-    vector<vector<int>> b = {{0, 1}, {0, 3}, {2, 4}, {3, 4}, {2, 2}};
-    solution.leftmostBuildingQueries(a, b);
+    vector<vector<int>> a = {{1, 10, 6, 7, 9, 10, 4, 9}};
+    solution.minimumEffortPath(a);
     return 0;
 }

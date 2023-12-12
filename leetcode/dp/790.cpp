@@ -115,68 +115,28 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-struct Node
-{
-    int index, heightx, y;
-};
 class Solution
 {
 public:
-    vector<int> leftmostBuildingQueries(vector<int> &heights, vector<vector<int>> &queries)
+    const static int maxn = 1e5 + 10;
+    const static int maxm = 1e5 + 10;
+    const int INF = 0x3f3f3f3f;
+    const long long mod = 1e9 + 7;
+    int numTilings(int n)
     {
-        int n = heights.size();
-        int m = queries.size();
-        vector<vector<Node>> l(n);
-        vector<int> ans(m);
-        for (int i = 0; i < m; ++i)
+        vector<vector<int>> dp(n + 1, vector<int>(4));
+        // 0 00 1 10, 2 01, 3 11
+        dp[0][3] = 1;
+        for (int i = 1; i <= n; ++i)
         {
-            int x = queries[i][0], y = queries[i][1];
-            if (x > y)
-                swap(x, y);
-            if (x == y)
-                ans[i] = x;
-            else if (heights[x] < heights[y])
-                ans[i] = y;
-            else
-            {
-                l[y].push_back({i, heights[x], y});
-            }
+            dp[i][0] = dp[i - 1][3];
+            dp[i][1] = (dp[i - 1][2] + dp[i - 1][0]) % mod;
+            dp[i][2] = (dp[i - 1][1] + dp[i - 1][0]) % mod;
+            dp[i][3] = ((dp[i - 1][3] + dp[i - 1][1]) % mod + dp[i - 1][2] + dp[i - 1][0]) % mod;
         }
-        vector<int> st(n); // 单调减
-        int top = -1;
-        for (int i = n - 1; i >= 0; --i)
-        {
-            while (top >= 0 && heights[st[top]] <= heights[i])
-            {
-                --top;
-            }
-            for (auto &item : l[i])
-            {
-                int limit = item.heightx;
-                int left = 0, right = top;
-                int index = -1;
-                while (left <= right)
-                {
-                    int mid = (left + right) >> 1;
-                    if (heights[st[mid]] > limit)
-                    {
-                        index = st[mid];
-                        left = mid + 1;
-                    }
-                    else
-                    {
-                        right = mid - 1;
-                    }
-                }
-                ans[item.index] = index;
-            }
-            st[++top] = i;
-        }
-        return ans;
+        return dp[n][3];
     }
 };
-
 int t, n, m, k;
 int main()
 {
@@ -187,8 +147,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {6, 4, 8, 5, 2, 7};
-    vector<vector<int>> b = {{0, 1}, {0, 3}, {2, 4}, {3, 4}, {2, 2}};
-    solution.leftmostBuildingQueries(a, b);
+    cout << solution.numTilings(3) << endl;
     return 0;
 }

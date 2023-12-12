@@ -56,16 +56,51 @@ const double eps = 1e-5;
 const int maxn = 1e3 + 10;
 const int maxm = 1e5 + 10;
 int t, n, m, k;
-
-struct pair_hash
+class Timer
 {
-    template <class T1, class T2>
-    std::size_t operator()(const std::pair<T1, T2> &p) const
+private:
+    using Clock = chrono::steady_clock;
+    using TimePoint = Clock::time_point;
+    TimePoint startTime, endTime;
+    long long timeout;
+
+public:
+    Timer(long long secTimeout)
     {
-        auto h1 = std::hash<T1>{}(p.first);
-        auto h2 = std::hash<T2>{}(p.second);
-        return h1 ^ h2;
+        timeout = secTimeout;
+        setTimer(secTimeout);
     }
+    void setTimer(long long secTimeout)
+    {
+        startTime = Clock::now();
+        endTime = startTime + chrono::seconds(secTimeout);
+    }
+    bool isTimeout()
+    {
+        return endTime < Clock::now();
+    }
+    double getDuration()
+    {
+        return std::chrono::duration<double>(Clock::now() - startTime).count();
+    }
+    long long getTimeout()
+    {
+        return timeout;
+    }
+};
+
+struct Node
+{
+    vector<int> &a;
+    Node(vector<int> &_a) : a(_a) {}
+    Node() : a(b) {}
+    void emplace_back(int v)
+    {
+        a.emplace_back(v);
+    }
+
+private:
+    vector<int> b;
 };
 
 int main()
@@ -76,14 +111,8 @@ int main()
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
-    unordered_map<pair<int, int>, int, pair_hash> mp;
-    mp[{0, 1}] = 1;
-    mp[{1, 0}] = 100;
-    mp[{0, 0}] = 1000;
-    cout << mp[{1, 0}] << endl;
-    cout << mp[{0, 1}] << endl;
-    cout << mp[{0, 0}] << endl;
-    mp[{2, 2}] ^= 12;
-    cout << mp[{2, 2}] << endl;
+    Node a;
+    a.emplace_back(10);
+    cout << a.a.size() << endl;
     return 0;
 }

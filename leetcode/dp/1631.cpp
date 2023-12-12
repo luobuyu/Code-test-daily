@@ -115,65 +115,70 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
 struct Node
 {
-    int index, heightx, y;
+    int u, v;
+    int w;
+    bool operator<(const Node &p) const
+    {
+        return w < p.w;
+    }
+};
+
+struct UF
+{
+    vector<int> fa;
+    UF(int n) : fa(n)
+    {
+        for (int i = 0; i < n; ++i)
+            fa[i] = i;
+    }
+    int find(int u) { return u == fa[u] ? u : fa[u] = find(fa[u]); }
+    void unite(int u, int v)
+    {
+        int up = find(u);
+        int vp = find(v);
+        if (up == vp)
+            return;
+        fa[up] = vp;
+    }
+    bool connect(int u, int v)
+    {
+        return find(u) == find(v);
+    }
 };
 class Solution
 {
 public:
-    vector<int> leftmostBuildingQueries(vector<int> &heights, vector<vector<int>> &queries)
+    const static int maxn = 1e5 + 10;
+    const static int maxm = 1e5 + 10;
+    const int INF = 0x3f3f3f3f;
+    int minimumEffortPath(vector<vector<int>> &heights)
     {
-        int n = heights.size();
-        int m = queries.size();
-        vector<vector<Node>> l(n);
-        vector<int> ans(m);
-        for (int i = 0; i < m; ++i)
+        vector<Node> path;
+        int n = heights.size(), m = heights[0].size();
+        for (int i = 0; i < n; ++i)
         {
-            int x = queries[i][0], y = queries[i][1];
-            if (x > y)
-                swap(x, y);
-            if (x == y)
-                ans[i] = x;
-            else if (heights[x] < heights[y])
-                ans[i] = y;
-            else
+            for (int j = 0; j < m; ++j)
             {
-                l[y].push_back({i, heights[x], y});
+                if (j + 1 < m)
+                    path.push_back({i * m + j, i * m + (j + 1), abs(heights[i][j + 1] - heights[i][j])});
+                if (i + 1 < n)
+                    path.push_back({i * m + j, (i + 1) * m + j, abs(heights[i][j] - heights[i + 1][j])});
             }
         }
-        vector<int> st(n); // 单调减
-        int top = -1;
-        for (int i = n - 1; i >= 0; --i)
+
+        sort(path.begin(), path.end());
+        UF uf(m * n);
+        for (auto &node : path)
         {
-            while (top >= 0 && heights[st[top]] <= heights[i])
+            uf.unite(node.u, node.v);
+            if (uf.connect(0, n * m - 1))
             {
-                --top;
+                return node.w;
             }
-            for (auto &item : l[i])
-            {
-                int limit = item.heightx;
-                int left = 0, right = top;
-                int index = -1;
-                while (left <= right)
-                {
-                    int mid = (left + right) >> 1;
-                    if (heights[st[mid]] > limit)
-                    {
-                        index = st[mid];
-                        left = mid + 1;
-                    }
-                    else
-                    {
-                        right = mid - 1;
-                    }
-                }
-                ans[item.index] = index;
-            }
-            st[++top] = i;
         }
-        return ans;
+        return 0;
     }
 };
 
@@ -187,8 +192,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {6, 4, 8, 5, 2, 7};
-    vector<vector<int>> b = {{0, 1}, {0, 3}, {2, 4}, {3, 4}, {2, 2}};
-    solution.leftmostBuildingQueries(a, b);
+    vector<vector<int>> a = {{1, 10, 6, 7, 9, 10, 4, 9}};
+    solution.minimumEffortPath(a);
     return 0;
 }

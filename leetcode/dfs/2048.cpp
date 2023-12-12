@@ -115,68 +115,49 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-struct Node
-{
-    int index, heightx, y;
-};
 class Solution
 {
 public:
-    vector<int> leftmostBuildingQueries(vector<int> &heights, vector<vector<int>> &queries)
+    const static int maxn = 1e5 + 10;
+    const static int maxm = 1e5 + 10;
+    const int INF = 0x3f3f3f3f;
+    string s;
+    vector<int> ans;
+    int upper = 1224444;
+    void dfs(int pre, int num)
     {
-        int n = heights.size();
-        int m = queries.size();
-        vector<vector<Node>> l(n);
-        vector<int> ans(m);
-        for (int i = 0; i < m; ++i)
+        if (num <= upper)
         {
-            int x = queries[i][0], y = queries[i][1];
-            if (x > y)
-                swap(x, y);
-            if (x == y)
-                ans[i] = x;
-            else if (heights[x] < heights[y])
-                ans[i] = y;
-            else
-            {
-                l[y].push_back({i, heights[x], y});
-            }
+            ans.emplace_back(num);
         }
-        vector<int> st(n); // 单调减
-        int top = -1;
-        for (int i = n - 1; i >= 0; --i)
+        for (int i = pre + 1; i <= 9; ++i)
         {
-            while (top >= 0 && heights[st[top]] <= heights[i])
+            int tmp = num;
+            int cnt = i;
+            bool flag = true;
+            while (cnt > 0)
             {
-                --top;
-            }
-            for (auto &item : l[i])
-            {
-                int limit = item.heightx;
-                int left = 0, right = top;
-                int index = -1;
-                while (left <= right)
+                tmp = tmp * 10 + i;
+                if (tmp > upper)
                 {
-                    int mid = (left + right) >> 1;
-                    if (heights[st[mid]] > limit)
-                    {
-                        index = st[mid];
-                        left = mid + 1;
-                    }
-                    else
-                    {
-                        right = mid - 1;
-                    }
+                    flag = false;
+                    break;
                 }
-                ans[item.index] = index;
+                cnt--;
             }
-            st[++top] = i;
+            if (flag)
+                dfs(i, tmp);
         }
-        return ans;
+    }
+    int nextBeautifulNumber(int n)
+    {
+        dfs(0, 0);
+        cout << ans.size() << endl;
+        sort(ans.begin(), ans.end());
+        int index = upper_bound(ans.begin(), ans.end(), n) - ans.begin();
+        return ans[index];
     }
 };
-
 int t, n, m, k;
 int main()
 {
@@ -187,8 +168,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {6, 4, 8, 5, 2, 7};
-    vector<vector<int>> b = {{0, 1}, {0, 3}, {2, 4}, {3, 4}, {2, 2}};
-    solution.leftmostBuildingQueries(a, b);
+    solution.nextBeautifulNumber(1);
     return 0;
 }

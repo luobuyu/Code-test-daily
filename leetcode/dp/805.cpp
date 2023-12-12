@@ -115,65 +115,70 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-struct Node
-{
-    int index, heightx, y;
-};
 class Solution
 {
 public:
-    vector<int> leftmostBuildingQueries(vector<int> &heights, vector<vector<int>> &queries)
+    const static int maxn = 1e5 + 10;
+    const static int maxm = 1e5 + 10;
+    const int INF = 0x3f3f3f3f;
+    bool splitArraySameAverage2(vector<int> &nums)
     {
-        int n = heights.size();
-        int m = queries.size();
-        vector<vector<Node>> l(n);
-        vector<int> ans(m);
-        for (int i = 0; i < m; ++i)
+        int sum = 0;
+        int n = nums.size();
+        for (auto &x : nums)
+            sum += x;
+        // sumA / k = (sum - sumA) / (n - k);
+        // sumA = sum * k / n
+        vector<vector<int>> dp(n + 1, vector<int>(sum + 1));
+        dp[0][0] = true;
+        for (int i = 0; i < n; ++i)
         {
-            int x = queries[i][0], y = queries[i][1];
-            if (x > y)
-                swap(x, y);
-            if (x == y)
-                ans[i] = x;
-            else if (heights[x] < heights[y])
-                ans[i] = y;
-            else
+            for (int j = sum; j >= nums[i]; --j)
             {
-                l[y].push_back({i, heights[x], y});
-            }
-        }
-        vector<int> st(n); // 单调减
-        int top = -1;
-        for (int i = n - 1; i >= 0; --i)
-        {
-            while (top >= 0 && heights[st[top]] <= heights[i])
-            {
-                --top;
-            }
-            for (auto &item : l[i])
-            {
-                int limit = item.heightx;
-                int left = 0, right = top;
-                int index = -1;
-                while (left <= right)
+                for (int k = 1; k <= n; ++k)
                 {
-                    int mid = (left + right) >> 1;
-                    if (heights[st[mid]] > limit)
-                    {
-                        index = st[mid];
-                        left = mid + 1;
-                    }
-                    else
-                    {
-                        right = mid - 1;
-                    }
+                    dp[k][j] |= dp[k - 1][j - nums[i]];
                 }
-                ans[item.index] = index;
             }
-            st[++top] = i;
         }
-        return ans;
+        for (int i = 1; i < n; ++i)
+        {
+            if (sum * i % n == 0 && dp[i][sum * i / n])
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    bool splitArraySameAverage(vector<int> &nums)
+    {
+        int sum = 0;
+        int n = nums.size();
+        for (auto &x : nums)
+            sum += x;
+        // sumA / k = (sum - sumA) / (n - k);
+        // sumA = sum * k / n
+        vector<int> dp(sum + 1);
+        // dp[j] 第 i 位 1 表示 dp[i][j] true
+        dp[0] = 1; // dp[0][0] = true
+        for (int i = 0; i < n; ++i)
+        {
+            for (int j = sum; j >= nums[i]; --j)
+            {
+                for (int k = 1; k <= n; ++k)
+                {
+                    dp[j] |= dp[j - nums[i]] << 1;
+                }
+            }
+        }
+        for (int i = 1; i < n; ++i)
+        {
+            if (sum * i % n == 0 && (dp[sum * i / n] >> (i - 1)) & 1)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 };
 
@@ -187,8 +192,8 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {6, 4, 8, 5, 2, 7};
-    vector<vector<int>> b = {{0, 1}, {0, 3}, {2, 4}, {3, 4}, {2, 2}};
-    solution.leftmostBuildingQueries(a, b);
+    vector<int> a = {17, 3, 7, 12, 1};
+    cout << solution.splitArraySameAverage(a) << endl;
+
     return 0;
 }

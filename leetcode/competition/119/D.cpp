@@ -108,70 +108,77 @@ using namespace FAST_IO;
 //     return 0;
 // }();
 
-auto optimize_cpp_stdio = []()
-{
-    std::ios::sync_with_stdio(false);
-    std::cin.tie(nullptr);
-    std::cout.tie(nullptr);
-    return 0;
-}();
-
-struct Node
-{
-    int index, heightx, y;
-};
 class Solution
 {
 public:
-    vector<int> leftmostBuildingQueries(vector<int> &heights, vector<vector<int>> &queries)
+    const static int maxn = 1e5 + 10;
+    const static int maxm = 1e5 + 10;
+    const int INF = 0x3f3f3f3f;
+    vector<vector<int>> oldg;
+    vector<vector<int>> g;
+    void close(int id, int n)
     {
-        int n = heights.size();
-        int m = queries.size();
-        vector<vector<Node>> l(n);
-        vector<int> ans(m);
-        for (int i = 0; i < m; ++i)
+        for (int i = 0; i < n; ++i)
         {
-            int x = queries[i][0], y = queries[i][1];
-            if (x > y)
-                swap(x, y);
-            if (x == y)
-                ans[i] = x;
-            else if (heights[x] < heights[y])
-                ans[i] = y;
-            else
+            if (!((id >> i) & 1))
             {
-                l[y].push_back({i, heights[x], y});
+                for (int j = 0; j < n; ++j)
+                {
+                    g[i][j] = INF;
+                    g[j][i] = INF;
+                }
             }
         }
-        vector<int> st(n); // 单调减
-        int top = -1;
-        for (int i = n - 1; i >= 0; --i)
+    }
+    bool check(int id, int maxDistance, int n)
+    {
+        for (int k = 0; k < n; ++k)
         {
-            while (top >= 0 && heights[st[top]] <= heights[i])
+            for (int i = 0; i < n; ++i)
             {
-                --top;
-            }
-            for (auto &item : l[i])
-            {
-                int limit = item.heightx;
-                int left = 0, right = top;
-                int index = -1;
-                while (left <= right)
+                for (int j = 0; j < n; ++j)
                 {
-                    int mid = (left + right) >> 1;
-                    if (heights[st[mid]] > limit)
-                    {
-                        index = st[mid];
-                        left = mid + 1;
-                    }
-                    else
-                    {
-                        right = mid - 1;
-                    }
+                    g[i][j] = min(g[i][j], g[i][k] + g[k][j]);
                 }
-                ans[item.index] = index;
             }
-            st[++top] = i;
+        }
+        for (int i = 0; i < n; ++i)
+        {
+            if (!((id >> i) & 1))
+                continue;
+            for (int j = 0; j < n; ++j)
+            {
+                if (!((id >> j) & 1))
+                    continue;
+                if (g[i][j] > maxDistance)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    int numberOfSets(int n, int maxDistance, vector<vector<int>> &roads)
+    {
+        g.resize(n, vector<int>(n, INF));
+        oldg.resize(n, vector<int>(n, INF));
+        for (int i = 0; i < n; ++i)
+        {
+            oldg[i][i] = 0;
+        }
+        for (auto &road : roads)
+        {
+            int u = road[0], v = road[1], w = road[2];
+            oldg[u][v] = oldg[v][u] = min(oldg[u][v], w);
+        }
+        int upper = (1 << n) - 1;
+        int ans = 0;
+        for (int i = upper; i >= 0; --i)
+        {
+            g = oldg;
+            close(i, n);
+            bool ret = check(i, maxDistance, n);
+            ans += ret;
         }
         return ans;
     }
@@ -187,8 +194,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {6, 4, 8, 5, 2, 7};
-    vector<vector<int>> b = {{0, 1}, {0, 3}, {2, 4}, {3, 4}, {2, 2}};
-    solution.leftmostBuildingQueries(a, b);
+    vector<vector<int>> a = {{2, 0, 6}, {1, 2, 28}, {0, 1, 18}, {0, 3, 10}};
+    cout << solution.numberOfSets(4, 17, a) << endl;
     return 0;
 }
