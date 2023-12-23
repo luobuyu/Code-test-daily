@@ -115,51 +115,38 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-vector<int> ret;
-bool dfs(int sum, int target)
-{
-    if (sum == 0 && target == 0)
-        return true;
-    if (sum < target)
-        return false;
-    int tmp = 0;
-    int d = 10;
-    while (tmp <= target)
-    {
-        tmp = sum % d;
-        if (dfs(sum / d, target - tmp))
-        {
-            return true;
-        }
-        d *= 10;
-    }
-    return false;
-}
-auto init = []()
-{
-    int sum = 0;
-    ret.resize(1001);
-    for (int i = 1; i <= 1000; ++i)
-    {
-        int tmp = i * i;
-        if (dfs(i * i, i))
-        {
-            sum += i * i;
-        }
-        ret[i] = sum;
-    }
-    return 0;
-}();
 class Solution
 {
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int punishmentNumber(int n)
+    long long solve(vector<int> &nums, int upper)
     {
-        return ret[n];
+        int n = nums.size();
+        int l = 0, r = n - 1;
+        long long sum = 0;
+        while (l < r)
+        {
+            if (nums[l] + nums[r] > upper)
+            {
+                --r;
+            }
+            else
+            {
+                sum += r - l + 1;
+                ++l;
+            }
+        }
+        return sum;
+    }
+    long long countFairPairs(vector<int> &nums, int lower, int upper)
+    {
+        sort(nums.begin(), nums.end());
+        long long ans = 0;
+        int n = nums.size();
+
+        return solve(nums, upper) - solve(nums, lower - 1);
     }
 };
 
@@ -173,6 +160,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    solution.punishmentNumber(45);
+
     return 0;
 }

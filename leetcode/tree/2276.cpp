@@ -116,50 +116,77 @@ auto optimize_cpp_stdio = []()
     return 0;
 }();
 
-vector<int> ret;
-bool dfs(int sum, int target)
+struct SegTree
 {
-    if (sum == 0 && target == 0)
-        return true;
-    if (sum < target)
-        return false;
-    int tmp = 0;
-    int d = 10;
-    while (tmp <= target)
+    struct TreeNode
     {
-        tmp = sum % d;
-        if (dfs(sum / d, target - tmp))
-        {
-            return true;
-        }
-        d *= 10;
-    }
-    return false;
-}
-auto init = []()
-{
-    int sum = 0;
-    ret.resize(1001);
-    for (int i = 1; i <= 1000; ++i)
+        TreeNode *left;
+        TreeNode *right;
+        int l, r, cnt;
+        TreeNode(int _l, int _r) : l(_l), r(_r), left(nullptr), right(nullptr), cnt(0) {}
+    };
+    TreeNode *root;
+    SegTree(int l, int r) { root = new TreeNode(l, r); }
+    void add(TreeNode *cur, int l, int r)
     {
-        int tmp = i * i;
-        if (dfs(i * i, i))
+        if (l <= cur->l && cur->r <= r)
         {
-            sum += i * i;
+            cur->cnt = cur->r - cur->l + 1;
+            return;
         }
-        ret[i] = sum;
+        // 防止越界
+        int mid = cur->l + ((cur->r - cur->l) >> 1);
+        int sum = 0;
+        if (l <= mid)
+        {
+            if (cur->left == nullptr)
+                cur->left = new TreeNode(cur->l, mid);
+            add(cur->left, l, r);
+        }
+        if (mid + 1 <= r)
+        {
+            if (cur->right == nullptr)
+                cur->right = new TreeNode(mid + 1, cur->r);
+            add(cur->right, l, r);
+        }
+
+        if (cur->left)
+            sum += cur->left->cnt;
+        if (cur->right)
+            sum += cur->right->cnt;
+        cur->cnt = sum;
     }
-    return 0;
-}();
-class Solution
+    int query(TreeNode *cur, int l, int r)
+    {
+        if (cur == nullptr)
+            return 0;
+        if (l <= cur->l && cur->r <= r)
+            return cur->cnt;
+        int mid = cur->l + ((cur->r - cur->l) >> 1);
+        int sum = 0;
+        if (l <= mid)
+            sum += query(cur->left, l, r);
+        if (mid + 1 <= r)
+            sum += query(cur->right, l, r);
+        return sum;
+    }
+};
+class CountIntervals
 {
 public:
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const int INF = 0x3f3f3f3f;
-    int punishmentNumber(int n)
+    SegTree seg;
+    CountIntervals() : seg(1, 10)
     {
-        return ret[n];
+    }
+
+    void add(int left, int right)
+    {
+        seg.add(seg.root, left, right);
+    }
+
+    int count()
+    {
+        return seg.query(seg.root, 1, 10);
     }
 };
 
@@ -172,7 +199,10 @@ int main()
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
-    Solution solution;
-    solution.punishmentNumber(45);
+    CountIntervals solution;
+    solution.add(2, 3);
+    cout << solution.count() << endl;
+    solution.add(7, 10);
+    cout << solution.count() << endl;
     return 0;
 }

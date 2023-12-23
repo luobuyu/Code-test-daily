@@ -115,51 +115,47 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-vector<int> ret;
-bool dfs(int sum, int target)
-{
-    if (sum == 0 && target == 0)
-        return true;
-    if (sum < target)
-        return false;
-    int tmp = 0;
-    int d = 10;
-    while (tmp <= target)
-    {
-        tmp = sum % d;
-        if (dfs(sum / d, target - tmp))
-        {
-            return true;
-        }
-        d *= 10;
-    }
-    return false;
-}
-auto init = []()
-{
-    int sum = 0;
-    ret.resize(1001);
-    for (int i = 1; i <= 1000; ++i)
-    {
-        int tmp = i * i;
-        if (dfs(i * i, i))
-        {
-            sum += i * i;
-        }
-        ret[i] = sum;
-    }
-    return 0;
-}();
 class Solution
 {
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int punishmentNumber(int n)
+    // 滑动窗口最小值，单调队列，单调增
+    // 滑动窗口最大值，单调队列，单调减
+    // 妈的，数据范围比较小，直接记录每个数的频率
+    vector<int> getSubarrayBeauty(vector<int> &nums, int k, int x)
     {
-        return ret[n];
+        int n = nums.size();
+        vector<int> cnt(102, 0);
+        int l = 0;
+        vector<int> ans(n - k + 1);
+        for (int r = 0; r < n; ++r)
+        {
+            cnt[nums[r] + 50]++;
+            while (r - l + 1 > k)
+            {
+                cnt[nums[l] + 50]--;
+                l++;
+            }
+
+            if (r - l + 1 == k)
+            {
+                int tmp = 0;
+                int minx = 0;
+                for (int j = 0; j < 50; ++j)
+                {
+                    if (tmp + cnt[j] >= x)
+                    {
+                        minx = j - 50;
+                        break;
+                    }
+                    tmp += cnt[j];
+                }
+                ans[l] = minx;
+            }
+        }
+        return ans;
     }
 };
 
@@ -173,6 +169,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    solution.punishmentNumber(45);
+    vector<int> a = {1, -1, -3, -2, 3};
+    solution.getSubarrayBeauty(a, 3, 2);
     return 0;
 }

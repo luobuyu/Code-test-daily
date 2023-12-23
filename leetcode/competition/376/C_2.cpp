@@ -115,40 +115,38 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-vector<int> ret;
-bool dfs(int sum, int target)
-{
-    if (sum == 0 && target == 0)
-        return true;
-    if (sum < target)
-        return false;
-    int tmp = 0;
-    int d = 10;
-    while (tmp <= target)
-    {
-        tmp = sum % d;
-        if (dfs(sum / d, target - tmp))
-        {
-            return true;
-        }
-        d *= 10;
-    }
-    return false;
-}
+vector<int> a;
 auto init = []()
 {
-    int sum = 0;
-    ret.resize(1001);
-    for (int i = 1; i <= 1000; ++i)
+    for (int i = 0; i <= 10000; ++i)
     {
-        int tmp = i * i;
-        if (dfs(i * i, i))
+        // i 是左侧数字
+        // 偶数
+        long long num = i;
+        int tmp = i;
+        while (tmp)
         {
-            sum += i * i;
+            num = num * 10 + tmp % 10;
+            tmp /= 10;
         }
-        ret[i] = sum;
+        if (num >= 1 && num <= 1000000000)
+            a.emplace_back(num);
+        // 奇数
+        for (int j = 0; j < 10; ++j)
+        {
+            num = i * 10 + j;
+            tmp = i;
+            while (tmp)
+            {
+                num = num * 10 + tmp % 10;
+                tmp /= 10;
+            }
+            if (num >= 1 && num <= 1000000000)
+                a.emplace_back(num);
+        }
     }
+    sort(a.begin(), a.end());
+    cout << a.back() << endl;
     return 0;
 }();
 class Solution
@@ -157,9 +155,31 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int punishmentNumber(int n)
+    long long cost(vector<int> &nums, int x)
     {
-        return ret[n];
+        long long ret = 0;
+        for (auto &y : nums)
+            ret += abs(y - x);
+        return ret;
+    }
+    long long minimumCost(vector<int> &nums)
+    {
+        int n = nums.size();
+        sort(nums.begin(), nums.end());
+        int x = nums[n / 2];
+        long long sum = 0;
+        for (auto &x : nums)
+            sum += x;
+        long long ans = LLONG_MAX;
+        // 找左侧
+        int index = lower_bound(a.begin(), a.end(), x) - 1 - a.begin();
+        if (index > 0)
+            ans = min(ans, cost(nums, a[index]));
+        // 找右侧
+        index = lower_bound(a.begin(), a.end(), x) - a.begin();
+        if (index != a.size())
+            ans = min(ans, cost(nums, a[index]));
+        return ans;
     }
 };
 
@@ -173,6 +193,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    solution.punishmentNumber(45);
+
+    cout << a.size() << endl;
     return 0;
 }

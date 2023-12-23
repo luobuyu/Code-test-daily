@@ -115,54 +115,69 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-vector<int> ret;
-bool dfs(int sum, int target)
-{
-    if (sum == 0 && target == 0)
-        return true;
-    if (sum < target)
-        return false;
-    int tmp = 0;
-    int d = 10;
-    while (tmp <= target)
-    {
-        tmp = sum % d;
-        if (dfs(sum / d, target - tmp))
-        {
-            return true;
-        }
-        d *= 10;
-    }
-    return false;
-}
-auto init = []()
-{
-    int sum = 0;
-    ret.resize(1001);
-    for (int i = 1; i <= 1000; ++i)
-    {
-        int tmp = i * i;
-        if (dfs(i * i, i))
-        {
-            sum += i * i;
-        }
-        ret[i] = sum;
-    }
-    return 0;
-}();
 class Solution
 {
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int punishmentNumber(int n)
+    long long maximumSumOfHeights(vector<int> &maxHeights)
     {
-        return ret[n];
+        int n = maxHeights.size();
+        vector<int> st(n);
+        int top = -1;
+        vector<long long> left(n);
+        vector<long long> right(n);
+        long long sum = 0;
+        int pre = -1;
+        for (int i = 0; i < n; ++i)
+        {
+            while (top >= 0 && maxHeights[st[top]] > maxHeights[i])
+            {
+                if (top >= 1)
+                    pre = st[top - 1];
+                else
+                    pre = -1;
+                sum -= (st[top] - pre) * maxHeights[st[top]];
+                --top;
+            }
+            if (top == -1)
+                pre = -1;
+            else
+                pre = st[top];
+            st[++top] = i;
+            sum += (i - pre) * maxHeights[i];
+            left[i] = sum;
+        }
+        top = -1;
+        sum = 0;
+        for (int i = n - 1; i >= 0; --i)
+        {
+            while (top >= 0 && maxHeights[st[top]] > maxHeights[i])
+            {
+                if (top >= 1)
+                    pre = st[top - 1];
+                else
+                    pre = n;
+                sum -= (pre - st[top]) * maxHeights[st[top]];
+                --top;
+            }
+            if (top == -1)
+                pre = n;
+            else
+                pre = st[top];
+            st[++top] = i;
+            sum += (pre - i) * maxHeights[i];
+            right[i] = sum;
+        }
+        long long ans = 0;
+        for (int i = 0; i < n; ++i)
+        {
+            ans = max(ans, left[i] + right[i] - maxHeights[i]);
+        }
+        return ans;
     }
 };
-
 int t, n, m, k;
 int main()
 {
@@ -173,6 +188,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    solution.punishmentNumber(45);
+    vector<int> a = {5, 3, 4, 1, 1};
+    solution.maximumSumOfHeights(a);
     return 0;
 }

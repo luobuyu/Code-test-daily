@@ -115,51 +115,56 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-vector<int> ret;
-bool dfs(int sum, int target)
-{
-    if (sum == 0 && target == 0)
-        return true;
-    if (sum < target)
-        return false;
-    int tmp = 0;
-    int d = 10;
-    while (tmp <= target)
-    {
-        tmp = sum % d;
-        if (dfs(sum / d, target - tmp))
-        {
-            return true;
-        }
-        d *= 10;
-    }
-    return false;
-}
-auto init = []()
-{
-    int sum = 0;
-    ret.resize(1001);
-    for (int i = 1; i <= 1000; ++i)
-    {
-        int tmp = i * i;
-        if (dfs(i * i, i))
-        {
-            sum += i * i;
-        }
-        ret[i] = sum;
-    }
-    return 0;
-}();
 class Solution
 {
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int punishmentNumber(int n)
+    int minimumMountainRemovals(vector<int> &nums)
     {
-        return ret[n];
+        int n = nums.size();
+        vector<int> left(n), right(n);
+        vector<int> a(n);
+        // dp[n] 长度为 n 的末尾下标是哪个
+        a[0] = nums[0];
+        int len = 1;
+        left[0] = len;
+        for (int i = 1; i < n; ++i)
+        {
+            if (nums[i] > a[len - 1])
+                a[len++] = nums[i];
+            else
+            {
+                int index = lower_bound(a.begin(), a.begin() + len, nums[i]) - a.begin();
+                a[index] = nums[i];
+            }
+            left[i] = len;
+        }
+
+        len = 1;
+        right[n - 1] = len;
+        a[0] = nums[n - 1];
+        for (int i = n - 2; i >= 0; --i)
+        {
+            if (nums[i] > a[len - 1])
+                a[len++] = nums[i];
+            else
+            {
+                int index = lower_bound(a.begin(), a.begin() + len, nums[i]) - a.begin();
+                a[index] = nums[i];
+            }
+            right[i] = len;
+        }
+        int ans = n;
+        for (int i = 1; i < n - 1; ++i)
+        {
+            if (left[i] > 1 && right[i] > 1)
+            {
+                ans = min(ans, n - left[i] - right[i] + 1);
+            }
+        }
+        return ans;
     }
 };
 
@@ -173,6 +178,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    solution.punishmentNumber(45);
+    vector<int> a = {9, 8, 1, 7, 6, 5, 4, 3, 2, 1};
+    solution.minimumMountainRemovals(a);
     return 0;
 }

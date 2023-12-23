@@ -115,54 +115,59 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-vector<int> ret;
-bool dfs(int sum, int target)
-{
-    if (sum == 0 && target == 0)
-        return true;
-    if (sum < target)
-        return false;
-    int tmp = 0;
-    int d = 10;
-    while (tmp <= target)
-    {
-        tmp = sum % d;
-        if (dfs(sum / d, target - tmp))
-        {
-            return true;
-        }
-        d *= 10;
-    }
-    return false;
-}
-auto init = []()
-{
-    int sum = 0;
-    ret.resize(1001);
-    for (int i = 1; i <= 1000; ++i)
-    {
-        int tmp = i * i;
-        if (dfs(i * i, i))
-        {
-            sum += i * i;
-        }
-        ret[i] = sum;
-    }
-    return 0;
-}();
 class Solution
 {
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int punishmentNumber(int n)
+    bool splitArraySameAverage(vector<int> &nums)
     {
-        return ret[n];
+        int sum = 0;
+        int n = nums.size();
+        if (n == 1)
+            return false;
+        for (auto &x : nums)
+            sum += x;
+        // sumA / k = (sum - sumA) / (n - k);
+        // sumA = sum * k / n
+        // 找一个子数组，和是 sumA
+        // 每个数均减去平均值，也就是 sumA = 0
+        // sumA = sum * n * k / n = sum * k
+        // 每个数减去sum，就是 sumA = 0
+        for (auto &x : nums)
+            x = x * n - sum;
+        int m = n >> 1;
+        unordered_set<int> s;
+        for (int i = 1; i < (1 << m); ++i)
+        {
+            // [1, (1 << m) - 1]
+            int tmp = 0;
+            for (int j = 0; j < m; ++j)
+            {
+                if ((i >> j) & 1)
+                    tmp += nums[j];
+            }
+            if (tmp == 0)
+                return true;
+            s.insert(tmp);
+        }
+        for (int i = 1; i < (1 << (n - m)); ++i)
+        {
+            int tmp = 0;
+            for (int j = m; j < n; ++j)
+            {
+                if ((i >> (j - m)) & 1)
+                    tmp += nums[j];
+            }
+            if (tmp == 0)
+                return true;
+            if (s.count(-tmp) && i != (1 << (n - m)) - 1)
+                return true;
+        }
+        return false;
     }
 };
-
 int t, n, m, k;
 int main()
 {
@@ -173,6 +178,8 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    solution.punishmentNumber(45);
+    vector<int> a = {17, 3, 7, 12, 1};
+    cout << solution.splitArraySameAverage(a) << endl;
+
     return 0;
 }

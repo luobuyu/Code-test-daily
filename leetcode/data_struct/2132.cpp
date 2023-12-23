@@ -115,51 +115,56 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-vector<int> ret;
-bool dfs(int sum, int target)
-{
-    if (sum == 0 && target == 0)
-        return true;
-    if (sum < target)
-        return false;
-    int tmp = 0;
-    int d = 10;
-    while (tmp <= target)
-    {
-        tmp = sum % d;
-        if (dfs(sum / d, target - tmp))
-        {
-            return true;
-        }
-        d *= 10;
-    }
-    return false;
-}
-auto init = []()
-{
-    int sum = 0;
-    ret.resize(1001);
-    for (int i = 1; i <= 1000; ++i)
-    {
-        int tmp = i * i;
-        if (dfs(i * i, i))
-        {
-            sum += i * i;
-        }
-        ret[i] = sum;
-    }
-    return 0;
-}();
 class Solution
 {
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int punishmentNumber(int n)
+    bool possibleToStamp(vector<vector<int>> &grid, int stampHeight, int stampWidth)
     {
-        return ret[n];
+        int n = grid.size(), m = grid[0].size();
+        vector<vector<int>> preSum(n + 1, vector<int>(m + 1));
+        vector<vector<int>> diff(n + 2, vector<int>(m + 2));
+        for (int i = 1; i <= n; ++i)
+        {
+            for (int j = 1; j <= m; ++j)
+            {
+                preSum[i][j] = preSum[i - 1][j] + preSum[i][j - 1] - preSum[i - 1][j - 1] + grid[i - 1][j - 1];
+            }
+        }
+        // 贪心，从起点开始，能贴就贴
+        for (int i = 1; i + stampHeight - 1 <= n; ++i)
+        {
+            for (int j = 1; j + stampWidth - 1 <= m; ++j)
+            {
+                // 起点 i, j
+                int end_i = i + stampHeight - 1;
+                int end_j = j + stampWidth - 1;
+
+                int sum = preSum[end_i][end_j] - preSum[end_i][j - 1] - preSum[i - 1][end_j] + preSum[i - 1][j - 1];
+                if (sum == 0)
+                {
+                    diff[i][j]++;
+                    diff[i][end_j + 1]--;
+                    diff[end_i + 1][j]--;
+                    diff[end_i + 1][end_j + 1]++;
+                }
+            }
+        }
+
+        for (int i = 1; i <= n; ++i)
+        {
+            for (int j = 1; j <= m; ++j)
+            {
+                diff[i][j] += diff[i - 1][j] + diff[i][j - 1] - diff[i - 1][j - 1];
+                if (diff[i][j] == 0 && grid[i - 1][j - 1] == 0)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 };
 
@@ -173,6 +178,13 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    solution.punishmentNumber(45);
+    vector<vector<int>> a = {
+        {1, 0, 0, 0},
+        {1, 0, 0, 0},
+        {1, 0, 0, 0},
+        {1, 0, 0, 0},
+    };
+    cout << solution.possibleToStamp(a, 4, 3) << endl;
+
     return 0;
 }

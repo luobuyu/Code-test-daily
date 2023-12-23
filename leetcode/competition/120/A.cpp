@@ -115,51 +115,42 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-vector<int> ret;
-bool dfs(int sum, int target)
-{
-    if (sum == 0 && target == 0)
-        return true;
-    if (sum < target)
-        return false;
-    int tmp = 0;
-    int d = 10;
-    while (tmp <= target)
-    {
-        tmp = sum % d;
-        if (dfs(sum / d, target - tmp))
-        {
-            return true;
-        }
-        d *= 10;
-    }
-    return false;
-}
-auto init = []()
-{
-    int sum = 0;
-    ret.resize(1001);
-    for (int i = 1; i <= 1000; ++i)
-    {
-        int tmp = i * i;
-        if (dfs(i * i, i))
-        {
-            sum += i * i;
-        }
-        ret[i] = sum;
-    }
-    return 0;
-}();
 class Solution
 {
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int punishmentNumber(int n)
+    bool check(vector<int> &nums, int l, int r)
     {
-        return ret[n];
+        int n = nums.size();
+        int pre = -1;
+        for (int i = 0; i < l; ++i)
+        {
+            if (nums[i] <= pre)
+                return false;
+            pre = nums[i];
+        }
+        for (int i = r + 1; i < n; ++i)
+        {
+            if (nums[i] <= pre)
+                return false;
+            pre = nums[i];
+        }
+        return true;
+    }
+    int incremovableSubarrayCount(vector<int> &nums)
+    {
+        int n = nums.size();
+        int ans = 0;
+        for (int i = 0; i < n; ++i)
+        {
+            for (int j = i; j < n; ++j)
+            {
+                ans += check(nums, i, j);
+            }
+        }
+        return ans;
     }
 };
 
@@ -173,6 +164,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    solution.punishmentNumber(45);
+    vector<int> a = {5, 3, 4, 6, 7};
+    cout << solution.incremovableSubarrayCount(a) << endl;
     return 0;
 }

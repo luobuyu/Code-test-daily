@@ -115,51 +115,31 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-vector<int> ret;
-bool dfs(int sum, int target)
-{
-    if (sum == 0 && target == 0)
-        return true;
-    if (sum < target)
-        return false;
-    int tmp = 0;
-    int d = 10;
-    while (tmp <= target)
-    {
-        tmp = sum % d;
-        if (dfs(sum / d, target - tmp))
-        {
-            return true;
-        }
-        d *= 10;
-    }
-    return false;
-}
-auto init = []()
-{
-    int sum = 0;
-    ret.resize(1001);
-    for (int i = 1; i <= 1000; ++i)
-    {
-        int tmp = i * i;
-        if (dfs(i * i, i))
-        {
-            sum += i * i;
-        }
-        ret[i] = sum;
-    }
-    return 0;
-}();
 class Solution
 {
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int punishmentNumber(int n)
+    int maxNumOfMarkedIndices(vector<int> &nums)
     {
-        return ret[n];
+        sort(nums.begin(), nums.end());
+        int n = nums.size();
+        int l = 0, r = n / 2;
+        int ans = 0;
+        while (r < n)
+        {
+            if (nums[l] * 2 > nums[r])
+                ++r;
+            else
+            {
+                ++l;
+                ++r;
+                ans += 2;
+            }
+        }
+        cout << ans << endl;
+        return ans;
     }
 };
 
@@ -173,6 +153,8 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    solution.punishmentNumber(45);
+    vector<int> a = {42, 83, 48, 10, 24, 55, 9, 100, 10, 17, 17, 99, 51, 32, 16, 98, 99, 31, 28, 68, 71, 14, 64, 29, 15, 40};
+    cout << a.size() << endl;
+    solution.maxNumOfMarkedIndices(a);
     return 0;
 }

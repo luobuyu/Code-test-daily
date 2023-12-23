@@ -115,51 +115,34 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-vector<int> ret;
-bool dfs(int sum, int target)
-{
-    if (sum == 0 && target == 0)
-        return true;
-    if (sum < target)
-        return false;
-    int tmp = 0;
-    int d = 10;
-    while (tmp <= target)
-    {
-        tmp = sum % d;
-        if (dfs(sum / d, target - tmp))
-        {
-            return true;
-        }
-        d *= 10;
-    }
-    return false;
-}
-auto init = []()
-{
-    int sum = 0;
-    ret.resize(1001);
-    for (int i = 1; i <= 1000; ++i)
-    {
-        int tmp = i * i;
-        if (dfs(i * i, i))
-        {
-            sum += i * i;
-        }
-        ret[i] = sum;
-    }
-    return 0;
-}();
 class Solution
 {
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int punishmentNumber(int n)
+    int minExtraChar(string s, vector<string> &dictionary)
     {
-        return ret[n];
+        unordered_set<string> ss;
+        for (auto &s : dictionary)
+            ss.insert(s);
+        int n = s.length();
+        vector<int> dp(n + 1, INF);
+        dp[0] = 0;
+        for (int i = 1; i <= n; ++i)
+        {
+            dp[i] = dp[i - 1] + 1;
+            for (int j = 0; j < i; ++j)
+            {
+                // [j + 1, i]
+                string tmp = s.substr(j + 1 - 1, i - j);
+                if (ss.count(tmp))
+                {
+                    dp[i] = min(dp[i], dp[j]);
+                }
+            }
+        }
+        return dp[n];
     }
 };
 
@@ -173,6 +156,8 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    solution.punishmentNumber(45);
+    string s = "leetscode";
+    vector<string> dict = {"leet", "code", "leetcode"};
+    solution.minExtraChar(s, dict);
     return 0;
 }

@@ -115,51 +115,31 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-vector<int> ret;
-bool dfs(int sum, int target)
-{
-    if (sum == 0 && target == 0)
-        return true;
-    if (sum < target)
-        return false;
-    int tmp = 0;
-    int d = 10;
-    while (tmp <= target)
-    {
-        tmp = sum % d;
-        if (dfs(sum / d, target - tmp))
-        {
-            return true;
-        }
-        d *= 10;
-    }
-    return false;
-}
-auto init = []()
-{
-    int sum = 0;
-    ret.resize(1001);
-    for (int i = 1; i <= 1000; ++i)
-    {
-        int tmp = i * i;
-        if (dfs(i * i, i))
-        {
-            sum += i * i;
-        }
-        ret[i] = sum;
-    }
-    return 0;
-}();
 class Solution
 {
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int punishmentNumber(int n)
+    int nextGreaterElement(int n)
     {
-        return ret[n];
+        string s = to_string(n);
+        int size = s.length();
+        // 从后往前单调增？
+        int i = size - 2;
+        while (i >= 0 && s[i] > s[i + 1])
+            --i;
+        int j = size - 1;
+        while (j >= 0 && s[i] >= s[j])
+            --j;
+        if (i == -1 || j == -1)
+            return -1;
+        swap(s[i], s[i]);
+        reverse(s.begin() + i + 1, s.end());
+        long long sum = stol(s.c_str());
+        if (sum > INT_MAX || sum <= n)
+            return -1;
+        return sum;
     }
 };
 
@@ -173,6 +153,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    solution.punishmentNumber(45);
+    solution.nextGreaterElement(12);
     return 0;
 }

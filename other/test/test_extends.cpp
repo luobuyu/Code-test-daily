@@ -1,6 +1,5 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
-#include "head.h"
 #define ll long long
 #define lll long long
 #define PII pair<int, int>
@@ -54,31 +53,67 @@ const ll mod = 1e9 + 7;
 const int INF = 0x3f3f3f3f;
 const ll INF_LL = 0x3f3f3f3f3f3f3f3f;
 const double eps = 1e-5;
+const int maxn = 1e3 + 10;
+const int maxm = 1e5 + 10;
 int t, n, m, k;
-class Solution
+
+struct Point_2
 {
+private:
+    double xx, yy;
+
 public:
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    vector<int> nextGreaterElements(vector<int> &nums)
+    Point_2() {}
+    Point_2(double _x, double _y) : xx(_x), yy(_y) {}
+
+    Point_2 operator-(const Point_2 &p) const
     {
-        int n = nums.size();
-        for (int i = 0; i < n - 1; ++i)
-            nums.emplace_back(nums[i]);
-        vector<int> ans(n, -1);
-        vector<int> st(n * 2);
-        int top = -1;
-        for (int i = 0; i < 2 * n - 1; ++i)
-        {
-            while (top >= 0 && nums[st[top]] < nums[i])
-            {
-                ans[st[top] % n] = nums[i];
-                --top;
-            }
-            st[++top] = i;
-        }
-        return ans;
+        return Point_2(xx - p.x(), yy - p.y());
+    }
+    Point_2 operator+(const Point_2 &p) const
+    {
+        return Point_2(xx + p.x(), yy + p.y());
+    }
+    Point_2 operator/(const double &k) const
+    {
+        return Point_2(xx / k, yy / k);
+    }
+    Point_2 operator*(const double &k) const
+    {
+        return Point_2(xx * k, yy * k);
+    }
+    double x() const
+    {
+        return xx;
+    }
+    double y() const
+    {
+        return yy;
+    }
+};
+
+struct Segment_2
+{
+private:
+    Point_2 start, end;
+
+public:
+    Segment_2() {}
+    Segment_2(Point_2 _start, Point_2 _end) : start(_start), end(_end) {}
+    Point_2 source()
+    {
+        return start;
+    }
+    Point_2 target()
+    {
+        return end;
+    }
+};
+
+struct Vector_2 : public Point_2
+{
+    Vector_2(int _x, int _y)
+    {
     }
 };
 int main()
@@ -89,8 +124,8 @@ int main()
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
-    Solution solution;
-    vector<int> a = {1, 1, 1, 1, 1};
-    solution.nextGreaterElements(a);
+    Vector_2 v1(1, 1), v2(0, 1);
+    Point_2 p1(1, 1), p2(0, 1);
+
     return 0;
 }

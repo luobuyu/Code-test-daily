@@ -115,54 +115,37 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-vector<int> ret;
-bool dfs(int sum, int target)
-{
-    if (sum == 0 && target == 0)
-        return true;
-    if (sum < target)
-        return false;
-    int tmp = 0;
-    int d = 10;
-    while (tmp <= target)
-    {
-        tmp = sum % d;
-        if (dfs(sum / d, target - tmp))
-        {
-            return true;
-        }
-        d *= 10;
-    }
-    return false;
-}
-auto init = []()
-{
-    int sum = 0;
-    ret.resize(1001);
-    for (int i = 1; i <= 1000; ++i)
-    {
-        int tmp = i * i;
-        if (dfs(i * i, i))
-        {
-            sum += i * i;
-        }
-        ret[i] = sum;
-    }
-    return 0;
-}();
 class Solution
 {
 public:
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const int INF = 0x3f3f3f3f;
-    int punishmentNumber(int n)
+    bool check(vector<int> &nums, vector<long long> &preSum, int l, int r, long long k)
     {
-        return ret[n];
+        // 从 1 开始
+        int x = l + (r - l >> 1);
+        long long cnt = preSum[r] - preSum[x] - 1ll * (r - x) * nums[x - 1] + 1ll * (x - l) * nums[x - 1] - (preSum[x - 1] - preSum[l - 1]);
+        return cnt <= k;
+    }
+    int maxFrequencyScore(vector<int> &nums, long long k)
+    {
+        // 二分最高频率，check 修改次数
+        int n = nums.size();
+        sort(nums.begin(), nums.end());
+        vector<long long> preSum(n + 1);
+        for (int i = 1; i <= n; ++i)
+        {
+            preSum[i] = preSum[i - 1] + nums[i - 1];
+        }
+        int ans = 1;
+        int l = 1, r = 1;
+        for (r = 1; r <= n; ++r)
+        {
+            while (!check(nums, preSum, l, r, k))
+                ++l;
+            ans = max(ans, r - l + 1);
+        }
+        return ans;
     }
 };
-
 int t, n, m, k;
 int main()
 {
@@ -173,6 +156,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    solution.punishmentNumber(45);
+    vector<int> a = {1, 2, 6, 4};
+    cout << solution.maxFrequencyScore(a, 3) << endl;
     return 0;
 }

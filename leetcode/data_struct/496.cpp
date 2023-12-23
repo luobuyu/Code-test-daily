@@ -115,51 +115,38 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-
-vector<int> ret;
-bool dfs(int sum, int target)
-{
-    if (sum == 0 && target == 0)
-        return true;
-    if (sum < target)
-        return false;
-    int tmp = 0;
-    int d = 10;
-    while (tmp <= target)
-    {
-        tmp = sum % d;
-        if (dfs(sum / d, target - tmp))
-        {
-            return true;
-        }
-        d *= 10;
-    }
-    return false;
-}
-auto init = []()
-{
-    int sum = 0;
-    ret.resize(1001);
-    for (int i = 1; i <= 1000; ++i)
-    {
-        int tmp = i * i;
-        if (dfs(i * i, i))
-        {
-            sum += i * i;
-        }
-        ret[i] = sum;
-    }
-    return 0;
-}();
 class Solution
 {
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int punishmentNumber(int n)
+    vector<int> nextGreaterElement(vector<int> &nums1, vector<int> &nums2)
     {
-        return ret[n];
+        int n1 = nums1.size(), n2 = nums2.size();
+        vector<int> ans(n1, -1);
+        unordered_map<int, int> mp;
+        for (auto &x : nums2)
+            mp[x] = -1;
+        for (int i = 0; i < n1; ++i)
+        {
+            mp[nums1[i]] = i;
+        }
+        vector<int> st(n2);
+        int top = -1;
+        for (int i = 0; i < n2; ++i)
+        {
+            while (top >= 0 && nums2[st[top]] <= nums2[i])
+            {
+                if (mp[nums2[st[top]]] != -1)
+                {
+                    ans[mp[nums2[st[top]]]] = nums2[i];
+                }
+                --top;
+            }
+            st[++top] = i;
+        }
+        return ans;
     }
 };
 
@@ -173,6 +160,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    solution.punishmentNumber(45);
+
     return 0;
 }
