@@ -120,11 +120,25 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    int findMaxLength(vector<int> &nums)
     {
+        int ans = 0;
+        int n = nums.size();
+        unordered_map<int, int> mp; // diff 1 - 0
+        mp[0] = -1;
+        int sum = 0;
+        for (int i = 0; i < n; ++i)
+        {
+            sum += (nums[i] == 1 ? 1 : -1);
+            if (!mp.count(sum))
+                mp[sum] = i;
+            else
+            {
+                ans = max(ans, i - mp[sum]);
+            }
+        }
+        return ans;
     }
 };
 

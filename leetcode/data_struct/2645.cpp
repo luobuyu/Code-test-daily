@@ -120,11 +120,57 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    int addMinimum1(string word)
     {
+        int n = word.size();
+        int ans = 0;
+        int i = 0;
+        while (i < n)
+        {
+            if (i == 0)
+            {
+                if (word[i] == 'b')
+                    ans += 1;
+                else if (word[i] == 'c')
+                    ans += 2;
+                ++i;
+                continue;
+            }
+            if (word[i] == 'a')
+            {
+                ans += 'c' - word[i - 1];
+            }
+            else if (word[i] == 'b')
+            {
+                if (word[i - 1] == 'c')
+                    ans += 1;
+                else if (word[i - 1] == 'b')
+                    ans += 2;
+            }
+            else if (word[i] == 'c')
+            {
+                if (word[i - 1] == 'a')
+                    ans += 1;
+                else if (word[i - 1] == 'c')
+                    ans += 2;
+            }
+            ++i;
+        }
+        ans += 'c' - word[n - 1];
+        return ans;
+    }
+    int addMinimum(string word)
+    {
+        int n = word.size();
+        int ans = 0;
+        for (int i = 1; i < n; ++i)
+        {
+            ans += (word[i] - word[i - 1] + 2) % 3;
+        }
+        ans += (word[0] - 'a' + 2) % 3;
+        ans += ('c' - word[n - 1] + 2) % 3;
+        return ans;
     }
 };
 
@@ -138,6 +184,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    string s = "b";
+    solution.addMinimum(s);
     return 0;
 }

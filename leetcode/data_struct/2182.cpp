@@ -120,11 +120,43 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    string repeatLimitedString(string s, int repeatLimit)
     {
+        int n = s.length();
+        vector<int> cnt(26);
+        for (auto &ch : s)
+        {
+            cnt[ch - 'a']++;
+        }
+        string ans;
+        for (int i = 25; i >= 0; --i)
+        {
+            if (cnt[i] == 0)
+                continue;
+            int addCnt = min(repeatLimit, cnt[i]);
+            ans += string(addCnt, i + 'a');
+            cnt[i] -= addCnt;
+            if (cnt[i] > 0)
+            {
+                bool flag = false;
+                for (int j = i - 1; j >= 0; --j)
+                {
+                    if (cnt[j] == 0)
+                        continue;
+                    ans += string(1, j + 'a');
+                    cnt[j] -= 1;
+                    flag = true;
+                    break;
+                }
+                if (flag)
+                {
+                    i++;
+                    continue;
+                }
+            }
+        }
+        return ans;
     }
 };
 
@@ -138,6 +170,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    string s = "cczazcc";
+    solution.repeatLimitedString(s, 3);
     return 0;
 }

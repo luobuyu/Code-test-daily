@@ -120,11 +120,25 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    int numSubarrayProductLessThanK(vector<int> &nums, int k)
     {
+        int l = 0, r = 0;
+        int ans = 0;
+        long long mul = 1;
+        int n = nums.size();
+        for (r = 0; r < n; ++r)
+        {
+            mul *= nums[r];
+            while (l <= r && mul >= k)
+            {
+                mul /= nums[l];
+                ++l;
+            }
+            if (l <= r)
+                ans += (r - l + 1);
+        }
+        return ans;
     }
 };
 
@@ -138,6 +152,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<int> a = {57, 44, 92, 28, 66, 60, 37, 33, 52, 38, 29, 76, 8, 75, 22};
+    solution.numSubarrayProductLessThanK(a, 18);
     return 0;
 }

@@ -123,8 +123,20 @@ public:
     const static int INF = 0x3f3f3f3f;
     const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    bool makeStringsEqual(string s, string target)
     {
+        int n = s.length();
+        int cnt1 = 0;
+        for (auto &ch : s)
+            if (ch == '1')
+                cnt1++;
+        int cnt2 = 0;
+        for (auto &ch : target)
+            if (ch == '1')
+                ++cnt2;
+        if (cnt1 > 0 && cnt2 == 0 || cnt1 == 0 && cnt2 > 0)
+            return false;
+        return true;
     }
 };
 

@@ -120,11 +120,47 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    const int mod = 1e9 + 7;
+    int dp[500];
+    string s;
+    int len;
+    int dfs(int step, string cur, bool isLimit, bool isLead)
     {
+        if (step == len)
+            return !isLead;
+        if (!isLimit && !isLead && dp[step] != -1)
+            return dp[step];
+        int up = isLimit ? s[step] : 'z';
+        int ans = 0;
+        if (isLead)
+            ans = (ans + dfs(step + 1, cur, false, true)) % mod;
+        for (int i = 'a'; i <= up; ++i)
+        {
+            if ()
+                cur.push_back(i);
+            ans = (ans + dfs(step + 1, cur, isLimit && i == up, false)) % mod;
+            cur.pop_back();
+        }
+        ans %= mod;
+        if (!isLimit && !isLead)
+            dp[step] = ans;
+        return ans;
+    }
+    int solve(string upper)
+    {
+        memset(dp, -1, sizeof(dp));
+        s = upper;
+        len = s.length();
+        return dfs(0, "", true, true) - 1;
+    }
+    int findGoodStrings(int n, string s1, string s2, string evil)
+    {
+        int ret2 = solve(s2);
+        int ret1 = solve(s1);
+        bool flag = true;
+        ret1 -= flag;
+        return (ret2 - ret1 + mod) % mod;
     }
 };
 
@@ -138,6 +174,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    cout << solution.findGoodStrings(2, "aa", "da", "b") << endl;
     return 0;
 }

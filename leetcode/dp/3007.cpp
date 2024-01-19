@@ -120,11 +120,61 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    string s;
+    int n;
+    int x;
+    long long dp[64][64];
+    long long dfs(int step, int val, bool isLimit)
     {
+        if (step == n)
+            return val;
+        if (!isLimit && dp[step][val] != -1)
+            return dp[step][val];
+        long long ans = 0;
+        int up = isLimit ? s[step] - '0' : 1;
+        for (int i = 0; i <= up; ++i)
+        {
+            ans += dfs(step + 1, val + (i == 1 && ((n - step) % x == 0)), isLimit && i == up);
+        }
+        if (!isLimit)
+            dp[step][val] = ans;
+        return ans;
+    }
+    bool check(long long mid, int k, int _x)
+    {
+        s.clear();
+        while (mid)
+        {
+            if (mid & 1)
+                s.push_back('1');
+            else
+                s.push_back('0');
+            mid >>= 1;
+        }
+        n = s.length();
+        x = _x;
+        reverse(s.begin(), s.end());
+        memset(dp, -1, sizeof(dp));
+        long long ret = dfs(0, 0, true);
+        return ret <= k;
+    }
+    long long findMaximumNumber(long long k, int x)
+    {
+        long long l = 1, r = 1e15;
+        long long ans;
+        while (l <= r)
+        {
+            long long mid = l + (r - l >> 1);
+            if (check(mid, k, x))
+            {
+                ans = mid;
+                l = mid + 1;
+            }
+            else
+                r = mid - 1;
+        }
+        return ans;
     }
 };
 
@@ -138,6 +188,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    cout << solution.findMaximumNumber(9, 1) << endl;
     return 0;
 }

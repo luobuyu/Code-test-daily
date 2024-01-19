@@ -120,11 +120,53 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    const long long mod = 1e9 + 7;
+    // solve <= num, digit <= max_sum
+    // step 遍历到第几位，sum数位和，isLimit当前位是否受到上界限制，isLead是否存在前导零
+    string s;
+    int n;
+    long long dp[23][220];
+    int minx, maxx;
+    int dfs(int step, int sum, bool isLimit)
     {
+        if (sum > maxx)
+            return 0;
+        if (step == n)
+            return sum >= minx; // 不能是纯零
+        if (!isLimit && dp[step][sum] != -1)
+            return dp[step][sum];
+        long long ans = 0;
+        int up = isLimit ? s[step] - '0' : 9;
+        for (int i = 0; i <= up; ++i) // 存在前导零的话，从1开始填，否则从0开始填。
+        {
+            ans = (ans + dfs(step + 1, sum + i, isLimit && (i == up))) % mod;
+        }
+        if (!isLimit)
+            dp[step][sum] = ans;
+        return ans;
+    }
+    int solve(string upper, int min_sum, int max_sum)
+    {
+        memset(dp, -1, sizeof(dp));
+        s = upper;
+        n = s.length();
+        minx = min_sum;
+        maxx = max_sum;
+        return dfs(0, 0, true);
+    }
+    int count(string num1, string num2, int min_sum, int max_sum)
+    {
+        long long ret1 = solve(num2, min_sum, max_sum);
+        long long ret2 = solve(num1, min_sum, max_sum);
+        int sum = 0;
+        for (auto &ch : num1)
+        {
+            sum += ch - '0';
+        }
+        if (sum >= minx && sum <= maxx)
+            ret2 -= 1;
+        return (ret1 - ret2 + mod) % mod;
     }
 };
 

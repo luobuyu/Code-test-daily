@@ -120,11 +120,52 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    vector<int> beautifulIndices(string s, string a, string b, int k)
     {
+        vector<int> equa;
+        vector<int> equb;
+        int lena = a.length(), lenb = b.length();
+        int n = s.length();
+        for (int i = 0; i <= min(n - 1, max(n - lena, n - lenb)); ++i)
+        {
+            if (i + lena - 1 < n)
+            {
+                string s1 = s.substr(i, lena);
+                if (s1 == a)
+                {
+                    equa.emplace_back(i);
+                }
+            }
+            if (i + lenb - 1 < n)
+            {
+                string s2 = s.substr(i, lenb);
+                if (s2 == b)
+                {
+                    equb.emplace_back(i);
+                }
+            }
+            if (i + lena - 1 >= n && i + lenb - 1 >= n)
+            {
+                break;
+            }
+        }
+        vector<int> ans;
+        for (auto &x : equa)
+        {
+            // < x + k + 1 ->  <= x + k
+            int index1 = lower_bound(equb.begin(), equb.end(), x + k + 1) - equb.begin() - 1;
+            int index2 = lower_bound(equb.begin(), equb.end(), x - k) - equb.begin();
+            if (index1 == index2 && index1 == equb.size())
+            {
+                continue;
+            }
+            if (index1 >= index2)
+            {
+                ans.emplace_back(x);
+            }
+        }
+        return ans;
     }
 };
 

@@ -120,11 +120,37 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    int minimumAddedCoins(vector<int> &coins, int target)
     {
+        int mx = 0;
+        int ans = 0;
+        int n = coins.size();
+        sort(coins.begin(), coins.end());
+        for (int i = 0; i < n; ++i)
+        {
+            int x = coins[i];
+            if (mx + 1 >= x)
+            {
+                mx += x;
+                if (mx >= target)
+                    return ans;
+            }
+            else
+            {
+                // 需要加入 mx + 1;
+                ans++;
+                mx = 2 * mx + 1;
+                --i;
+                continue;
+            }
+        }
+        while (mx < target)
+        {
+            ans++;
+            mx = 2 * mx + 1;
+        }
+        return ans;
     }
 };
 
@@ -138,6 +164,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<int> a = {1, 4, 10};
+    solution.minimumAddedCoins(a, 19);
     return 0;
 }

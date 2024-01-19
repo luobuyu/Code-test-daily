@@ -1,14 +1,11 @@
 struct TrieNode
 {
     const static int M = 26;
-    TrieNode **next;
+    vector<TrieNode *> next;
     bool exist;
     int val;
-    TrieNode()
+    TrieNode() : next(M, nullptr)
     {
-        next = new TrieNode *[M]();
-        for (int i = 0; i < M; ++i)
-            next[i] = nullptr;
         exist = false;
         val = 0;
     }

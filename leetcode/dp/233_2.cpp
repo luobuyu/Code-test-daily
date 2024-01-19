@@ -120,11 +120,32 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    string s;
+    int n;
+    int dp[10][10];
+    int dfs(int step, int val, bool isLimit)
     {
+        if (step == n)
+            return val;
+        if (!isLimit && dp[step][val] != -1)
+            return dp[step][val];
+        int ans = 0;
+        int up = isLimit ? s[step] - '0' : 9;
+        for (int i = 0; i <= up; ++i)
+        {
+            ans += dfs(step + 1, val + (i == 1), isLimit && i == up);
+        }
+        if (!isLimit)
+            dp[step][val] = ans;
+        return ans;
+    }
+    int countDigitOne(int num)
+    {
+        s = to_string(num);
+        n = s.length();
+        memset(dp, -1, sizeof(dp));
+        return dfs(0, 0, true);
     }
 };
 
@@ -138,6 +159,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    cout << solution.countDigitOne(20) << endl;
     return 0;
 }

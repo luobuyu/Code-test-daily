@@ -120,11 +120,53 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    const long long mod = 1e9 + 7;
+    string s;
+    int len;
+    long long dp[100][10];
+    long long dfs(int step, int pre, bool isLimit, bool isLead)
     {
+        if (step == len)
+            return !isLead;
+        if (!isLimit && !isLead && dp[step][pre] != -1)
+            return dp[step][pre];
+        long long ans = 0;
+        if (isLead)
+            ans = (ans + dfs(step + 1, pre, false, true)) % mod;
+        int up = isLimit ? s[step] - '0' : 9;
+        for (int i = isLead; i <= up; ++i)
+        {
+            if (!isLead && abs(i - pre) != 1)
+                continue;
+            ans = (ans + dfs(step + 1, i, isLimit && i == up, false)) % mod;
+        }
+        if (!isLimit && !isLead)
+            dp[step][pre] = ans;
+        return ans;
+    }
+    long long solve(string upper)
+    {
+        memset(dp, -1, sizeof(dp));
+        s = upper;
+        len = s.length();
+        return dfs(0, 0, true, true);
+    }
+    int countSteppingNumbers(string low, string high)
+    {
+        long long ret1 = solve(high);
+        long long ret2 = solve(low);
+        bool flag = true;
+        for (int i = 1; i < low.length(); ++i)
+        {
+            if (abs(low[i] - low[i - 1]) != 1)
+            {
+                flag = false;
+                break;
+            }
+        }
+        ret2 -= flag;
+        return (ret1 - ret2 + mod) % mod;
     }
 };
 

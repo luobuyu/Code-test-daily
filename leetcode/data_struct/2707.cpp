@@ -115,16 +115,104 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
+struct Trie
+{
+    struct TrieNode
+    {
+        vector<TrieNode *> next;
+        bool exist;
+        TrieNode() : next(26, nullptr), exist(false) {}
+    };
+    TrieNode *root;
+    TrieNode *streamCur;
+    Trie()
+    {
+        root = new TrieNode();
+        streamCur = nullptr;
+    }
+    void insert(const string &word)
+    {
+        TrieNode *cur = root;
+        int n = word.size();
+        for (int i = 0; i < n; ++i)
+        {
+            int index = word[i] - 'a';
+            if (!cur->next[index])
+                cur->next[index] = new TrieNode();
+            cur = cur->next[index];
+        }
+        cur->exist = true;
+    }
+    void initStreamQuery()
+    {
+        streamCur = root;
+    }
+    bool queryStream(char ch)
+    {
+        if (streamCur == nullptr || streamCur->next[ch - 'a'] == nullptr)
+        {
+            // next 不存在的时候需要清空一下，否则会出错，比如 leetscode， leet在，next[s] 不在，如果不清空，接下来 c 会判定在。
+            streamCur = nullptr;
+            return false;
+        }
+        streamCur = streamCur->next[ch - 'a'];
+        return streamCur->exist;
+    }
+};
 class Solution
 {
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    int minExtraChar1(string s, vector<string> &dictionary)
     {
+        unordered_set<string> ss;
+        for (auto &s : dictionary)
+            ss.insert(s);
+        int n = s.length();
+        vector<int> dp(n + 1, INF);
+        dp[0] = 0;
+        for (int i = 1; i <= n; ++i)
+        {
+            dp[i] = dp[i - 1] + 1;
+            for (int j = 0; j < i; ++j)
+            {
+                // [j + 1, i]
+                string tmp = s.substr(j + 1 - 1, i - j);
+                if (ss.count(tmp))
+                {
+                    dp[i] = min(dp[i], dp[j]);
+                }
+            }
+        }
+        return dp[n];
+    }
+
+    int minExtraChar(string s, vector<string> &dictionary)
+    {
+        Trie trie;
+        for (auto &s : dictionary)
+        {
+            reverse(s.begin(), s.end());
+            trie.insert(s);
+        }
+        int n = s.length();
+        vector<int> dp(n + 1, INF);
+        dp[0] = 0;
+        for (int i = 1; i <= n; ++i)
+        {
+            dp[i] = dp[i - 1] + 1;
+            trie.initStreamQuery();
+            for (int j = i - 1; j >= 0; --j)
+            {
+                if (trie.queryStream(s[j]))
+                {
+                    dp[i] = min(dp[i], dp[j]);
+                }
+            }
+        }
+        return dp[n];
     }
 };
 

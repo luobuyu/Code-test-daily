@@ -123,8 +123,27 @@ public:
     const static int INF = 0x3f3f3f3f;
     const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    int xorBeauty(vector<int> &nums)
     {
+        int n = nums.size();
+        vector<int> cnt0(32);
+        vector<int> cnt1(32);
+        for (int i = 0; i < n; ++i)
+        {
+            for (int j = 31; j >= 0; --j)
+            {
+                if ((nums[i] >> j) & 1)
+                    cnt1[j]++;
+                else
+                    cnt0[j]++;
+            }
+        }
+        long long ans = 0;
+        for (int i = 31; i >= 0; --i)
+        {
+            ans += 1ll * ((((cnt0[i] + cnt1[i]) * (cnt0[i] + cnt1[i]) - cnt0[i] * cnt0[i]) * cnt1[i]) % 2) * (1 << i);
+        }
+        return ans;
     }
 };
 

@@ -120,11 +120,41 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    vector<int> num;
+    int len;
+    string s;
+    int dp[10];
+    int dfs(int step, bool isLimit, bool isLead)
     {
+        if (step == len)
+            return !isLead;
+        if (!isLimit && !isLead && dp[step] != -1)
+            return dp[step];
+        int up = isLimit ? s[step] - '0' : 9;
+        int ans = 0;
+        if (isLead)
+            ans += dfs(step + 1, false, true);
+        for (int i = 0; i < num.size(); ++i)
+        {
+            if (num[i] > up)
+                break;
+            ans += dfs(step + 1, isLimit && num[i] == up, false);
+        }
+        if (!isLimit && !isLead)
+            dp[step] = ans;
+        return ans;
+    }
+    int atMostNGivenDigitSet(vector<string> &digits, int n)
+    {
+        s = to_string(n);
+        for (auto &ss : digits)
+        {
+            num.emplace_back(ss[0] - '0');
+        }
+        len = s.length();
+        memset(dp, -1, sizeof(dp));
+        return dfs(0, true, true);
     }
 };
 
@@ -138,6 +168,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<string> a = {"1", "3", "5", "7"};
+    solution.atMostNGivenDigitSet(a, 100);
     return 0;
 }

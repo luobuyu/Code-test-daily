@@ -120,11 +120,46 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    string minWindow(string s, string t)
     {
+        int l = 0, r = 0;
+        int cnt = t.length(); // 未覆盖的个数
+        int n = s.length();
+        vector<int> mp(128);
+        vector<int> mp2(128);
+        int len = INF;
+        int ansl = 0, ansr = 0;
+        for (int i = 0; i < cnt; ++i)
+        {
+            mp2[t[i]]++;
+        }
+        // mp[i] == 0 时被覆盖
+        for (r = 0; r < n; ++r)
+        {
+            if (mp2[s[r]] == 0)
+                continue;
+            mp[s[r]]++;
+            if (mp[s[r]] <= mp2[s[r]])
+                --cnt;
+            while (l <= r && cnt == 0)
+            {
+                if (r - l + 1 < len)
+                {
+                    len = r - l + 1;
+                    ansl = l;
+                    ansr = r;
+                }
+                if (mp2[s[l]])
+                {
+                    mp[s[l]]--;
+                    if (mp[s[l]] < mp2[s[l]])
+                        ++cnt;
+                }
+                ++l;
+            }
+        }
+        return s.substr(ansl, len);
     }
 };
 
@@ -138,6 +173,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    string a = "a", t = "aa";
+    solution.minWindow(a, t);
     return 0;
 }

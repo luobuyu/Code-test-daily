@@ -123,11 +123,25 @@ public:
     const static int INF = 0x3f3f3f3f;
     const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    long long minimumRemoval(vector<int> &beans)
     {
+        sort(beans.begin(), beans.end());
+        long long sum = 0;
+        for (auto &x : beans)
+            sum += x;
+        int n = beans.size();
+        long long cnt = 0;
+        long long ans = INF_LL;
+
+        for (int i = 0; i < n; ++i)
+        {
+            // 全修改为 beans[i]
+            ans = min(ans, cnt + (sum - cnt) - 1ll * beans[i] * (n - i));
+            cnt += beans[i];
+        }
+        return ans;
     }
 };
-
 int t, n, m, k;
 int main()
 {
@@ -138,6 +152,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<int> a = {4, 1, 6, 5};
+    solution.minimumRemoval(a);
     return 0;
 }

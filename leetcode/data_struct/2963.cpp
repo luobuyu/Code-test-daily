@@ -120,11 +120,28 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    const int mod = 1e9 + 7;
+    int numberOfGoodPartitions(vector<int> &nums)
     {
+        int n = nums.size();
+        unordered_map<int, int> mp; // x, last_index
+        for (int i = 0; i < n; ++i)
+            mp[nums[i]] = i;
+        int cnt = 0;
+        int maxIndex = -1;
+        int ans = 1;
+        for (int i = 0; i < n; ++i)
+        {
+            if (i > maxIndex)
+            {
+                ++cnt;
+                if (cnt >= 2)
+                    ans = ans * 2 % mod;
+            }
+            maxIndex = max(mp[nums[i]], maxIndex);
+        }
+        return ans;
     }
 };
 
@@ -138,6 +155,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<int> a = {1, 2, 1, 3};
+    solution.numberOfGoodPartitions(a);
     return 0;
 }

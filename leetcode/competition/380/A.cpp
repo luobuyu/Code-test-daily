@@ -120,11 +120,26 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    int maxFrequencyElements(vector<int> &nums)
     {
+        int n = nums.size();
+        int ans = 0;
+        int maxx = 0;
+        vector<int> cnt(101);
+        for (auto &x : nums)
+        {
+            cnt[x]++;
+            maxx = max(maxx, cnt[x]);
+        }
+        for (auto &x : nums)
+        {
+            if (cnt[x] == maxx)
+            {
+                ans += cnt[x];
+            }
+        }
+        return ans;
     }
 };
 
@@ -138,6 +153,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<int> a = {1, 2, 2, 3, 1, 4};
+    solution.maxFrequencyElements(a);
     return 0;
 }

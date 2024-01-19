@@ -120,11 +120,26 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    int solve(string &word, int l, int r)
     {
+    }
+    int countCompleteSubstrings(string word, int k)
+    {
+        vector<int> cnt(26);
+        int ans = 0;
+        int n = word.size();
+        // 划分子串
+        int i = 0;
+        while (i < n)
+        {
+            int j = i + 1;
+            while (j < n && abs(word[j] - word[j - 1]) <= 2)
+                ++j;
+            // [i, j)
+            ans += solve(word, i, j - 1);
+            i = j;
+        }
     }
 };
 

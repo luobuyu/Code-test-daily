@@ -120,11 +120,38 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    vector<int> num = {0, 1, 2, 5, 6, 8, 9};
+    int len;
+    string s;
+    int dp[5][2];
+    // flag 是否存在 2， 5， 6， 9
+    int dfs(int step, bool flag, bool isLimit, bool isLead)
     {
+        if (step == len)
+            return !isLead && flag;
+        if (!isLimit && !isLead && dp[step][flag] != -1)
+            return dp[step][flag];
+        int up = isLimit ? s[step] - '0' : 9;
+        int ans = 0;
+        if (isLead)
+            ans += dfs(step + 1, false, false, true);
+        for (int i = isLead; i < num.size(); ++i)
+        {
+            if (num[i] > up)
+                break;
+            ans += dfs(step + 1, flag | (num[i] == 2 || num[i] == 5 || num[i] == 6 || num[i] == 9), isLimit && num[i] == up, false);
+        }
+        if (!isLimit && !isLead)
+            dp[step][flag] = ans;
+        return ans;
+    }
+    int rotatedDigits(int n)
+    {
+        s = to_string(n);
+        len = s.length();
+        memset(dp, -1, sizeof(dp));
+        return dfs(0, false, true, true);
     }
 };
 
@@ -138,6 +165,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<string> a = {"1", "3", "5", "7"};
+    solution.rotatedDigits(10);
     return 0;
 }

@@ -120,11 +120,36 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    string s;
+    int len;
+    int dp[10][1 << 10];
+    int dfs(int step, int mask, bool isLimit, bool isLead)
     {
+        if (step == len)
+            return !isLead;
+        if (!isLimit && !isLead && dp[step][mask] != -1)
+            return dp[step][mask];
+        int ans = 0;
+        if (isLead)
+            ans += dfs(step + 1, mask, false, true);
+        int up = isLimit ? s[step] - '0' : 9;
+        for (int i = isLead; i <= up; ++i)
+        {
+            if ((mask >> i) & 1)
+                continue;
+            ans += dfs(step + 1, mask | (1 << i), isLimit && i == up, false);
+        }
+        if (!isLimit && !isLead)
+            dp[step][mask] = ans;
+        return ans;
+    }
+    int countSpecialNumbers(int n)
+    {
+        s = to_string(n);
+        len = s.length();
+        memset(dp, -1, sizeof(dp));
+        return dfs(0, 0, true, true);
     }
 };
 

@@ -120,11 +120,42 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    string s;
+    int len;
+    int dp[30][2]; // 当前step，当前位状态，是否是 1
+    int dfs(int step, int pre, bool isLimit)
     {
+        if (step == len)
+            return 1;
+        if (!isLimit && dp[step][pre] != -1)
+            return dp[step][pre];
+        int ans = 0;
+        int up = isLimit ? s[step] - '0' : 1;
+        for (int i = 0; i <= up; ++i)
+        {
+            if (i == 1 && pre == 1)
+                continue;
+            ans += dfs(step + 1, i, isLimit && i == up);
+        }
+        if (!isLimit)
+            dp[step][pre] = ans;
+        return ans;
+    }
+    int findIntegers(int n)
+    {
+        while (n)
+        {
+            if (n & 1)
+                s.push_back('1');
+            else
+                s.push_back('0');
+            n >>= 1;
+        }
+        reverse(s.begin(), s.end());
+        len = s.length();
+        memset(dp, -1, sizeof(dp));
+        return dfs(0, -1, true);
     }
 };
 
@@ -138,6 +169,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    cout << solution.findIntegers(2) << endl;
     return 0;
 }

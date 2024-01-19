@@ -120,11 +120,43 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    int minMovesToCaptureTheQueen(int a, int b, int c, int d, int e, int f)
     {
+        if (a == e)
+        {
+            if (a == c && (d > b && d < f || d > f && d < b))
+                return 2;
+            return 1;
+        }
+        if (b == f)
+        {
+            if (b == d && (c > a && c < e || c < a && c < e))
+                return 2;
+            return 1;
+        }
+        if (c - d == e - f)
+        {
+            if (a - b == c - d)
+            {
+                if (a + b > c + d && a + b < e + f || a + b < c + d && a + b > e + f)
+                {
+                    return 2;
+                }
+            }
+            return 1;
+        }
+        if (c + d == e + f)
+        {
+            if (a + b == c + d)
+            {
+                if (a - b > c - d && a - b < e - f || a - b < c - d && a - b > e - f)
+                {
+                    return 2;
+                }
+            }
+            return 1;
+        }
     }
 };
 
@@ -138,6 +170,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    solution.minMovesToCaptureTheQueen(6, 1, 4, 4, 2, 2);
     return 0;
 }

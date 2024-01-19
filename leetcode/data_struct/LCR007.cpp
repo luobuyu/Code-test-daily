@@ -108,23 +108,47 @@ using namespace FAST_IO;
 //     return 0;
 // }();
 
-auto optimize_cpp_stdio = []()
-{
-    std::ios::sync_with_stdio(false);
-    std::cin.tie(nullptr);
-    std::cout.tie(nullptr);
-    return 0;
-}();
 class Solution
 {
 public:
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    bool find(vector<int> &nums, int a, vector<vector<int>> &ans)
     {
+        int n = nums.size();
+        int l = a + 1, r = n - 1;
+        int target = -nums[a];
+        while (l < r)
+        {
+            while (l > a + 1 && l < r && nums[l] == nums[l - 1])
+                ++l;
+            while (r < n - 1 && l < r && nums[r] == nums[r + 1])
+                --r;
+            if (nums[l] + nums[r] > target)
+                --r;
+            else if (nums[l] + nums[r] < target)
+                ++l;
+            else
+            {
+                ans.emplace_back(vector<int>{nums[a], nums[l], nums[r]});
+                ++l;
+                --r;
+                continue;
+            }
+        }
+        return false;
+    }
+    vector<vector<int>> threeSum(vector<int> &nums)
+    {
+        sort(nums.begin(), nums.end());
+        int a, b, c;
+        vector<vector<int>> ans;
+        int n = nums.size();
+        for (int i = 0; i < n; ++i)
+        {
+            if (i > 0 && nums[i] == nums[i - 1])
+                continue;
+            find(nums, i, ans);
+        }
+        return ans;
     }
 };
 
@@ -138,6 +162,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<int> a = {-1, -1, 0, 1, 2};
+    solution.threeSum(a);
     return 0;
 }

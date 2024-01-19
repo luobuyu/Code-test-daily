@@ -118,13 +118,65 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    const static int maxn = 1e5 + 10;
+    const static int maxn = 5e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    int Next[maxn];
+    void getNext(string substr, int l2) // 模式串，长度
     {
+        Next[0] = -1;
+        for (int t = -1, i = 0; i < l2; Next[++i] = ++t)
+            for (; ~t && substr[i] != substr[t]; t = Next[t])
+                ;
+    }
+    vector<int> kmp(string str, int l1, string substr, int l2) // 主串，长度  模式串，长度
+    {
+        vector<int> ans;
+        int i = 0, j = 0;
+        while (i < l1)
+        {
+            if (j == -1 || str[i] == substr[j])
+                i++, j++;
+            else
+                j = Next[j];
+            if (j == l2)
+            {
+                ans.emplace_back(i - l2 + 1);
+                i--;
+                j--;
+                j = Next[j];
+            }
+        }
+        return ans;
+    }
+    vector<int> beautifulIndices(string s, string a, string b, int k)
+    {
+        int lena = a.length(), lenb = b.length();
+        int n = s.length();
+        getNext(a, lena);
+        vector<int> equa = kmp(s, n, a, lena);
+        memset(Next, 0, sizeof(Next));
+        getNext(b, lenb);
+        vector<int> equb = kmp(s, n, b, lenb);
+        vector<int> ans;
+        int l = 0, r = 0;
+        n = equb.size();
+        if (equb.size() == 0)
+            return {};
+        for (auto &x : equa)
+        {
+            while (l < n && x - equb[l] < k)
+                ++l;
+            while (r < n && equb[r] - x <= k)
+                ++r;
+            if (l == r && r == n)
+                break;
+            if (r >= l)
+            {
+                ans.emplace_back(x);
+            }
+        }
+        return ans;
     }
 };
 

@@ -120,11 +120,42 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    int minOperations(int n)
     {
+        string s;
+        while (n)
+        {
+            s.push_back((n & 1) + '0');
+            n >>= 1;
+        }
+        n = s.length();
+        int i = 0;
+        int cnt = 0;
+        int ans = 0;
+        while (i < n)
+        {
+            if (s[i] == '0')
+            {
+                if (cnt != 0)
+                {
+                    ans++;
+                    cnt = (cnt > 1);
+                }
+                ++i;
+                continue;
+            }
+            int j = i;
+            while (j < n && s[j] == '1')
+                ++j;
+            cnt += (j - i);
+            i = j;
+        }
+        if (cnt == 1)
+            ans++;
+        else if (cnt > 1)
+            ans += 2;
+        return ans;
     }
 };
 
@@ -138,6 +169,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    cout << solution.minOperations(39) << endl;
     return 0;
 }

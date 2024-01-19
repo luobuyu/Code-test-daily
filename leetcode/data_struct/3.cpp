@@ -120,11 +120,24 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    int lengthOfLongestSubstring(string s)
     {
+        int l = 0, r = 0;
+        int n = s.length();
+        vector<int> mp(26);
+        int ans = 0;
+        for (r = 0; r < n; ++r)
+        {
+            while (l <= r && mp[s[r] - 'a'])
+            {
+                mp[s[l] - 'a']--;
+                ++l;
+            }
+            mp[s[r] - 'a']++;
+            ans = max(ans, r - l + 1);
+        }
+        return ans;
     }
 };
 

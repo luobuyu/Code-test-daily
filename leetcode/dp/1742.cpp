@@ -120,11 +120,41 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    string s;
+    int len;
+    int dp[5][45];
+    int dfs(int step, int val, int target, bool isLimit)
     {
+        if (step == len)
+            return val == target;
+        if (!isLimit && dp[step][val] != -1)
+            return dp[step][val];
+        int up = isLimit ? s[step] - '0' : 9;
+        int ans = 0;
+        for (int i = 0; i <= up; ++i)
+        {
+            ans += dfs(step + 1, val + i, target, isLimit && i == up);
+        }
+        if (!isLimit)
+            dp[step][val] = ans;
+        return ans;
+    }
+    int solve(int upper, int target)
+    {
+        memset(dp, -1, sizeof(dp));
+        s = to_string(upper);
+        len = s.length();
+        return dfs(0, 0, target, true);
+    }
+    int countBalls(int lowLimit, int highLimit)
+    {
+        int maxx = 0;
+        for (int i = 1; i <= 45; ++i)
+        {
+            maxx = max(maxx, solve(highLimit, i) - solve(lowLimit - 1, i));
+        }
+        return maxx;
     }
 };
 

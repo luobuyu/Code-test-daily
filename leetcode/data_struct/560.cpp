@@ -120,11 +120,22 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    int subarraySum(vector<int> &nums, int k)
     {
+        unordered_map<int, int> mp;
+        int n = nums.size();
+        mp[0] = 1;
+        int sum = 0;
+        int ans = 0;
+        for (int i = 0; i < n; ++i)
+        {
+            sum += nums[i];
+            if (mp.count(sum - k))
+                ans += mp[sum - k];
+            mp[sum]++;
+        }
+        return ans;
     }
 };
 
@@ -138,6 +149,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<int> a = {1, -1, 0};
+    solution.subarraySum(a, 0);
     return 0;
 }

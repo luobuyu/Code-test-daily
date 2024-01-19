@@ -120,11 +120,21 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    const int INF = 0x3f3f3f3f;
+    int areaOfMaxDiagonal(vector<vector<int>> &dimensions)
     {
+        int maxx = 0, area = 0;
+        for (auto &item : dimensions)
+        {
+            int x = item[0], y = item[1];
+            int tmp = x * x + y * y;
+            if (tmp > maxx)
+            {
+                maxx = tmp;
+                area = x * y;
+            }
+        }
+        return area;
     }
 };
 
