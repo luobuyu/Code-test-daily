@@ -118,75 +118,65 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    const static int maxn = 1e5 + 10;
+    const static int maxn = 5e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    vector<vector<int>> g;
-    vector<int> ans;
-    unordered_set<long long> s;
-    bool count(long long u, long long v)
+    int Next[maxn];
+    void getNext(string substr, int l2) // 模式串，长度
     {
-        return s.count((u << 32) | v);
+        Next[0] = -1;
+        for (int t = -1, i = 0; i < l2; Next[++i] = ++t)
+            for (; ~t && substr[i] != substr[t]; t = Next[t])
+                ;
     }
-    void insert(long long u, long long v)
+    vector<int> kmp(string str, int l1, string substr, int l2) // 主串，长度  模式串，长度
     {
-        s.insert((u << 32) | v);
+        vector<int> ans;
+        int i = 0, j = 0;
+        while (i < l1)
+        {
+            if (j == -1 || str[i] == substr[j])
+                i++, j++;
+            else
+                j = Next[j];
+            if (j == l2)
+            {
+                ans.emplace_back(i - l2 + 1);
+                i--;
+                j--;
+                j = Next[j];
+            }
+        }
+        return ans;
     }
-
-    void dfs1(int u, int fa)
+    vector<int> beautifulIndices(string s, string a, string b, int k)
     {
-        // unordered_set<int> son;
-        for (int i = 0; i < g[u].size(); ++i)
+        int lena = a.length(), lenb = b.length();
+        int n = s.length();
+        getNext(a, lena);
+        vector<int> equa = kmp(s, n, a, lena);
+        memset(Next, 0, sizeof(Next));
+        getNext(b, lenb);
+        vector<int> equb = kmp(s, n, b, lenb);
+        vector<int> ans;
+        int l = 0, r = 0;
+        n = equb.size();
+        if (equb.size() == 0)
+            return {};
+        for (auto &x : equa)
         {
-            int v = g[u][i];
-            if (v == fa)
-                continue;
-            if (count(u, v))
-                ++ans[0];
-            dfs1(v, u);
+            while (l < n && x - equb[l] < k)
+                ++l;
+            while (r < n && equb[r] - x <= k)
+                ++r;
+            if (l == r && r == n)
+                break;
+            if (r >= l)
+            {
+                ans.emplace_back(x);
+            }
         }
-    }
-    void dfs2(int u, int fa)
-    {
-        for (int i = 0; i < g[u].size(); ++i)
-        {
-            int v = g[u][i];
-            if (v == fa)
-                continue;
-            ans[v] = ans[u];
-            if (count(u, v))
-                ans[v]--;
-            if (count(v, u))
-                ans[v]++;
-            dfs2(v, u);
-        }
-    }
-    int rootCount(vector<vector<int>> &edges, vector<vector<int>> &guesses, int k)
-    {
-        int n = edges.size() + 1;
-        g.resize(n);
-        ans.resize(n);
-        for (auto &edge : edges)
-        {
-            int u = edge[0], v = edge[1];
-            g[u].emplace_back(v);
-            g[v].emplace_back(u);
-        }
-        for (auto &edge : guesses)
-        {
-            int u = edge[0], v = edge[1];
-            insert(u, v);
-        }
-        // 先假设 0 为根，遍历一遍，找到几个为 true 的
-        dfs1(0, -1);
-        dfs2(0, -1);
-        int cnt = 0;
-        for (int i = 0; i < n; ++i)
-        {
-            if (ans[i] >= k)
-                ++cnt;
-        }
-        return cnt;
+        return ans;
     }
 };
 
@@ -200,8 +190,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<vector<int>> edges = {{0, 1}, {1, 2}, {1, 3}, {4, 2}};
-    vector<vector<int>> guesses = {{1, 3}, {0, 1}, {1, 0}, {2, 4}};
-    solution.rootCount(edges, guesses, 3);
+
     return 0;
 }

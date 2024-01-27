@@ -121,72 +121,49 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    vector<vector<int>> g;
-    vector<int> ans;
-    unordered_set<long long> s;
-    bool count(long long u, long long v)
+    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
+    const static long long mod = 1e9 + 7;
+    int splitArray(vector<int> &nums, int k)
     {
-        return s.count((u << 32) | v);
-    }
-    void insert(long long u, long long v)
-    {
-        s.insert((u << 32) | v);
-    }
-
-    void dfs1(int u, int fa)
-    {
-        // unordered_set<int> son;
-        for (int i = 0; i < g[u].size(); ++i)
+        int n = nums.size();
+        function<bool(int)> check = [&](int mid)
         {
-            int v = g[u][i];
-            if (v == fa)
-                continue;
-            if (count(u, v))
-                ++ans[0];
-            dfs1(v, u);
-        }
-    }
-    void dfs2(int u, int fa)
-    {
-        for (int i = 0; i < g[u].size(); ++i)
+            int cnt = 1;
+            int sum = 0;
+            for (int i = 0; i < n; ++i)
+            {
+                if (nums[i] > mid)
+                    return false;
+                if (sum + nums[i] > mid)
+                {
+                    sum = 0;
+                    cnt++;
+                }
+                sum += nums[i];
+                if (cnt > k)
+                    return false;
+            }
+            return cnt <= k;
+        };
+        vector<int> preSum(n + 1);
+        for (int i = 1; i <= n; ++i)
         {
-            int v = g[u][i];
-            if (v == fa)
-                continue;
-            ans[v] = ans[u];
-            if (count(u, v))
-                ans[v]--;
-            if (count(v, u))
-                ans[v]++;
-            dfs2(v, u);
+            preSum[i] = preSum[i - 1] + nums[i - 1];
         }
-    }
-    int rootCount(vector<vector<int>> &edges, vector<vector<int>> &guesses, int k)
-    {
-        int n = edges.size() + 1;
-        g.resize(n);
-        ans.resize(n);
-        for (auto &edge : edges)
+        int l = 0, r = preSum[n];
+        int ans = 0;
+        while (l <= r)
         {
-            int u = edge[0], v = edge[1];
-            g[u].emplace_back(v);
-            g[v].emplace_back(u);
+            int mid = l + (r - l >> 1);
+            if (check(mid))
+            {
+                ans = mid;
+                r = mid - 1;
+            }
+            else
+                l = mid + 1;
         }
-        for (auto &edge : guesses)
-        {
-            int u = edge[0], v = edge[1];
-            insert(u, v);
-        }
-        // 先假设 0 为根，遍历一遍，找到几个为 true 的
-        dfs1(0, -1);
-        dfs2(0, -1);
-        int cnt = 0;
-        for (int i = 0; i < n; ++i)
-        {
-            if (ans[i] >= k)
-                ++cnt;
-        }
-        return cnt;
+        return ans;
     }
 };
 
@@ -200,8 +177,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<vector<int>> edges = {{0, 1}, {1, 2}, {1, 3}, {4, 2}};
-    vector<vector<int>> guesses = {{1, 3}, {0, 1}, {1, 0}, {2, 4}};
-    solution.rootCount(edges, guesses, 3);
+    vector<int> a = {1, 4, 4};
+    cout << solution.splitArray(a, 3) << endl;
     return 0;
 }

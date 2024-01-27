@@ -56,24 +56,6 @@ const double eps = 1e-5;
 const int maxn = 1e3 + 10;
 const int maxm = 1e5 + 10;
 int t, n, m, k;
-
-class Node
-{
-public:
-    virtual void test() = 0;
-};
-class Node1 : public Node
-{
-public:
-    void fun()
-    {
-        cout << "i am fun" << endl;
-    }
-    void test()
-    {
-        fun();
-    }
-};
 int main()
 {
 // #define COMP_DATA
@@ -82,7 +64,9 @@ int main()
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
-    Node *a = new Node1();
-    a->test();
+    vector<int> a = {23, 2, 134, 45, 56};
+    nth_element(a.begin(), a.begin() + 1, a.end(), [](const int &x, const int &y)
+                { return x > y; });
+    cout << a[1] << endl;
     return 0;
 }

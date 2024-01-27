@@ -120,73 +120,53 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const int INF = 0x3f3f3f3f;
-    vector<vector<int>> g;
-    vector<int> ans;
-    unordered_set<long long> s;
-    bool count(long long u, long long v)
+    const static int INF = 0x3f3f3f3f;
+    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
+    const static long long mod = 1e9 + 7;
+    long long maximumSumOfHeights(vector<int> &maxHeights)
     {
-        return s.count((u << 32) | v);
-    }
-    void insert(long long u, long long v)
-    {
-        s.insert((u << 32) | v);
-    }
-
-    void dfs1(int u, int fa)
-    {
-        // unordered_set<int> son;
-        for (int i = 0; i < g[u].size(); ++i)
-        {
-            int v = g[u][i];
-            if (v == fa)
-                continue;
-            if (count(u, v))
-                ++ans[0];
-            dfs1(v, u);
-        }
-    }
-    void dfs2(int u, int fa)
-    {
-        for (int i = 0; i < g[u].size(); ++i)
-        {
-            int v = g[u][i];
-            if (v == fa)
-                continue;
-            ans[v] = ans[u];
-            if (count(u, v))
-                ans[v]--;
-            if (count(v, u))
-                ans[v]++;
-            dfs2(v, u);
-        }
-    }
-    int rootCount(vector<vector<int>> &edges, vector<vector<int>> &guesses, int k)
-    {
-        int n = edges.size() + 1;
-        g.resize(n);
-        ans.resize(n);
-        for (auto &edge : edges)
-        {
-            int u = edge[0], v = edge[1];
-            g[u].emplace_back(v);
-            g[v].emplace_back(u);
-        }
-        for (auto &edge : guesses)
-        {
-            int u = edge[0], v = edge[1];
-            insert(u, v);
-        }
-        // 先假设 0 为根，遍历一遍，找到几个为 true 的
-        dfs1(0, -1);
-        dfs2(0, -1);
-        int cnt = 0;
+        int n = maxHeights.size();
+        vector<int> st(n + 1);
+        vector<long long> left(n);
+        vector<long long> right(n);
+        int top = -1, pre = -1;
+        long long height = 0;
+        st[++top] = -1;
         for (int i = 0; i < n; ++i)
         {
-            if (ans[i] >= k)
-                ++cnt;
+            while (top >= 1 && maxHeights[st[top]] > maxHeights[i])
+            {
+                pre = st[top - 1];
+                height -= 1ll * maxHeights[st[top]] * (st[top] - pre);
+                --top;
+            }
+            pre = st[top];
+            st[++top] = i;
+            height += 1ll * maxHeights[i] * (i - pre);
+            left[i] = height;
         }
-        return cnt;
+        top = -1;
+        st[++top] = n;
+        height = 0;
+        for (int i = n - 1; i >= 0; --i)
+        {
+            while (top >= 1 && maxHeights[st[top]] > maxHeights[i])
+            {
+                pre = st[top - 1];
+                height -= 1ll * maxHeights[st[top]] * (pre - st[top]);
+                --top;
+            }
+            pre = st[top];
+            st[++top] = i;
+            height += 1ll * maxHeights[i] * (pre - i);
+            right[i] = height;
+        }
+        long long ans = 0;
+        for (int i = 0; i < n; ++i)
+        {
+            ans = max(ans, left[i] + right[i] - maxHeights[i]);
+        }
+        return ans;
     }
 };
 
@@ -200,8 +180,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<vector<int>> edges = {{0, 1}, {1, 2}, {1, 3}, {4, 2}};
-    vector<vector<int>> guesses = {{1, 3}, {0, 1}, {1, 0}, {2, 4}};
-    solution.rootCount(edges, guesses, 3);
+    vector<int> a = {5, 3, 4, 1, 1};
+    solution.maximumSumOfHeights(a);
     return 0;
 }

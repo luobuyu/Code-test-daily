@@ -120,73 +120,35 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const int INF = 0x3f3f3f3f;
-    vector<vector<int>> g;
-    vector<int> ans;
-    unordered_set<long long> s;
-    bool count(long long u, long long v)
+    const static int INF = 0x3f3f3f3f;
+    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
+    const static long long mod = 1e9 + 7;
+    int maximumSwap(int num)
     {
-        return s.count((u << 32) | v);
-    }
-    void insert(long long u, long long v)
-    {
-        s.insert((u << 32) | v);
-    }
-
-    void dfs1(int u, int fa)
-    {
-        // unordered_set<int> son;
-        for (int i = 0; i < g[u].size(); ++i)
+        string s = to_string(num);
+        int n = s.length();
+        // 找每个数最右边最大的一个数，如果有多个找最后一个
+        int maxxIndex = n - 1;
+        int minxIndex = n - 1;
+        int tmpi = 0, tmpj = 0;
+        for (int i = n - 1; i >= 0; --i)
         {
-            int v = g[u][i];
-            if (v == fa)
-                continue;
-            if (count(u, v))
-                ++ans[0];
-            dfs1(v, u);
+            if (s[i] > s[maxxIndex])
+            {
+                maxxIndex = i;
+            }
+            if (s[i] < s[maxxIndex])
+            {
+                minxIndex = i;
+            }
+            if (minxIndex < maxxIndex)
+            {
+                tmpi = minxIndex;
+                tmpj = maxxIndex;
+            }
         }
-    }
-    void dfs2(int u, int fa)
-    {
-        for (int i = 0; i < g[u].size(); ++i)
-        {
-            int v = g[u][i];
-            if (v == fa)
-                continue;
-            ans[v] = ans[u];
-            if (count(u, v))
-                ans[v]--;
-            if (count(v, u))
-                ans[v]++;
-            dfs2(v, u);
-        }
-    }
-    int rootCount(vector<vector<int>> &edges, vector<vector<int>> &guesses, int k)
-    {
-        int n = edges.size() + 1;
-        g.resize(n);
-        ans.resize(n);
-        for (auto &edge : edges)
-        {
-            int u = edge[0], v = edge[1];
-            g[u].emplace_back(v);
-            g[v].emplace_back(u);
-        }
-        for (auto &edge : guesses)
-        {
-            int u = edge[0], v = edge[1];
-            insert(u, v);
-        }
-        // 先假设 0 为根，遍历一遍，找到几个为 true 的
-        dfs1(0, -1);
-        dfs2(0, -1);
-        int cnt = 0;
-        for (int i = 0; i < n; ++i)
-        {
-            if (ans[i] >= k)
-                ++cnt;
-        }
-        return cnt;
+        swap(s[tmpi], s[tmpj]);
+        return atoi(s.c_str());
     }
 };
 
@@ -200,8 +162,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<vector<int>> edges = {{0, 1}, {1, 2}, {1, 3}, {4, 2}};
-    vector<vector<int>> guesses = {{1, 3}, {0, 1}, {1, 0}, {2, 4}};
-    solution.rootCount(edges, guesses, 3);
+    cout << solution.maximumSwap(120) << endl;
     return 0;
 }

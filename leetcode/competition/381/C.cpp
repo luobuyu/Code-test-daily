@@ -121,72 +121,64 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    vector<vector<int>> g;
-    vector<int> ans;
-    unordered_set<long long> s;
-    bool count(long long u, long long v)
-    {
-        return s.count((u << 32) | v);
-    }
-    void insert(long long u, long long v)
-    {
-        s.insert((u << 32) | v);
-    }
 
-    void dfs1(int u, int fa)
+    int min_key_presses(const std::string &word)
     {
-        // unordered_set<int> son;
-        for (int i = 0; i < g[u].size(); ++i)
+        // 定义字母到电话按键的映射
+        std::unordered_map<char, int> key_mapping = {
+            {'a', 2},
+            {'b', 2},
+            {'c', 2},
+            {'d', 3},
+            {'e', 3},
+            {'f', 3},
+            {'g', 4},
+            {'h', 4},
+            {'i', 4},
+            {'j', 5},
+            {'k', 5},
+            {'l', 5},
+            {'m', 6},
+            {'n', 6},
+            {'o', 6},
+            {'p', 7},
+            {'q', 7},
+            {'r', 7},
+            {'s', 7},
+            {'t', 8},
+            {'u', 8},
+            {'v', 8},
+            {'w', 9},
+            {'x', 9},
+            {'y', 9},
+            {'z', 9},
+        };
+
+        int total_pushes = 0;
+        int prev_key = -1;
+
+        for (char letter : word)
         {
-            int v = g[u][i];
-            if (v == fa)
-                continue;
-            if (count(u, v))
-                ++ans[0];
-            dfs1(v, u);
+            int key = key_mapping[letter];
+
+            // 如果当前按键与上一个按键相同，则添加一个空格按键
+            if (key == prev_key)
+            {
+                total_pushes += 1;
+            }
+
+            // 计算当前字母所需的按键次数
+            total_pushes += key_mapping[letter];
+
+            // 更新上一个按键
+            prev_key = key;
         }
+
+        return total_pushes;
     }
-    void dfs2(int u, int fa)
+    int minimumPushes(string word)
     {
-        for (int i = 0; i < g[u].size(); ++i)
-        {
-            int v = g[u][i];
-            if (v == fa)
-                continue;
-            ans[v] = ans[u];
-            if (count(u, v))
-                ans[v]--;
-            if (count(v, u))
-                ans[v]++;
-            dfs2(v, u);
-        }
-    }
-    int rootCount(vector<vector<int>> &edges, vector<vector<int>> &guesses, int k)
-    {
-        int n = edges.size() + 1;
-        g.resize(n);
-        ans.resize(n);
-        for (auto &edge : edges)
-        {
-            int u = edge[0], v = edge[1];
-            g[u].emplace_back(v);
-            g[v].emplace_back(u);
-        }
-        for (auto &edge : guesses)
-        {
-            int u = edge[0], v = edge[1];
-            insert(u, v);
-        }
-        // 先假设 0 为根，遍历一遍，找到几个为 true 的
-        dfs1(0, -1);
-        dfs2(0, -1);
-        int cnt = 0;
-        for (int i = 0; i < n; ++i)
-        {
-            if (ans[i] >= k)
-                ++cnt;
-        }
-        return cnt;
+        return min_key_presses(word);
     }
 };
 
@@ -200,8 +192,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<vector<int>> edges = {{0, 1}, {1, 2}, {1, 3}, {4, 2}};
-    vector<vector<int>> guesses = {{1, 3}, {0, 1}, {1, 0}, {2, 4}};
-    solution.rootCount(edges, guesses, 3);
+    solution.minimumPushes(7, 2);
     return 0;
 }

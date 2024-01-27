@@ -123,8 +123,36 @@ public:
     const static int INF = 0x3f3f3f3f;
     const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const static long long mod = 1e9 + 7;
-    int minSubarray(vector<int> &nums, int p)
+    int minimumTime(vector<int> &nums1, vector<int> &nums2, int x)
     {
+        int n = nums1.size();
+        vector<pair<int, int>> nums(n);
+        for (int i = 0; i < n; ++i)
+        {
+            nums[i].first = nums1[i];
+            nums[i].second = nums2[i];
+        }
+        sort(nums.begin(), nums.end(), [&](const pair<int, int> &x, const pair<int, int> &y)
+             { return x.second < y.second; });
+        vector<int> dp(n + 1);
+        // dp[i][j]=max(dp[i - 1][j], dp[i - 1][j - 1] + nums1[i] + nums2[i] * j);
+        for (int i = 1; i <= n; ++i)
+        {
+            for (int j = i; j >= 1; --j)
+            {
+                dp[j] = max(dp[j], dp[j - 1] + nums[i - 1].first + nums[i - 1].second * j);
+            }
+        }
+        int sum1 = accumulate(nums1.begin(), nums1.end(), 0);
+        int sum2 = accumulate(nums2.begin(), nums2.end(), 0);
+        for (int j = 0; j <= n; ++j)
+        {
+            if (sum1 + sum2 * j - dp[j] <= x)
+            {
+                return j;
+            }
+        }
+        return -1;
     }
 };
 
