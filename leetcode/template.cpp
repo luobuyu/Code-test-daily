@@ -120,9 +120,9 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const static int INF = 0x3f3f3f3f;
-    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const static long long mod = 1e9 + 7;
+    const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
+    const int INF = 0x3f3f3f3f;
     int minSubarray(vector<int> &nums, int p)
     {
     }

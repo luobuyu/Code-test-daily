@@ -87,27 +87,6 @@ namespace FAST_IO
 
 } // namespace FAST_IO
 using namespace FAST_IO;
-
-int init = []
-{
-    /*********** fast_read ***************/
-    freopen("user.out", "w", stdout);
-    ios_base::sync_with_stdio(false);
-    cin.tie(nullptr);
-    cout.tie(nullptr);
-    /*************************************/
-
-    while (true)
-    {
-        if (!getline())
-            break;
-
-        getline();
-    }
-    exit(0);
-    return 0;
-}();
-
 auto optimize_cpp_stdio = []()
 {
     std::ios::sync_with_stdio(false);
@@ -132,12 +111,14 @@ public:
         for (int i = 0; i < m; ++i)
             pos[ring[i] - 'a'].emplace_back(i);
         // 初始化 dp[0][k]
+        int ans = INT_MAX;
         for (auto &k : pos[key[0] - 'a'])
         {
             dp[0][k] = min(k, m - k) + 1;
+            if (n == 1)
+                ans = min(ans, dp[0][k]);
         }
-        int ans = INT_MAX;
-        for (int i = 1; i < m; ++i)
+        for (int i = 1; i < n; ++i)
         {
             for (auto &j : pos[key[i] - 'a'])
             {
@@ -145,14 +126,13 @@ public:
                 {
                     dp[i][j] = min(dp[i][j], dp[i - 1][k] + min(abs(j - k), m - abs(j - k)) + 1);
                 }
-                if (i == m - 1)
+                if (i == n - 1)
                     ans = min(ans, dp[i][j]);
             }
         }
         return ans;
     }
 };
-
 int t, n, m, k;
 int main()
 {
@@ -163,6 +143,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    cout << solution.findRotateSteps("godding", "gd") << endl;
     return 0;
 }

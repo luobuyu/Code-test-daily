@@ -120,31 +120,34 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const int INF = 0x3f3f3f3f;
-    int longestEqualSubarray(vector<int> &nums, int k)
+    const static int INF = 0x3f3f3f3f;
+    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
+    const static long long mod = 1e9 + 7;
+    vector<vector<int>> substringXorQueries(string s, vector<vector<int>> &queries)
     {
-        int n = nums.size();
-        vector<vector<int>> a(n + 1);
+        unordered_map<int, pair<int, int>> mp;
+        int n = s.length();
         for (int i = 0; i < n; ++i)
         {
-            a[nums[i]].emplace_back(i);
-        }
-        int ans = 0;
-        for (int i = 1; i <= n; ++i)
-        {
-            if (a[i].size() <= 1)
-                continue;
-            int l = 0, r = 1;
-            int cnt = 0;
-            for (r; r < a[i].size(); ++r)
+            int tmp = 0;
+            for (int bits = 0; bits < 30 && i + bits < n; ++bits)
             {
-                cnt += a[i][r] - a[i][r - 1] - 1;
-                while (l <= r && cnt > k)
-                {
-                    cnt -= a[i][l + 1] - a[i][l] - 1;
-                    ++l;
-                }
-                ans = max(ans, r - l + 1);
+                tmp = tmp * 2 + (s[i + bits] == '1');
+                if (!mp.count(tmp) || mp[tmp].second - mp[tmp].first > bits)
+                    mp[tmp] = {i, i + bits};
+            }
+        }
+        vector<vector<int>> ans;
+        for (auto &q : queries)
+        {
+            int tmp = q[1] ^ q[0];
+            if (mp.count(tmp))
+            {
+                ans.emplace_back(vector<int>{mp[tmp].first, mp[tmp].second});
+            }
+            else
+            {
+                ans.emplace_back(vector<int>{-1, -1});
             }
         }
         return ans;
@@ -161,7 +164,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {1, 3, 2, 3, 1, 3};
-    solution.longestEqualSubarray(a, 3);
+
     return 0;
 }

@@ -121,30 +121,36 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int longestEqualSubarray(vector<int> &nums, int k)
+    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
+    const static long long mod = 1e9 + 7;
+    // dp[key][ring]
+    int findRotateSteps(string ring, string key)
     {
-        int n = nums.size();
-        vector<vector<int>> a(n + 1);
+        int n = ring.size(), m = key.size();
+        vector<vector<int>> pos(26, vector<int>()); // 26个字符
+        vector<vector<int>> dp(m, vector<int>(n, INF));
         for (int i = 0; i < n; ++i)
+            pos[ring[i] - 'a'].emplace_back(i);
+        int ans = INF;
+        for (int j = 0; j < pos[key[0] - 'a'].size(); ++j)
         {
-            a[nums[i]].emplace_back(i);
+            int jj = pos[key[0] - 'a'][j];
+            dp[0][jj] = min(jj, n - jj) + 1;
+            if (m == 1)
+                ans = min(ans, dp[0][jj]);
         }
-        int ans = 0;
-        for (int i = 1; i <= n; ++i)
+        for (int i = 1; i < m; ++i)
         {
-            if (a[i].size() <= 1)
-                continue;
-            int l = 0, r = 1;
-            int cnt = 0;
-            for (r; r < a[i].size(); ++r)
+            for (int j = 0; j < pos[key[i] - 'a'].size(); ++j)
             {
-                cnt += a[i][r] - a[i][r - 1] - 1;
-                while (l <= r && cnt > k)
+                for (int k = 0; k < pos[key[i - 1] - 'a'].size(); ++k)
                 {
-                    cnt -= a[i][l + 1] - a[i][l] - 1;
-                    ++l;
+                    int jj = pos[key[i] - 'a'][j];
+                    int kk = pos[key[i - 1] - 'a'][k];
+                    dp[i][jj] = min(dp[i][jj], dp[i - 1][kk] + min(abs(jj - kk), n - abs(jj - kk)) + 1);
+                    if (i == m - 1)
+                        ans = min(ans, dp[m - 1][jj]);
                 }
-                ans = max(ans, r - l + 1);
             }
         }
         return ans;
@@ -161,7 +167,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {1, 3, 2, 3, 1, 3};
-    solution.longestEqualSubarray(a, 3);
+    cout << solution.findRotateSteps("godding", "gd") << endl;
     return 0;
 }

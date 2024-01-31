@@ -121,30 +121,37 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int longestEqualSubarray(vector<int> &nums, int k)
+    int minAbsoluteDifference(vector<int> &nums, int x)
     {
         int n = nums.size();
-        vector<vector<int>> a(n + 1);
+        unordered_map<int, int> mp;
+        set<int> s1;
+        int ans = INF;
+        for (int i = x; i < n; ++i)
+        {
+            mp[nums[i]]++;
+            s1.insert(nums[i]);
+        }
         for (int i = 0; i < n; ++i)
         {
-            a[nums[i]].emplace_back(i);
-        }
-        int ans = 0;
-        for (int i = 1; i <= n; ++i)
-        {
-            if (a[i].size() <= 1)
-                continue;
-            int l = 0, r = 1;
-            int cnt = 0;
-            for (r; r < a[i].size(); ++r)
+            if (s1.size())
             {
-                cnt += a[i][r] - a[i][r - 1] - 1;
-                while (l <= r && cnt > k)
+                auto it1 = s1.lower_bound(nums[i]);
+                if (it1 != s1.end())
                 {
-                    cnt -= a[i][l + 1] - a[i][l] - 1;
-                    ++l;
+                    ans = min(*it1 - nums[i], ans);
                 }
-                ans = max(ans, r - l + 1);
+                if (it1 != s1.begin())
+                {
+                    it1--;
+                    ans = min(nums[i] - *it1, ans);
+                }
+            }
+            if (i + x < n)
+            {
+                mp[nums[i + x]]--;
+                if (mp[nums[i + x]] == 0)
+                    s1.erase(nums[i + x]);
             }
         }
         return ans;
@@ -161,7 +168,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {1, 3, 2, 3, 1, 3};
-    solution.longestEqualSubarray(a, 3);
+    vector<int> a = {5, 3, 2, 10, 15};
+    solution.minAbsoluteDifference(a, 1);
     return 0;
 }

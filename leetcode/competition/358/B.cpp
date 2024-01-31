@@ -108,6 +108,14 @@ using namespace FAST_IO;
 //     return 0;
 // }();
 
+struct ListNode
+{
+    int val;
+    ListNode *next;
+    ListNode() : val(0), next(nullptr) {}
+    ListNode(int x) : val(x), next(nullptr) {}
+    ListNode(int x, ListNode *next) : val(x), next(next) {}
+};
 auto optimize_cpp_stdio = []()
 {
     std::ios::sync_with_stdio(false);
@@ -115,42 +123,56 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
+
 class Solution
 {
 public:
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const int INF = 0x3f3f3f3f;
-    int longestEqualSubarray(vector<int> &nums, int k)
+    ListNode *doubleIt(ListNode *head)
     {
-        int n = nums.size();
-        vector<vector<int>> a(n + 1);
-        for (int i = 0; i < n; ++i)
+        string s;
+        ListNode *cur = head;
+        while (cur)
         {
-            a[nums[i]].emplace_back(i);
+            s.push_back(cur->val + '0');
+            cur = cur->next;
         }
-        int ans = 0;
-        for (int i = 1; i <= n; ++i)
+        reverse(s.begin(), s.end());
+        int add = 0;
+        int i = 0;
+        int n = s.length();
+        while (i < n || add)
         {
-            if (a[i].size() <= 1)
-                continue;
-            int l = 0, r = 1;
-            int cnt = 0;
-            for (r; r < a[i].size(); ++r)
+            int tmp;
+            if (i < n)
+                tmp = s[i] - '0' + s[i] - '0' + add;
+            else
+                tmp = add;
+            add = tmp / 10;
+            tmp = tmp % 10;
+            if (i < n)
+                s[i] = tmp + '0';
+            else
+                s.push_back(tmp + '0');
+            ++i;
+        }
+        reverse(s.begin(), s.end());
+        cur = head;
+        i = 0;
+        n = s.length();
+        while (i < n)
+        {
+            cur->val = s[i] - '0';
+            if (cur->next == nullptr)
             {
-                cnt += a[i][r] - a[i][r - 1] - 1;
-                while (l <= r && cnt > k)
-                {
-                    cnt -= a[i][l + 1] - a[i][l] - 1;
-                    ++l;
-                }
-                ans = max(ans, r - l + 1);
+                if (i < n - 1)
+                    cur->next = new ListNode();
             }
+            cur = cur->next;
+            i++;
         }
-        return ans;
+        return head;
     }
 };
-
 int t, n, m, k;
 int main()
 {
@@ -161,7 +183,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {1, 3, 2, 3, 1, 3};
-    solution.longestEqualSubarray(a, 3);
+
     return 0;
 }

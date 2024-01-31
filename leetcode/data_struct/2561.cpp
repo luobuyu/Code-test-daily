@@ -120,34 +120,53 @@ class Solution
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
-    const int INF = 0x3f3f3f3f;
-    int longestEqualSubarray(vector<int> &nums, int k)
+    const static int INF = 0x3f3f3f3f;
+    const static long long INF_LL = 0x3f3f3f3f3f3f3f3f;
+    const static long long mod = 1e9 + 7;
+    long long minCost(vector<int> &basket1, vector<int> &basket2)
     {
-        int n = nums.size();
-        vector<vector<int>> a(n + 1);
-        for (int i = 0; i < n; ++i)
+        unordered_map<int, int> mp, mp1;
+        int minx = INF;
+        for (auto &x : basket1)
         {
-            a[nums[i]].emplace_back(i);
+            mp[x]++;
+            mp1[x]++;
         }
-        int ans = 0;
-        for (int i = 1; i <= n; ++i)
+        for (auto &x : basket2)
         {
-            if (a[i].size() <= 1)
-                continue;
-            int l = 0, r = 1;
+            mp[x]++;
+        }
+        for (auto &[key, value] : mp)
+        {
+            minx = min(minx, key);
+            if (value & 1)
+                return -1;
+        }
+        // 最大的跟最小的交换
+        vector<int> ans;
+        for (auto &[key, value] : mp)
+        {
             int cnt = 0;
-            for (r; r < a[i].size(); ++r)
+            if (!mp1.count(key))
             {
-                cnt += a[i][r] - a[i][r - 1] - 1;
-                while (l <= r && cnt > k)
-                {
-                    cnt -= a[i][l + 1] - a[i][l] - 1;
-                    ++l;
-                }
-                ans = max(ans, r - l + 1);
+                cnt = value / 2;
+            }
+            else
+            {
+                cnt = abs(mp1[key] - value / 2);
+            }
+            for (int i = 0; i < cnt; ++i)
+            {
+                ans.emplace_back(key);
             }
         }
-        return ans;
+        sort(ans.begin(), ans.end());
+        int ret = 0;
+        for (int i = 0, j = ans.size() - 1; i < j; ++i, --j)
+        {
+            ret += min(ans[i], minx * 2);
+        }
+        return ret;
     }
 };
 
@@ -161,7 +180,8 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {1, 3, 2, 3, 1, 3};
-    solution.longestEqualSubarray(a, 3);
+    vector<int> a = {84, 80, 43, 8, 80, 88, 43, 14, 100, 88};
+    vector<int> b = {32, 32, 42, 68, 68, 100, 42, 84, 14, 8};
+    solution.minCost(a, b);
     return 0;
 }

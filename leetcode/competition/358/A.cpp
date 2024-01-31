@@ -121,33 +121,31 @@ public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int longestEqualSubarray(vector<int> &nums, int k)
+    int getMax(int num)
     {
+        int maxx = 0;
+        while (num)
+        {
+            maxx = max(maxx, num % 10);
+            num /= 10;
+        }
+        return maxx;
+    }
+    int maxSum(vector<int> &nums)
+    {
+        int sum = -1;
         int n = nums.size();
-        vector<vector<int>> a(n + 1);
         for (int i = 0; i < n; ++i)
         {
-            a[nums[i]].emplace_back(i);
-        }
-        int ans = 0;
-        for (int i = 1; i <= n; ++i)
-        {
-            if (a[i].size() <= 1)
-                continue;
-            int l = 0, r = 1;
-            int cnt = 0;
-            for (r; r < a[i].size(); ++r)
+            for (int j = i + 1; j < n; ++j)
             {
-                cnt += a[i][r] - a[i][r - 1] - 1;
-                while (l <= r && cnt > k)
+                if (getMax(nums[i]) == getMax(nums[j]))
                 {
-                    cnt -= a[i][l + 1] - a[i][l] - 1;
-                    ++l;
+                    sum = max(sum, nums[i] + nums[j]);
                 }
-                ans = max(ans, r - l + 1);
             }
         }
-        return ans;
+        return sum;
     }
 };
 
@@ -161,7 +159,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {1, 3, 2, 3, 1, 3};
-    solution.longestEqualSubarray(a, 3);
+
     return 0;
 }

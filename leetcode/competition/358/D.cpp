@@ -115,43 +115,94 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
+vector<bool> notPrime;
+vector<int> prime;
+vector<int> from;
+vector<int> cnt;
+int init = [](int maxx)
+{
+    notPrime.resize(maxx + 1);
+    notPrime[0] = notPrime[1] = true;
+    from.resize(maxx + 1);
+    cnt.resize(maxx + 1);
+    for (int i = 2; i <= maxx; ++i)
+    {
+        if (!notPrime[i])
+        {
+            from[i] = i;
+            prime.emplace_back(i);
+            cnt[i] = 1;
+        }
+        for (int j = 0; j < prime.size() && i * prime[j] <= maxx; ++j)
+        {
+            notPrime[i * prime[j]] = true;
+            from[i * prime[j]] = prime[j];
+            cnt[i * prime[j]] = cnt[i] + (from[i] != prime[j]);
+            if (i % prime[j] == 0)
+                break;
+        }
+    }
+    return 0;
+}(1e5);
+
 class Solution
 {
 public:
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const int INF = 0x3f3f3f3f;
-    int longestEqualSubarray(vector<int> &nums, int k)
+    const static int mod = 1e9 + 7;
+    long long qpow(long long a, long long b)
+    {
+        long long ret = 1, tmp = a;
+        while (b)
+        {
+            if (b & 1)
+                ret = ret * tmp % mod;
+            tmp = tmp * tmp % mod;
+            b >>= 1;
+        }
+        return ret;
+    }
+    int maximumScore(vector<int> &nums, int k)
     {
         int n = nums.size();
-        vector<vector<int>> a(n + 1);
-        for (int i = 0; i < n; ++i)
+        // 单调减栈
+        vector<int> st(n);
+        int top = -1;
+        vector<int> left(n, -1), right(n, n);
+        for (int i = 0; i < nums.size(); ++i)
         {
-            a[nums[i]].emplace_back(i);
-        }
-        int ans = 0;
-        for (int i = 1; i <= n; ++i)
-        {
-            if (a[i].size() <= 1)
-                continue;
-            int l = 0, r = 1;
-            int cnt = 0;
-            for (r; r < a[i].size(); ++r)
+            while (top >= 0 && cnt[nums[st[top]]] < cnt[nums[i]])
             {
-                cnt += a[i][r] - a[i][r - 1] - 1;
-                while (l <= r && cnt > k)
-                {
-                    cnt -= a[i][l + 1] - a[i][l] - 1;
-                    ++l;
-                }
-                ans = max(ans, r - l + 1);
+                right[st[top]] = i;
+                --top;
             }
+            if (top >= 0)
+                left[i] = st[top];
+            st[++top] = i;
+        }
+        // i, right[i] - i, i - left[i], 相乘
+        long long ans = 1;
+        vector<int> id(n);
+        iota(id.begin(), id.end(), 0);
+        sort(id.begin(), id.end(), [&](const int &x, const int &y)
+             { return nums[x] > nums[y]; });
+        for (auto &x : id)
+        {
+            if (k == 0)
+                break;
+            long long tot = (right[x] - x) * (x - left[x]);
+            int times = min(tot, 1ll * k);
+            ans = ans * qpow(nums[x], times) % mod;
+            k -= times;
         }
         return ans;
     }
 };
 
 int t, n, m, k;
+
 int main()
 {
 // #define COMP_DATA
@@ -161,7 +212,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    vector<int> a = {1, 3, 2, 3, 1, 3};
-    solution.longestEqualSubarray(a, 3);
+    vector<int> a = {8, 3, 9, 3, 8};
+    cout << solution.maximumScore(a, 2) << endl;
     return 0;
 }
