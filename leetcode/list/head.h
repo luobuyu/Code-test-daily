@@ -10,6 +10,19 @@ struct ListNode
     ListNode(int x) : val(x), next(nullptr) {}
     ListNode(int x, ListNode *next) : val(x), next(next) {}
 };
+
+ListNode *createList(vector<int> &nums)
+{
+    ListNode *virHead = new ListNode();
+    ListNode *pre = virHead;
+    for (auto &num : nums)
+    {
+        ListNode *p = new ListNode(num, nullptr);
+        pre->next = p;
+        pre = p;
+    }
+    return virHead->next;
+}
 // class Node
 // {
 // public:
