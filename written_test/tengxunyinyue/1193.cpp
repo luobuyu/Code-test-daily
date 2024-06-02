@@ -53,61 +53,61 @@ const ll mod = 1e9 + 7;
 const int INF = 0x3f3f3f3f;
 const ll INF_LL = 0x3f3f3f3f3f3f3f3f;
 const double eps = 1e-5;
-const int maxn = 1e3 + 10;
+const int maxn = 1e5 + 10;
 const int maxm = 1e5 + 10;
 int t, n, m, k;
-
-struct Point
+int a[maxn];
+vector<int> g[maxn];
+int dp[maxn][2];
+void count(int u)
 {
-    double x, y;
-    Point(double x, double y) : x(x), y(y) {}
-    Point operator-(const Point &b) const
+    while (a[u] % 2 == 0)
     {
-        return Point(x - b.x, y - b.y);
+        dp[u][0]++;
+        a[u] /= 2;
     }
-    Point rotate(Point p, double angle)
+    while (a[u] % 5 == 0)
     {
-        Point v = (*this) - p;
-        double c = cos(angle), s = sin(angle);
-        return Point(p.x + v.x * c - v.y * s, p.y + v.x * s + v.y * c);
+        dp[u][1]++;
+        a[u] /= 5;
     }
-};
-enum TYPE
+}
+void dfs(int u, int fa)
 {
-    POLY = 1,
-    SEG = 2
-};
-
-struct Node
-{
-    int x;
-    Node(int _x) : x(_x) {}
-    bool operator==(const Node &p) { return x == p.x; }
-    bool operator==(const Node *p) { return x == p->x; }
-};
-
-void fun(Node *a, Node *b)
-{
-    swap(a, b);
-    a->x = 100;
+    count(u);
+    for (int i = 0; i < g[u].size(); ++i)
+    {
+        int v = g[u][i];
+        if (v == fa)
+            continue;
+        dfs(v, u);
+        dp[u][0] += dp[v][0];
+        dp[u][1] += dp[v][1];
+    }
 }
 int main()
 {
 // #define COMP_DATA
 #ifndef ONLINE_JUDGE
-    freopen("20x054-1.bool", "rb", stdin);
+    freopen("in.txt", "r", stdin);
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
-    bool a = true, b = true;
-    bool c, d;
-    if (!(a ^ b))
+    cin >> n;
+    for (int i = 1; i <= n; ++i)
+        cin >> a[i];
+    int u, v;
+    for (int i = 1; i <= n - 1; ++i)
     {
-        c = d = !a;
+        cin >> u >> v;
+        g[u].emplace_back(v);
+        g[v].emplace_back(u);
     }
-    cout << bitset<8>(~a) << endl;
-    cout << bitset<8>(!a) << endl;
-    cout << c << ", " << d << endl;
-    // map<int, int> mp;
+    dfs(1, 0);
+    for (int i = 1; i <= n; ++i)
+    {
+        cout << min(dp[i][0], dp[i][1]) << " ";
+    }
+    cout << endl;
     return 0;
 }

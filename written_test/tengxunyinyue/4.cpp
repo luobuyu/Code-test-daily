@@ -53,61 +53,59 @@ const ll mod = 1e9 + 7;
 const int INF = 0x3f3f3f3f;
 const ll INF_LL = 0x3f3f3f3f3f3f3f3f;
 const double eps = 1e-5;
-const int maxn = 1e3 + 10;
+const int maxn = 1e6 + 10;
 const int maxm = 1e5 + 10;
 int t, n, m, k;
-
-struct Point
+int a[maxn];
+int tmp[maxn];
+int ans = 0;
+void mix(int a[], int l, int mid, int r, int tmp[])
 {
-    double x, y;
-    Point(double x, double y) : x(x), y(y) {}
-    Point operator-(const Point &b) const
+    int i = l, j = mid + 1, k = l;
+    while (i <= mid && j <= r)
     {
-        return Point(x - b.x, y - b.y);
+        if (a[i] <= a[j])
+        {
+            tmp[k++] = a[i++];
+        }
+        else
+        {
+            // a[i] > a[j]
+            ans++;
+            tmp[k++] = a[j++];
+        }
     }
-    Point rotate(Point p, double angle)
-    {
-        Point v = (*this) - p;
-        double c = cos(angle), s = sin(angle);
-        return Point(p.x + v.x * c - v.y * s, p.y + v.x * s + v.y * c);
-    }
-};
-enum TYPE
-{
-    POLY = 1,
-    SEG = 2
-};
+    while (i <= mid)
+        tmp[k++] = a[i++];
+    while (j <= r)
+        tmp[k++] = a[j++];
+    for (int i = l; i <= r; ++i)
+        a[i] = tmp[i];
+}
 
-struct Node
+void mergeSort(int a[], int l, int r)
 {
-    int x;
-    Node(int _x) : x(_x) {}
-    bool operator==(const Node &p) { return x == p.x; }
-    bool operator==(const Node *p) { return x == p->x; }
-};
-
-void fun(Node *a, Node *b)
-{
-    swap(a, b);
-    a->x = 100;
+    if (l >= r)
+        return;
+    int mid = (l + r) >> 1;
+    mergeSort(a, l, mid);
+    mergeSort(a, mid + 1, r);
+    mix(a, l, mid, r, tmp);
 }
 int main()
 {
 // #define COMP_DATA
 #ifndef ONLINE_JUDGE
-    freopen("20x054-1.bool", "rb", stdin);
+    freopen("in.txt", "r", stdin);
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
-    bool a = true, b = true;
-    bool c, d;
-    if (!(a ^ b))
+    cin >> n;
+    for (int i = 1; i <= n; ++i)
     {
-        c = d = !a;
+        cin >> a[i];
     }
-    cout << bitset<8>(~a) << endl;
-    cout << bitset<8>(!a) << endl;
-    cout << c << ", " << d << endl;
-    // map<int, int> mp;
+    mergeSort(a, 1, n);
+    cout << ans << endl;
     return 0;
 }

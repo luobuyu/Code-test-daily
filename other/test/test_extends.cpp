@@ -61,6 +61,10 @@ class Node
 {
 public:
     virtual void test() = 0;
+    virtual ~Node()
+    {
+        cout << "父类析构被调用" << endl;
+    }
 };
 class Node1 : public Node
 {
@@ -73,6 +77,10 @@ public:
     {
         fun();
     }
+    ~Node1()
+    {
+        cout << "子类析构被调用" << endl;
+    }
 };
 int main()
 {
@@ -84,5 +92,10 @@ int main()
     cin.tie(0);
     Node *a = new Node1();
     a->test();
+    delete a;
+    move(a);
+    shared_ptr<int> p;
+    p.get();
+    p.use_count();
     return 0;
 }

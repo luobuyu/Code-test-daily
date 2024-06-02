@@ -62,3 +62,40 @@ public:
         return right.top();
     }
 };
+
+class Solution
+{
+public:
+    // 最大堆，小于中位数的
+    // 最小堆。大于等于中位数的
+    // size1 >= size2
+    priority_queue<int> qMax;
+    priority_queue<int, vector<int>, greater<int>> qMin;
+    void Insert(int num)
+    {
+        if (qMax.size() == qMin.size())
+        {
+            qMin.push(num);
+            qMax.push(qMin.top());
+            qMin.pop();
+        }
+        else
+        {
+            qMax.push(num);
+            qMin.push(qMax.top());
+            qMax.pop();
+        }
+    }
+
+    double GetMedian()
+    {
+        if (qMin.size() == qMax.size())
+        {
+            return (qMin.top() + qMax.top()) / 2.0;
+        }
+        else
+        {
+            return qMax.top();
+        }
+    }
+};

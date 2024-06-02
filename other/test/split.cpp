@@ -53,61 +53,36 @@ const ll mod = 1e9 + 7;
 const int INF = 0x3f3f3f3f;
 const ll INF_LL = 0x3f3f3f3f3f3f3f3f;
 const double eps = 1e-5;
-const int maxn = 1e3 + 10;
+const int maxn = 1e5 + 10;
 const int maxm = 1e5 + 10;
 int t, n, m, k;
 
-struct Point
+vector<string> split(string &str, char delim)
 {
-    double x, y;
-    Point(double x, double y) : x(x), y(y) {}
-    Point operator-(const Point &b) const
-    {
-        return Point(x - b.x, y - b.y);
-    }
-    Point rotate(Point p, double angle)
-    {
-        Point v = (*this) - p;
-        double c = cos(angle), s = sin(angle);
-        return Point(p.x + v.x * c - v.y * s, p.y + v.x * s + v.y * c);
-    }
-};
-enum TYPE
-{
-    POLY = 1,
-    SEG = 2
-};
-
-struct Node
-{
-    int x;
-    Node(int _x) : x(_x) {}
-    bool operator==(const Node &p) { return x == p.x; }
-    bool operator==(const Node *p) { return x == p->x; }
-};
-
-void fun(Node *a, Node *b)
-{
-    swap(a, b);
-    a->x = 100;
+    stringstream ss(str);
+    vector<string> ret;
+    string s;
+    while (getline(ss, s, delim))
+        ret.emplace_back(s);
+    return ret;
 }
+
 int main()
 {
 // #define COMP_DATA
 #ifndef ONLINE_JUDGE
-    freopen("20x054-1.bool", "rb", stdin);
+    freopen("in.txt", "r", stdin);
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
-    bool a = true, b = true;
-    bool c, d;
-    if (!(a ^ b))
+    string s;
+    char ch;
+    cin >> s >> ch;
+    auto ret = split(s, ch);
+    for (auto &item : ret)
     {
-        c = d = !a;
+        cout << item << " ";
     }
-    cout << bitset<8>(~a) << endl;
-    cout << bitset<8>(!a) << endl;
-    cout << c << ", " << d << endl;
-    // map<int, int> mp;
+    cout << endl;
     return 0;
 }

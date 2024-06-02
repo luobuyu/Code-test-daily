@@ -53,61 +53,47 @@ const ll mod = 1e9 + 7;
 const int INF = 0x3f3f3f3f;
 const ll INF_LL = 0x3f3f3f3f3f3f3f3f;
 const double eps = 1e-5;
-const int maxn = 1e3 + 10;
+const int maxn = 1e5 + 10;
 const int maxm = 1e5 + 10;
 int t, n, m, k;
-
-struct Point
+string low, high;
+int dp[maxn][40];
+int len;
+int dfs(int step, int diff, bool isUpperLimit, bool isLowerLimit, bool isLead)
 {
-    double x, y;
-    Point(double x, double y) : x(x), y(y) {}
-    Point operator-(const Point &b) const
+    if (step == len)
     {
-        return Point(x - b.x, y - b.y);
+        return diff == 20;
     }
-    Point rotate(Point p, double angle)
+    if (!isUpperLimit && !isLowerLimit && !isLead && !dp[step][diff])
+        return dp[step][diff];
+    int ans = 0;
+    if (isLead && low[step] == '0') // 只有存在前导零，low当前位是 0 才能填 0
+        ans += dfs(step + 1, diff, false, true, true);
+    int hi = (isUpperLimit ? high[step] - '0' : 9);
+    int lo = (isLowerLimit ? low[step] - '0' : 0);
+    for (int i = max(lo, isLead * 1); i <= hi; ++i)
     {
-        Point v = (*this) - p;
-        double c = cos(angle), s = sin(angle);
-        return Point(p.x + v.x * c - v.y * s, p.y + v.x * s + v.y * c);
+        ans += dfs(step + 1, diff + (i & 1 ? 1 : -1), isUpperLimit && i == hi, isLowerLimit && i == lo, false);
     }
-};
-enum TYPE
-{
-    POLY = 1,
-    SEG = 2
-};
-
-struct Node
-{
-    int x;
-    Node(int _x) : x(_x) {}
-    bool operator==(const Node &p) { return x == p.x; }
-    bool operator==(const Node *p) { return x == p->x; }
-};
-
-void fun(Node *a, Node *b)
-{
-    swap(a, b);
-    a->x = 100;
+    if (!isUpperLimit && !isLowerLimit && !isLead)
+    {
+        dp[step][diff] = ans;
+    }
+    return ans;
 }
 int main()
 {
 // #define COMP_DATA
 #ifndef ONLINE_JUDGE
-    freopen("20x054-1.bool", "rb", stdin);
+    freopen("in.txt", "r", stdin);
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
-    bool a = true, b = true;
-    bool c, d;
-    if (!(a ^ b))
-    {
-        c = d = !a;
-    }
-    cout << bitset<8>(~a) << endl;
-    cout << bitset<8>(!a) << endl;
-    cout << c << ", " << d << endl;
-    // map<int, int> mp;
+    cin >> low >> high;
+    low = string(high.length() - low.length(), '0') + low;
+    len = high.length();
+    memset(dp, -1, sizeof(dp));
+    cout << dfs(0, 20, true, true, true) << endl;
     return 0;
 }

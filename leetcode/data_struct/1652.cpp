@@ -1,6 +1,5 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
-#define ll long long
 #define lll long long
 #define PII pair<int, int>
 namespace FAST_IO
@@ -49,65 +48,62 @@ namespace FAST_IO
 } // namespace FAST_IO
 using namespace std;
 using namespace FAST_IO;
-const ll mod = 1e9 + 7;
 const int INF = 0x3f3f3f3f;
-const ll INF_LL = 0x3f3f3f3f3f3f3f3f;
 const double eps = 1e-5;
-const int maxn = 1e3 + 10;
+const int maxn = 1e5 + 10;
 const int maxm = 1e5 + 10;
 int t, n, m, k;
-
-struct Point
+class Solution
 {
-    double x, y;
-    Point(double x, double y) : x(x), y(y) {}
-    Point operator-(const Point &b) const
+public:
+    vector<int> preSum;
+    int n;
+    vector<int> decrypt(vector<int> &code, int k)
     {
-        return Point(x - b.x, y - b.y);
+        n = code.size();
+        preSum.resize(n + 1);
+        for (int i = 1; i <= n; ++i)
+        {
+            preSum[i] = preSum[i - 1] + code[i - 1];
+        }
+        vector<int> ans(n, 0);
+        if (k > 0)
+        {
+            for (int i = 1; i <= n; ++i)
+            {
+                ans[i - 1] = getSum(i + 1, i + k);
+            }
+        }
+        else if (k < 0)
+        {
+            for (int i = 1; i <= n; ++i)
+            {
+                ans[i - 1] = getSum(i + k, i - 1);
+            }
+        }
+        return ans;
     }
-    Point rotate(Point p, double angle)
+    // [l, r]
+    int getSum(int l, int r)
     {
-        Point v = (*this) - p;
-        double c = cos(angle), s = sin(angle);
-        return Point(p.x + v.x * c - v.y * s, p.y + v.x * s + v.y * c);
+        l = ((l - 1) % n + n) % n + 1;
+        r = ((r - 1) % n + n) % n + 1;
+        if (r >= l)
+            return preSum[r] - preSum[l - 1];
+        else
+            return preSum[r] - preSum[l - 1] + preSum[n];
     }
 };
-enum TYPE
-{
-    POLY = 1,
-    SEG = 2
-};
-
-struct Node
-{
-    int x;
-    Node(int _x) : x(_x) {}
-    bool operator==(const Node &p) { return x == p.x; }
-    bool operator==(const Node *p) { return x == p->x; }
-};
-
-void fun(Node *a, Node *b)
-{
-    swap(a, b);
-    a->x = 100;
-}
 int main()
 {
 // #define COMP_DATA
 #ifndef ONLINE_JUDGE
-    freopen("20x054-1.bool", "rb", stdin);
+    freopen("in.txt", "r", stdin);
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
-    bool a = true, b = true;
-    bool c, d;
-    if (!(a ^ b))
-    {
-        c = d = !a;
-    }
-    cout << bitset<8>(~a) << endl;
-    cout << bitset<8>(!a) << endl;
-    cout << c << ", " << d << endl;
-    // map<int, int> mp;
+    vector<int> a = {10, 5, 7, 7, 3, 2, 10, 3, 6, 9, 1, 6};
+    Solution solution;
+    solution.decrypt(a, -4);
     return 0;
 }

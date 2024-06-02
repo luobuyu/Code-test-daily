@@ -52,7 +52,7 @@ using namespace FAST_IO;
 const ll mod = 1e9 + 7;
 const int INF = 0x3f3f3f3f;
 const ll INF_LL = 0x3f3f3f3f3f3f3f3f;
-const double eps = 1e-5;
+const double eps = 1e-7;
 const int maxn = 1e3 + 10;
 const int maxm = 1e5 + 10;
 
@@ -165,13 +165,29 @@ struct Point
         r /= l;
         return (*this) * r;
     }
+
+    // 绕着p逆时针旋转 angle
     Point rotate(Point p, double angle)
     {
         Point v = (*this) - p;
         double c = cos(angle), s = sin(angle);
         return Point(p.x + v.x * c - v.y * s, p.y + v.x * s + v.y * c);
     }
+
+    Point rotate90(const Point &p, int flag)
+    {
+        double c = 0, s = sgn(flag);
+        Point v = (*this) - p;
+        return Point(p.x + v.x * c - v.y * s, p.y + v.x * s + v.y * c);
+    }
+    friend ostream &operator<<(ostream &os, Point p);
 };
+
+ostream &operator<<(ostream &os, Point p)
+{
+    os << "(" << p.x << ", " << p.y << ")";
+    return os;
+}
 struct Line
 {
     // 使用向量表示直线
@@ -265,6 +281,28 @@ struct Line
         return (d1 == 0 || d2 == 0);
     }
 
+    int segCrossSeg(Line v)
+    {
+        Point se = (e - s).trunc(1);
+        Point svs = (v.s - s).trunc(1);
+        Point sve = (v.e - s).trunc(1);
+        Point vsve = (v.e - v.s).trunc(1);
+        Point vss = (s - v.s).trunc(1);
+        Point vse = (e - v.s).trunc(1);
+        int d1 = sgn(se ^ svs);
+        int d2 = sgn(se ^ sve);
+        int d3 = sgn(vsve ^ vss);
+        int d4 = sgn(vsve ^ vse);
+        if ((d1 ^ d2) == -2 && (d3 ^ d4) == -2)
+        {
+            return 2;
+        }
+        return (d1 == 0 && sgn(svs * (v.s - e).trunc(1)) <= 0) ||
+               (d2 == 0 && sgn(sve * (v.e - e).trunc(1)) <= 0) ||
+               (d3 == 0 && sgn(vss * (s - v.e).trunc(1)) <= 0) ||
+               (d4 == 0 && sgn(vse * (e - v.e).trunc(1)) <= 0);
+    }
+
     // 直线向量平行
     bool parallel(Line v)
     {
@@ -285,10 +323,8 @@ int main()
 #endif
     ios::sync_with_stdio(false);
     cin.tie(0);
-    Point a(1, 0);
-    Point p(0, 0);
-    Point c = a.rotate(p, -pi / 2);
-    cout << c.x << ", " << c.y << endl;
-
+    Point a(1, 0), b(2, 0);
+    cout << a - b << endl;
+    cout << a.rotate(b, -pi / 2) << endl;
     return 0;
 }
