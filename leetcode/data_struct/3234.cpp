@@ -133,8 +133,6 @@ public:
         {
             if (s[i] == '0')
                 pos0.emplace_back(i + 1);
-            else
-                ans++;
             presum1[i + 1] = presum1[i] + (s[i] == '1');
         }
         pos0.emplace_back(n + 1);
@@ -142,14 +140,22 @@ public:
         // "101101"
         for (int i = 1; i <= n; ++i)
         {
+            if(s[i - 1] == '1') {
+                ans += pos0[left] - i;
+            }
             for (int j = left; j < pos0.size() - 1; ++j) {
                 int cnt0 = j - left + 1;
+                // 右端点 pos[j + 1] - 1, 左端点 i, len = pos[j + 1] - 1 - i + 1, cnt1 = len - cnt0;
                 int cnt1 = pos0[j + 1] - 1 - i + 1 - cnt0;
                 // pos0[k] 前面有多少个 1
                 int precnt1 = pos0[j] - i + 1 - (j - left + 1);
+
+                // 剩余 1 的数量，presum[n] - presum[i - 1]
+                int left1 = presum1[n] - presum1[i - 1];
+                if(cnt0 * cnt0 > left1) break;
                 if (cnt1 >= cnt0 * cnt0)
                 {
-                    ans += max(cnt1 - max(cnt0 * cnt0 - precnt1, 0), 0);
+                    ans += max(cnt1 - precnt1 - max(cnt0 * cnt0 - precnt1, 0) + 1, 0);
                 }
             }
             if(s[i - 1] == '0')
@@ -170,5 +176,6 @@ int main()
     cin.tie(0);
     Solution solution;
     cout << solution.numberOfSubstrings("00011") << endl;
+    // cout << solution.numberOfSubstrings("101101") << endl;
     return 0;
 }
