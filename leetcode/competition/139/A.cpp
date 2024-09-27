@@ -121,8 +121,18 @@ public:
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    vector<int> stableMountains(vector<int> &height, int threshold)
     {
+        int n = height.size();
+        vector<int> ans;
+        for (int i = 1; i < n; ++i)
+        {
+            if (height[i - 1] > threshold)
+            {
+                ans.emplace_back(i);
+            }
+        }
+        return ans;
     }
 };
 

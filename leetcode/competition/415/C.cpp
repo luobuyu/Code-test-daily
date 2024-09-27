@@ -121,8 +121,40 @@ public:
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    int minValidStrings(vector<string> &words, string target)
     {
+        int n = target.size();
+        vector<int> dp(n + 2, INF);
+        dp[0] = 0;
+        if (n == 1)
+        {
+            for (auto &word : words)
+            {
+                if (target[0] == word[0])
+                {
+                    return 1;
+                }
+            }
+            return -1;
+        }
+
+        for (int i = 0; i < n; ++i)
+        {
+            // 遍历每个单词，判断能否作为 target[i:] 的前缀
+            for (string &word : words)
+            {
+                for (int len = 1; i + len <= n && len <= word.length(); ++len)
+                {
+                    if (target[i + len - 1] == word[len - 1])
+                    {
+                        dp[i + len] = min(dp[i + len], dp[i] + 1);
+                    }
+                    else
+                        break;
+                }
+            }
+        }
+        return dp[n] == INF ? -1 : dp[n];
     }
 };
 
@@ -136,6 +168,8 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<string> a = {
+        "abc", "aaaaa", "bcdef"};
+    solution.minValidStrings(a, "aabcdabc");
     return 0;
 }

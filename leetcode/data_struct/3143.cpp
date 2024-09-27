@@ -1,6 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
+#define lll long long
+#define PII pair<int, int>
 namespace FAST_IO
 {
     static string buf_line;
@@ -115,17 +118,47 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    using ll = long long;
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    int maxPointsInsideSquare(vector<vector<int>> &points, string s)
     {
+        int n = points.size();
+        vector<int> ids(n);
+        for (int i = 0; i < n; ++i)
+            ids[i] = i;
+        sort(ids.begin(), ids.end(), [&](const int &x, const int &y)
+             { return max(abs(points[x][0]), abs(points[x][1])) < max(abs(points[y][0]), abs(points[y][1])); });
+
+        unordered_set<char> uset;
+        int ans;
+        int i = 0;
+        while (i < n)
+        {
+            int j = i;
+            int idi = ids[i];
+            int idj = ids[j];
+            ans = uset.size();
+            int disi = max(abs(points[idi][0]), abs(points[idi][1]));
+            while (j < n)
+            {
+                idj = ids[j];
+                if (max(abs(points[idj][0]), abs(points[idj][1])) != disi)
+                    break;
+                if (uset.count(s[idj]))
+                    return ans;
+                else
+                    uset.insert(s[idj]);
+                ++j;
+            }
+            i = j;
+            ans = uset.size();
+        }
+        return ans;
     }
 };
-
 int t, n, m, k;
 int main()
 {
@@ -136,6 +169,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<vector<int>> points = {{1, -1}};
+    solution.maxPointsInsideSquare(points, "a");
     return 0;
 }

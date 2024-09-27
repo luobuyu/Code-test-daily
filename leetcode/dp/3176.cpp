@@ -1,6 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
+#define lll long long
+#define PII pair<int, int>
 namespace FAST_IO
 {
     static string buf_line;
@@ -115,14 +118,42 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    using ll = long long;
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    int maximumLength(vector<int> &nums, int k)
     {
+        int n = nums.size();
+        vector<vector<int>> dp(n + 1, vector<int>(k + 1));
+        // dp[i][k] 表示 以 nums[i] 结尾的，刚好为 k 个的长度
+        for (int i = 0; i < n; ++i)
+        {
+            dp[i][0] = 1;
+        }
+        int ans = 1;
+        for (int i = 1; i < n; ++i)
+        {
+            for (int kk = 0; kk <= min(k, i + 1); ++kk)
+            {
+                for (int j = 0; j < i; ++j)
+                {
+                    if (nums[i] == nums[j])
+                    {
+                        dp[i][kk] = max(dp[i][kk], dp[j][kk] + 1);
+                    }
+                    else
+                    {
+                        // 前一列的最大值，i 往后移动，需要维护每一列的最大值
+                        if (kk - 1 >= 0)
+                            dp[i][kk] = max(dp[i][kk], dp[j][kk - 1] + 1);
+                    }
+                }
+                ans = max(ans, dp[i][kk]);
+            }
+        }
+        return ans;
     }
 };
 

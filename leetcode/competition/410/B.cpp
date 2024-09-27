@@ -1,6 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
+#define lll long long
+#define PII pair<int, int>
 namespace FAST_IO
 {
     static string buf_line;
@@ -115,14 +118,67 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    using ll = long long;
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    vector<vector<int>> g;
+    vector<int> size;
+    int ans = 0;
+    int dfs(int u, int fa)
     {
+        size[u] = 1;
+        for (int i = 0; i < g[u].size(); ++i)
+        {
+            int v = g[u][i];
+            if (v == fa)
+                continue;
+            size[u] += dfs(v, u);
+        }
+        return size[u];
+    }
+    void dfs2(int u, int fa)
+    {
+        int cnt = 0;
+        bool flag = true;
+        for (int i = 0; i < g[u].size(); ++i)
+        {
+            int v = g[u][i];
+            if (i == 0)
+                cnt = size[v];
+            else if (cnt != size[v])
+            {
+                flag = false;
+            }
+            if (v == fa)
+                continue;
+            dfs2(v, u);
+        }
+        if (flag)
+        {
+            cout << u << endl;
+            ans++;
+        }
+    }
+    int countGoodNodes(vector<vector<int>> &edges)
+    {
+        int n = edges.size() + 1;
+        g.resize(n);
+        size.resize(n);
+        for (auto &edge : edges)
+        {
+            int u = edge[0], v = edge[1];
+            g[u].emplace_back(v);
+            g[v].emplace_back(u);
+        }
+        dfs(0, -1);
+        // for (int i = 0; i < n; ++i)
+        // {
+        //     cout << i << ", " << size[i] << endl;
+        // }
+        dfs2(0, -1);
+        return ans;
     }
 };
 

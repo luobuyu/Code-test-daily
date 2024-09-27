@@ -1,6 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
+#define lll long long
+#define PII pair<int, int>
 namespace FAST_IO
 {
     static string buf_line;
@@ -115,14 +118,74 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    using ll = long long;
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    vector<vector<int>> g;
+    vector<vector<int>> dp;
+    vector<int> ans;
+    int dfs1(int u, int fa, int time)
     {
+        dp[u][0] = dp[u][1] = time;
+        for (int i = 0; i < g[u].size(); ++i)
+        {
+            int v = g[u][i];
+            if (v == fa)
+                continue;
+            dfs1(v, u, time + (v % 2 == 0 ? 2 : 1));
+            if (dp[v][0] > dp[u][0])
+            {
+                dp[u][1] = dp[u][0];
+                dp[u][0] = dp[v][0];
+            }
+            else if (dp[v][0] > dp[u][1])
+                dp[u][1] = dp[v][0];
+        }
+        return dp[u][0];
+    }
+    void dfs2(int u, int fa)
+    {
+        for (int i = 0; i < g[u].size(); ++i)
+        {
+            int v = g[u][i];
+            if (v == fa)
+                continue;
+            if (u % 2 == 0)
+            {
+                ans[v] = max(ans[u] + 2, ans[v] - 2);
+            }
+            else
+            {
+                ans[v] = max(ans[u] + 1, ans[v] - 1);
+            }
+            dfs2(v, u);
+        }
+    }
+    vector<int> timeTaken(vector<vector<int>> &edges)
+    {
+        int n = edges.size() + 1;
+        g.resize(n);
+        ans.resize(n);
+        dp.resize(n, vector<int>(2)); // 最大值，次大值。
+        for (auto &edge : edges)
+        {
+            int u = edge[0], v = edge[1];
+            g[u].emplace_back(v);
+            g[v].emplace_back(u);
+        }
+        dfs1(0, -1, 0);
+        for (int i = 0; i < n; ++i)
+        {
+            ans[i] = dp[i][0];
+        }
+        dfs2(0, -1);
+        for (int i = 0; i < n; ++i)
+        {
+            cout << i << ", " << ans[i] << endl;
+        }
+        return ans;
     }
 };
 
@@ -136,6 +199,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<vector<int>> a = {{2, 4}, {0, 1}, {2, 3}, {0, 2}};
+    solution.timeTaken(a);
     return 0;
 }

@@ -121,8 +121,19 @@ public:
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    vector<int> getSneakyNumbers(vector<int> &nums)
     {
+        vector<int> ans;
+        unordered_map<int, int> mp;
+        for (auto &x : nums)
+        {
+            mp[x]++;
+            if (mp[x] == 2)
+            {
+                ans.emplace_back(x);
+            }
+        }
+        return ans;
     }
 };
 

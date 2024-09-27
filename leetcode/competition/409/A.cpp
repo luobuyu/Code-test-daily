@@ -1,6 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
+#define lll long long
+#define PII pair<int, int>
 namespace FAST_IO
 {
     static string buf_line;
@@ -112,20 +115,56 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
-class Solution
+class neighborSum
 {
 public:
-    using ll = long long;
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const static long long mod = 1e9 + 7;
-    const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    unordered_map<int, pair<int, int>> mp;
+    int n, m;
+    vector<vector<int>> grid;
+    neighborSum(vector<vector<int>> &grid)
     {
+        n = grid.size();
+        m = grid[0].size();
+        for (int i = 0; i < n; ++i)
+        {
+            for (int j = 0; j < m; ++j)
+            {
+                mp[grid[i][j]] = {i, j};
+            }
+        }
+        this->grid = grid;
+    }
+
+    int adjacentSum(int value)
+    {
+        auto &[x, y] = mp[value];
+        int sum = 0;
+        if (x - 1 >= 0)
+            sum += grid[x - 1][y];
+        if (y - 1 >= 0)
+            sum += grid[x][y - 1];
+        if (x + 1 < n)
+            sum += grid[x + 1][y];
+        if (y + 1 < m)
+            sum += grid[x][y + 1];
+        return sum;
+    }
+
+    int diagonalSum(int value)
+    {
+        int sum = 0;
+        auto &[x, y] = mp[value];
+        if (x - 1 >= 0 && y - 1 >= 0)
+            sum += grid[x - 1][y - 1];
+        if (x - 1 >= 0 && y + 1 < m)
+            sum += grid[x - 1][y + 1];
+        if (x + 1 < n && y - 1 >= 0)
+            sum += grid[x + 1][y - 1];
+        if (x + 1 < n && y + 1 < m)
+            sum += grid[x + 1][y + 1];
+        return sum;
     }
 };
-
 int t, n, m, k;
 int main()
 {

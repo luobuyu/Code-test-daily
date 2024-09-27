@@ -121,9 +121,10 @@ public:
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    long long maxScore(vector<int> &a, vector<int> &b)
     {
-    }
+        sort(a.begin(), a.end());
+        }
 };
 
 int t, n, m, k;

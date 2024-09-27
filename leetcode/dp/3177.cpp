@@ -1,6 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
+#define lll long long
+#define PII pair<int, int>
 namespace FAST_IO
 {
     static string buf_line;
@@ -115,14 +118,46 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    using ll = long long;
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    int maximumLength(vector<int> &nums, int k)
     {
+        int n = nums.size();
+        vector<vector<int>> dp(n + 1, vector<int>(k + 1));
+        // dp[i][k] 表示 以 nums[i] 结尾的，刚好为 k 个的长度
+        int ans = 1;
+        vector<int> premax(k + 1);
+        unordered_map<int, vector<int>> pre_equ_max;
+        for (int i = 0; i < n; ++i)
+        {
+            // 当前列前面最大的。
+            if (pre_equ_max.count(nums[i]))
+            {
+                auto &pre = pre_equ_max[nums[i]];
+                for (int kk = 0; kk <= k; ++kk)
+                    dp[i][kk] = pre[kk] + 1;
+            }
+            else
+            {
+                dp[i][0] = 1;
+            }
+            for (int kk = 0; kk <= min(k, i + 1); ++kk)
+            {
+                // 前一列前面最大的。
+                if (kk - 1 >= 0)
+                    dp[i][kk] = max(dp[i][kk], premax[kk - 1] + 1);
+                ans = max(ans, dp[i][kk]);
+            }
+            for (int j = 0; j < k; ++j)
+            {
+                premax[j] = max(premax[j], dp[i][j]);
+            }
+            pre_equ_max[nums[i]] = dp[i];
+        }
+        return ans;
     }
 };
 
@@ -136,6 +171,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<int> a = {1, 2, 3, 4, 5, 1};
+    solution.maximumLength(a, 0);
     return 0;
 }

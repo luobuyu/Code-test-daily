@@ -1,6 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
+#define lll long long
+#define PII pair<int, int>
 namespace FAST_IO
 {
     static string buf_line;
@@ -115,17 +118,59 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    using ll = long long;
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    int lengthOfLIS(vector<int> &nums)
     {
+        int n = nums.size();
+        vector<int> dp(n, 1);
+        int ans = 1;
+        for (int i = 1; i < n; ++i)
+        {
+            dp[i] = 1;
+            for (int j = 0; j < i; ++j)
+            {
+                if (nums[i] > nums[j])
+                {
+                    dp[i] = max(dp[i], dp[j] + 1);
+                }
+            }
+            ans = max(ans, dp[i]);
+        }
+        int index;
+        for (int i = 0; i < n; ++i)
+        {
+            if (dp[i] == ans)
+            {
+                index = i;
+            }
+        }
+        int pre = index;
+        int cnt = ans;
+        vector<int> num;
+        num.emplace_back(nums[index]);
+        while (cnt)
+        {
+            for (int i = index - 1; i >= 0; --i)
+            {
+                if (dp[i] == cnt - 1)
+                {
+                    num.emplace_back(nums[i]);
+                    index = i;
+                    cnt--;
+                    break;
+                }
+            }
+        }
+        reverse(num.begin(), num.end());
+        for (auto &x : num)
+            cout << x << ", ";
+        return ans;
     }
 };
-
 int t, n, m, k;
 int main()
 {

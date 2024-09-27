@@ -1,6 +1,8 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define lll long long
+#define PII pair<int, int>
 namespace FAST_IO
 {
     static string buf_line;
@@ -115,14 +117,39 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    using ll = long long;
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    using ll = long long;
+    int maximumRobots(vector<int> &chargeTimes, vector<int> &runningCosts, long long budget)
     {
+        int n = chargeTimes.size();
+        vector<int> q(n);
+        int hh = 0, tt = -1;
+        // 求最大值，递减单调队列
+        long long sum = 0;
+        int ans = 0;
+        for (int l = 0, r = 0; r < n; ++r)
+        {
+            sum += runningCosts[r];
+            // 加入 r，保证单调性
+            while (hh <= tt && chargeTimes[q[tt]] < chargeTimes[r])
+                --tt;
+            q[++tt] = r;
+            // 计算当前窗口 [l, r] sum
+            while (l <= r && chargeTimes[q[hh]] + (r - l + 1) * sum > budget)
+            {
+                // 移出 l
+                if (q[hh] == l)
+                    ++hh;
+                sum -= runningCosts[l];
+                ++l;
+            }
+            ans = max(ans, r - l + 1);
+        }
+        return ans;
     }
 };
 
@@ -136,6 +163,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<int> a = {3, 6, 1, 3, 4}, b = {2, 1, 3, 4, 5};
+    solution.maximumRobots(a, b, 25);
     return 0;
 }

@@ -115,14 +115,45 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    using ll = long long;
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const static long long mod = 1e9 + 7;
-    const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    long long validSubstringCount(string word1, string word2)
     {
+        int n = word1.size(), m = word2.size();
+        if (m > n)
+            return 0;
+
+        vector<int> targetFreq(26, 0), windowFreq(26, 0);
+
+        for (char c : word2)
+        {
+            targetFreq[c - 'a']++;
+        }
+
+        long long count = 0;
+        int l = 0, r = 0;
+        int r = word1.size();
+        for (r = 0; r < n; ++r)
+        {
+            windowFreq[word1[r] - 'a']++;
+            while (r - l + 1 >= m && isValid(windowFreq, targetFreq))
+            {
+                windowFreq[word1[l] - 'a']--;
+                ++l;
+            }
+        }
+
+        return count;
+    }
+
+private:
+    // 只要窗口的字符频率不小于目标字符的频率，则返回 true
+    bool isValid(vector<int> &windowFreq, vector<int> &targetFreq)
+    {
+        for (int i = 0; i < 26; ++i)
+        {
+            if (windowFreq[i] < targetFreq[i])
+                return false;
+        }
+        return true;
     }
 };
 

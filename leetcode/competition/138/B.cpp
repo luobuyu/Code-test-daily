@@ -1,6 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
+#define lll long long
+#define PII pair<int, int>
 namespace FAST_IO
 {
     static string buf_line;
@@ -115,17 +118,28 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    using ll = long long;
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    string stringHash(string s, int k)
     {
+        int n = s.length();
+        int cnt = n / k;
+        string ans;
+        for (int i = 0; i < n; i += k)
+        {
+            int sum = 0;
+            for (int j = i; j < k; ++j)
+            {
+                sum += s[j] - 'a';
+            }
+            ans.push_back((sum % 26) + '0');
+        }
+        return ans;
     }
 };
-
 int t, n, m, k;
 int main()
 {

@@ -1,6 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
+#define lll long long
+#define PII pair<int, int>
 namespace FAST_IO
 {
     static string buf_line;
@@ -115,14 +118,58 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    using ll = long long;
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    vector<vector<pair<int, int>>> g;
+    vector<int> dis;
+    vector<bool> vis;
+    int solve()
     {
+        fill(dis.begin(), dis.end(), INF);
+        fill(vis.begin(), vis.end(), false);
+        dis[0] = 0;
+        priority_queue<pair<int, int>> q;
+        q.push({0, 0});
+        while (q.size())
+        {
+            auto out = q.top();
+            q.pop();
+            int u = out.second;
+            if (vis[u])
+                continue;
+            vis[u] = true;
+            for (int i = 0; i < g[u].size(); ++i)
+            {
+                int v = g[u][i].first, w = g[u][i].second;
+                if (dis[v] > dis[u] + w)
+                {
+                    dis[v] = dis[u] + w;
+                    q.push({-dis[v], v});
+                }
+            }
+        }
+        return dis.back();
+    }
+    vector<int> shortestDistanceAfterQueries(int n, vector<vector<int>> &queries)
+    {
+        int m = queries.size();
+        vector<int> ans(m);
+        dis.resize(n);
+        g.resize(n);
+        vis.resize(n);
+        for (int i = 0; i < n - 1; ++i)
+        {
+            g[i].emplace_back(i + 1, 1);
+        }
+        for (int i = 0; i < m; ++i)
+        {
+            g[queries[i][0]].emplace_back(queries[i][1], 1);
+            ans[i] = solve();
+        }
+        return ans;
     }
 };
 

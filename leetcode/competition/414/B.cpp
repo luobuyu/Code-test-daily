@@ -1,6 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
+#define lll long long
+#define PII pair<int, int>
 namespace FAST_IO
 {
     static string buf_line;
@@ -112,17 +115,55 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
+
+struct Node
+{
+    int x, y;
+    long long dis;
+    Node() {}
+    Node(int _x, int _y)
+    {
+        x = _x;
+        y = _y;
+        dis = abs(x) + abs(y);
+    }
+    bool operator<(const Node &p) const
+    {
+        return dis < p.dis;
+    }
+};
 class Solution
 {
 public:
-    using ll = long long;
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+
+    vector<int> resultsArray(vector<vector<int>> &queries, int k)
     {
+        int n = queries.size();
+        vector<int> ans(n);
+        priority_queue<Node> q;
+        for (int i = 0; i < n; ++i)
+        {
+            if (q.size() < k)
+            {
+                q.push(Node(queries[i][0], queries[i][1]));
+            }
+            if (q.size() < k)
+            {
+                ans[i] = -1;
+            }
+            else
+            {
+                while (q.size() > k)
+                    q.pop();
+                ans[i] = q.top().dis;
+            }
+        }
+        return ans;
     }
 };
 

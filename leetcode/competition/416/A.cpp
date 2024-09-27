@@ -121,8 +121,22 @@ public:
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    bool reportSpam(vector<string> &message, vector<string> &bannedWords)
     {
+        unordered_map<string, int> mp;
+        for (auto &word : bannedWords)
+        {
+            mp[word]++;
+        }
+        int cnt = 0;
+        for (auto &word : message)
+        {
+            if (mp.count(word))
+            {
+                ++cnt;
+            }
+        }
+        return cnt >= 2;
     }
 };
 

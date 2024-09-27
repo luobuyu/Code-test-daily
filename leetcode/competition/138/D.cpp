@@ -1,6 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
+#define lll long long
+#define PII pair<int, int>
 namespace FAST_IO
 {
     static string buf_line;
@@ -115,14 +118,37 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    using ll = long long;
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    long long minDamage(int power, vector<int> &damage, vector<int> &health)
     {
+        int n = damage.size();
+        vector<int> ids(n);
+        for (int i = 0; i < n; ++i)
+            ids[i] = i;
+        sort(ids.begin(), ids.end(), [&](const int &x, const int &y)
+             { int timesX = (health[x] - 1) / power + 1;
+            int timesY = (health[y] - 1) / power + 1;
+            if(timesX == timesY)
+                return damage[x] > damage[y];
+            else return timesX * damage[x] < timesY * damage[y] });
+        long long sum = 0;
+        vector<long long> sufSum(n + 1);
+        for (int i = n - 1; i >= 0; --i)
+        {
+            int id = ids[i];
+            sufSum[i] = sufSum[i + 1] + damage[id];
+        }
+        for (int i = 0; i < n; ++i)
+        {
+            int id = ids[i];
+            int times = (health[id] - 1) / power + 1;
+            sum += sufSum[i] * times;
+        }
+        return sum;
     }
 };
 

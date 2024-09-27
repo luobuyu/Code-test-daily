@@ -1,6 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
+#define lll long long
+#define PII pair<int, int>
 namespace FAST_IO
 {
     static string buf_line;
@@ -115,14 +118,24 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    using ll = long long;
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    bool checkTwoChessboards(string coordinate1, string coordinate2)
     {
+        int dis1 = (coordinate1[0] - coordinate2[0] + 8) % 8;
+        int dis2 = (coordinate1[1] - coordinate2[1] + 8) % 8;
+        if (dis1 % 2 == 0 && dis2 % 2 == 0)
+        {
+            return true;
+        }
+        if (dis1 % 2 == 1 && dis2 % 2 == 1)
+        {
+            return true;
+        }
+        return false;
     }
 };
 

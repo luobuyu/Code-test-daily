@@ -121,8 +121,43 @@ public:
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    vector<vector<int>> g;
+    int numBusesToDestination(vector<vector<int>> &routes, int source, int target)
     {
+        int n = routes.size();
+        unordered_map<int, vector<int>> mp; // 车站，bus
+        for (int i = 0; i < routes.size(); ++i)
+        {
+            for (auto &x : routes[i])
+            {
+                mp[x].emplace_back(i);
+            }
+        }
+        queue<int> q; // 车站
+        vector<int> dis(mp.size());
+        q.push(source);
+        dis[source] = 0;
+        vector<bool> vis(mp.size());
+        vis[source] = true;
+        while (q.size())
+        {
+            auto out = q.front();
+            q.pop();
+            if (out == target)
+                return dis[out];
+            for (auto &bus : mp[out])
+            {
+                for (auto &y : routes[bus])
+                {
+                    if (source == y || vis[y])
+                        continue;
+                    dis[y] = dis[out] + 1;
+                    vis[y] = true;
+                    q.push(y);
+                }
+            }
+        }
+        return -1;
     }
 };
 

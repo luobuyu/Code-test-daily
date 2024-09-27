@@ -105,6 +105,40 @@ using namespace FAST_IO;
 //     return 0;
 // }();
 
+struct ListNode
+{
+    int val;
+    ListNode *next;
+    ListNode() : val(0), next(nullptr) {}
+    ListNode(int x) : val(x), next(nullptr) {}
+    ListNode(int x, ListNode *next) : val(x), next(next) {}
+};
+class Node
+{
+public:
+    int val;
+    Node *next;
+    Node *random;
+
+    Node(int _val)
+    {
+        val = _val;
+        next = NULL;
+        random = NULL;
+    }
+};
+
+void show(ListNode *head)
+{
+    while (head)
+    {
+        cout << head->val << endl;
+        head = head->next;
+    }
+}
+void show()
+{
+}
 auto optimize_cpp_stdio = []()
 {
     std::ios::sync_with_stdio(false);
@@ -112,17 +146,38 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
+
 class Solution
 {
 public:
-    using ll = long long;
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const static long long mod = 1e9 + 7;
-    const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    ListNode *mergeKLists(vector<ListNode *> &lists)
     {
+        auto cmp = [](ListNode *a, ListNode *b) -> bool
+        {
+            return a->val > b->val;
+        };
+        priority_queue<ListNode *, vector<ListNode *>, decltype(cmp)> pq;
+        for (auto &head : lists)
+        {
+            auto ptr = head;
+            while (ptr)
+            {
+                pq.push(ptr);
+                ptr = ptr->next;
+            }
+        }
+        auto dummy = new ListNode(-1), ptr = dummy;
+        cout << pq.size() << endl;
+        while (!pq.empty())
+        {
+            auto x = pq.top();
+            pq.pop();
+            cout << x->val << endl;
+            ptr->next = x;
+            ptr = ptr->next;
+        }
+
+        return dummy->next;
     }
 };
 
@@ -136,6 +191,21 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
+    ListNode *l11 = new ListNode(-2);
+    ListNode *l12 = new ListNode(-2);
+    ListNode *l13 = new ListNode(-1);
+    l11->next = l12;
+    l12->next = l13;
 
+    ListNode *l21 = new ListNode(-1);
+    ListNode *l22 = new ListNode(-1);
+    ListNode *l23 = new ListNode(-1);
+
+    l21->next = l22;
+    l22->next = l23;
+
+    vector<ListNode *> a = {l11, l21};
+    auto ret = solution.mergeKLists(a);
+    auto ptr = ret;
     return 0;
 }

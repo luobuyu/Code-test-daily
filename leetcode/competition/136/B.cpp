@@ -1,6 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
+#define lll long long
+#define PII pair<int, int>
 namespace FAST_IO
 {
     static string buf_line;
@@ -115,14 +118,38 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    using ll = long long;
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    int minFlips(vector<vector<int>> &grid)
     {
+        int n = grid.size();
+        int m = grid[0].size();
+        int ans1 = 0;
+        for (int i = 0; i < n; ++i)
+        {
+            for (int j = 0; k = m - 1; j < k; ++j, --k)
+            {
+                if (grid[i][j] != grid[i][k])
+                {
+                    ans1++;
+                }
+            }
+        }
+        int ans2 = 0;
+        for (int j = 0; j < m; ++j)
+        {
+            for (int i = 0, k = n - 1; i < k; ++i, --k)
+            {
+                if (grid[i][j] != grid[k][j])
+                {
+                    ans2++;
+                }
+            }
+        }
+        return min(ans1, ans2);
     }
 };
 

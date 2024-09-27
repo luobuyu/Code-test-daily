@@ -1,6 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
+#define lll long long
+#define PII pair<int, int>
 namespace FAST_IO
 {
     static string buf_line;
@@ -115,14 +118,47 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    using ll = long long;
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    int getSum(int l, int r, vector<int> &presum)
     {
+        return presum[r + 1] - presum[l + 1 - 1];
+    }
+    vector<long long> countKConstraintSubstrings(string s, int k, vector<vector<int>> &queries)
+    {
+        int n = s.length();
+
+        vector<int> presum0(n + 1), presum1(n + 1);
+        for (int i = 1; i <= n; ++i)
+        {
+            presum0[i] += presum0[i - 1] + (s[i - 1] == '0');
+        }
+        for (int i = 1; i <= n; ++i)
+        {
+            presum1[i] += presum1[i - 1] + (s[i - 1] == '1');
+        }
+        // 需要求出每个区间内，既满足又满足的数量
+        int r = 0, l = 0;
+        int num0 = 0, num1 = 0;
+        for (int r = 0; r < n; ++r)
+        {
+            if (s[r] == '0')
+                num0++;
+            else
+                num1++;
+            while (num0 > k || num1 > k)
+            {
+                if (s[l] == '0')
+                    num0--;
+                else
+                    num1--;
+                l++;
+            }
+            // [l, r] 满足即有
+        }
     }
 };
 

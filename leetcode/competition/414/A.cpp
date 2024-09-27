@@ -1,6 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
+#define lll long long
+#define PII pair<int, int>
 namespace FAST_IO
 {
     static string buf_line;
@@ -115,14 +118,42 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    using ll = long long;
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    vector<string> split2(const string &s, string delim)
     {
+        vector<string> ret;
+        int start = 0, end = 0;
+        while ((end = s.find(delim, start)) != string::npos)
+        {
+            ret.emplace_back(s.substr(start, end - start));
+            start = end + delim.length();
+        }
+        if (start < s.length())
+            ret.emplace_back(s.substr(start));
+        return ret;
+    }
+    vector<string> split(string s, char delim)
+    {
+        stringstream ss(s);
+        string str;
+        vector<string> ret;
+        while (getline(ss, str, delim))
+        {
+            ret.emplace_back(str);
+        }
+        return ret;
+    }
+    string convertDateToBinary(string date)
+    {
+        for (auto &s : split2(date, "-"))
+        {
+            cout << s << endl;
+        }
+        return "";
     }
 };
 
@@ -136,6 +167,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    solution.convertDateToBinary("2020-02-01");
     return 0;
 }

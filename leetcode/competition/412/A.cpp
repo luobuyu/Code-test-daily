@@ -1,6 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
+#define lll long long
+#define PII pair<int, int>
 namespace FAST_IO
 {
     static string buf_line;
@@ -112,17 +115,46 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
+struct Node
+{
+    long long val;
+    int index;
+    Node(int _val, int _index)
+    {
+        val = _val;
+        index = _index;
+    }
+    bool operator<(const Node &p) const
+    {
+        if (val == p.val)
+            return index > p.index;
+        return val > p.val;
+    }
+};
 class Solution
 {
 public:
-    using ll = long long;
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    vector<int> getFinalState(vector<int> &nums, int k, int multiplier)
     {
+        vector<int> ans = nums;
+        priority_queue<Node> q; //
+        int n = nums.size();
+        for (int i = 0; i < n; ++i)
+            q.push(Node(nums[i], i));
+        while (k--)
+        {
+            auto out = q.top();
+            q.pop();
+            ans[out.index] = ans[out.index] * multiplier % mod;
+            out.val = out.val * multiplier % mod;
+            q.push(out);
+        }
+        return ans;
     }
 };
 
@@ -136,6 +168,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<int> a = {2, 1, 3, 5, 6};
+    solution.getFinalState(a, 5, 2);
     return 0;
 }

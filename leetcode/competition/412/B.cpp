@@ -1,6 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
+#define lll long long
+#define PII pair<int, int>
 namespace FAST_IO
 {
     static string buf_line;
@@ -115,14 +118,47 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    using ll = long long;
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    bool check(int x, int y)
     {
+        if (x == y)
+            return true;
+        string xx = to_string(x);
+        string yy = to_string(y);
+        if (xx.length() < yy.length())
+        {
+            swap(xx, yy);
+            swap(x, y);
+        }
+        int size = xx.length();
+        for (int i = 0; i < size; ++i)
+        {
+            for (int j = i + 1; j < size; ++j)
+            {
+                string tmp = xx;
+                swap(tmp[i], tmp[j]);
+                if (atoi(tmp.c_str()) == y)
+                    return true;
+            }
+        }
+        return false;
+    }
+    int countPairs(vector<int> &nums)
+    {
+        int n = nums.size();
+        int ans = 0;
+        for (int i = 0; i < n; ++i)
+        {
+            for (int j = i + 1; j < n; ++j)
+            {
+                ans += check(nums[i], nums[j]);
+            }
+        }
+        return ans;
     }
 };
 

@@ -1,6 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
+#define lll long long
+#define PII pair<int, int>
 namespace FAST_IO
 {
     static string buf_line;
@@ -115,14 +118,30 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    using ll = long long;
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    int minSubarray()
     {
+        int ans = 0;
+        unordered_set<string> mp;
+        for (int i = 10000; i <= 99999; ++i)
+        {
+            if (i % 6 != 0)
+                continue;
+            string tmp = to_string(i);
+            string rever_tmp = tmp;
+            reverse(rever_tmp.begin(), rever_tmp.end());
+            if (tmp != rever_tmp)
+                continue;
+            ans++;
+            sort(tmp.begin(), tmp.end());
+            mp.insert(tmp);
+        }
+        cout << mp.size() << endl;
+        return 0;
     }
 };
 
@@ -136,6 +155,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    solution.minSubarray();
     return 0;
 }

@@ -1,6 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
+#define lll long long
+#define PII pair<int, int>
 namespace FAST_IO
 {
     static string buf_line;
@@ -115,14 +118,28 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    using ll = long long;
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    int finalPositionOfSnake(int n, vector<string> &commands)
     {
+        int x = 0, y = 0;
+        for (auto &s : commands)
+        {
+            if (s == "UP")
+            {
+                x--;
+            }
+            else if (s == "RIGHT")
+                y++;
+            else if (s == "DOWN")
+                x++;
+            else if (s == "LEFT")
+                y--;
+        }
+        return x * n + y;
     }
 };
 

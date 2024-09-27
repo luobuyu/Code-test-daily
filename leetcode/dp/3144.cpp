@@ -1,6 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
+#define lll long long
+#define PII pair<int, int>
 namespace FAST_IO
 {
     static string buf_line;
@@ -115,17 +118,43 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    using ll = long long;
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const static long long mod = 1e9 + 7;
-    const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    bool check(vector<int> &a, vector<int> &b)
     {
+        int n = a.size();
+        int pre = -1;
+        unordered_set<int> uset;
+        for (int i = 0; i < n; ++i)
+        {
+            if (b[i] - a[i] == 0)
+                continue;
+            uset.insert(b[i] - a[i]);
+        }
+        return uset.size() <= 1;
+    }
+    int minimumSubstringsInPartition(string s)
+    {
+        int n = s.length();
+        vector<vector<int>> preSum(n + 1, vector<int>(26));
+        vector<int> dp(n + 1);
+        for (int i = 1; i <= n; ++i)
+        {
+            preSum[i] = preSum[i - 1];
+            preSum[i][s[i - 1] - 'a']++;
+            dp[i] = INT_MAX / 2;
+        }
+        for (int i = 1; i <= n; ++i)
+        {
+            for (int j = 0; j < i; ++j)
+            {
+                if (check(preSum[j], preSum[i]))
+                {
+                    dp[i] = min(dp[i], dp[j] + 1);
+                }
+            }
+        }
+        return dp[n];
     }
 };
-
 int t, n, m, k;
 int main()
 {
@@ -136,6 +165,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    solution.minimumSubstringsInPartition("fabccddg");
     return 0;
 }

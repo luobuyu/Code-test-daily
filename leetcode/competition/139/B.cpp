@@ -105,27 +105,80 @@ using namespace FAST_IO;
 //     return 0;
 // }();
 
-auto optimize_cpp_stdio = []()
-{
-    std::ios::sync_with_stdio(false);
-    std::cin.tie(nullptr);
-    std::cout.tie(nullptr);
-    return 0;
-}();
+#include <vector>
+#include <queue>
+#include <tuple>
+
+using namespace std;
+
 class Solution
 {
 public:
-    using ll = long long;
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const static long long mod = 1e9 + 7;
-    const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    bool findSafeWalk(vector<vector<int>> &grid, int health)
     {
+        int m = grid.size();
+        int n = grid[0].size();
+
+        // 用于表示四个方向的移动（上、下、左、右）
+        vector<pair<int, int>> directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+
+        // BFS 队列，存储 (x, y, 当前健康值)
+        queue<tuple<int, int, int>> q;
+        q.push({0, 0, health});
+
+        // 用于记录已经访问过的格子及对应健康值
+        vector<vector<int>> visited(m, vector<int>(n, -1));
+        visited[0][0] = health;
+
+        while (!q.empty())
+        {
+            auto [x, y, curHealth] = q.front();
+            q.pop();
+
+            // 到达终点
+            if (x == m - 1 && y == n - 1)
+            {
+                return curHealth > 0;
+            }
+
+            // 进行四个方向的遍历
+            for (auto [dx, dy] : directions)
+            {
+                int newX = x + dx;
+                int newY = y + dy;
+                int newHealth = curHealth;
+
+                // 检查边界条件
+                if (newX < 0 || newX >= m || newY < 0 || newY >= n)
+                {
+                    continue;
+                }
+
+                // 如果是“不安全”区域，健康值减少
+                if (grid[newX][newY] == 1)
+                {
+                    newHealth -= 1;
+                }
+
+                // 如果健康值不为正，无法继续
+                if (newHealth <= 0)
+                {
+                    continue;
+                }
+
+                // 如果当前路径的健康值比之前到达这个点的健康值高，继续探索
+                if (newHealth > visited[newX][newY])
+                {
+                    visited[newX][newY] = newHealth;
+                    q.push({newX, newY, newHealth});
+                }
+            }
+        }
+
+        // 无法到达终点
+        return false;
     }
 };
-
 int t, n, m, k;
 int main()
 {

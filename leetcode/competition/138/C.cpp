@@ -1,6 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
+#define lll long long
+#define PII pair<int, int>
 namespace FAST_IO
 {
     static string buf_line;
@@ -115,14 +118,86 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    using ll = long long;
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    unordered_set<string> mp;
+    long long countGoodIntegers(int n, int k)
     {
+        int len = n / 2;
+        long long num = 0;
+        int upper = pow(10, len);
+        vector<long long> jc(11);
+        jc[0] = 1;
+        for (int i = 1; i <= 10; ++i)
+        {
+            jc[i] = jc[i - 1] * i;
+        }
+        cout << pow(10, len - 1) << ", " << upper << endl;
+        for (int i = pow(10, len - 1); i < upper; ++i)
+        {
+            string tmp;
+            if (i != 0)
+                tmp = to_string(i);
+
+            reverse(tmp.begin(), tmp.end());
+            if (n & 1)
+            {
+                for (int j = 0; j < 10; ++j)
+                {
+                    string cur = tmp;
+                    cur.push_back('0' + j);
+                    cur += tmp;
+                    long long cur_num = atoi(cur.c_str());
+                    if (cur_num % k != 0 || to_string(cur_num).length() != n)
+                        continue;
+                    // cout << cur_num << endl;
+                    if (cur_num == 0)
+                        continue;
+                    sort(cur.begin(), cur.end());
+                    mp.insert(cur);
+                }
+            }
+            else
+            {
+                string cur = tmp;
+                cur += tmp;
+                long long cur_num = atoi(cur.c_str());
+                if (cur_num % k != 0 || to_string(cur_num).length() != n)
+                    continue;
+                if (cur_num == 0)
+                    continue;
+                sort(cur.begin(), cur.end());
+                mp.insert(cur);
+            }
+        }
+        cout << mp.size() << endl;
+        long long ans = 0;
+        for (auto &s : mp)
+        {
+            // cout << s << endl;
+            vector<int> cnt(10);
+            int len = s.length();
+            if (len == 1)
+            {
+                ans++;
+                continue;
+            }
+            for (auto &ch : s)
+            {
+                cnt[ch - '0']++;
+            }
+            long long tmp = (len - cnt[0]) * (len - 1);
+            for (int i = 0; i < 10; ++i)
+            {
+                tmp /= jc[cnt[i]];
+            }
+            ans += tmp;
+        }
+
+        return ans;
     }
 };
 
@@ -136,6 +211,6 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    solution.countGoodIntegers(2, 1);
     return 0;
 }

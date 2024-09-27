@@ -112,17 +112,95 @@ auto optimize_cpp_stdio = []()
     std::cout.tie(nullptr);
     return 0;
 }();
+
+class TrieNode
+{
+public:
+    TrieNode *children[26];
+    bool isWord;
+    TrieNode()
+    {
+        fill(begin(children), end(children), nullptr);
+        isWord = false;
+    }
+};
+
+class Trie
+{
+public:
+    TrieNode *root;
+
+    Trie()
+    {
+        root = new TrieNode();
+    }
+
+    void insert(const string &word)
+    {
+        TrieNode *node = root;
+        for (char c : word)
+        {
+            int idx = c - 'a';
+            if (!node->children[idx])
+            {
+                node->children[idx] = new TrieNode();
+            }
+            node = node->children[idx];
+        }
+        node->isWord = true;
+    }
+
+    // 返回从 target[start:] 可以匹配的所有前缀长度
+    vector<int> search(const string &target, int start)
+    {
+        vector<int> matchLengths;
+        TrieNode *node = root;
+        for (int i = start; i < target.size(); ++i)
+        {
+            int idx = target[i] - 'a';
+            if (!node->children[idx])
+            {
+                break;
+            }
+            node = node->children[idx];
+            matchLengths.push_back(i - start + 1);
+        }
+        return matchLengths;
+    }
+};
+
 class Solution
 {
 public:
-    using ll = long long;
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const static long long mod = 1e9 + 7;
-    const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+
+    int minValidStrings(vector<string> &words, string target)
     {
+        int n = target.size();
+        vector<int> dp(n + 1, INF);
+        dp[0] = 0;
+
+        Trie trie;
+        for (const string &word : words)
+        {
+            trie.insert(word);
+        }
+
+        for (int i = 0; i < n; ++i)
+        {
+            if (dp[i] == INF)
+                continue;
+            vector<int> matchLengths = trie.search(target, i);
+            for (int len : matchLengths)
+            {
+                if (i + len <= n)
+                {
+                    dp[i + len] = min(dp[i + len], dp[i] + 1);
+                }
+            }
+        }
+
+        return dp[n] == INF ? -1 : dp[n];
     }
 };
 

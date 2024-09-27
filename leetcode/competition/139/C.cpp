@@ -105,27 +105,17 @@ using namespace FAST_IO;
 //     return 0;
 // }();
 
-auto optimize_cpp_stdio = []()
-{
-    std::ios::sync_with_stdio(false);
-    std::cin.tie(nullptr);
-    std::cout.tie(nullptr);
-    return 0;
-}();
 class Solution
 {
 public:
-    using ll = long long;
-    const static int maxn = 1e5 + 10;
-    const static int maxm = 1e5 + 10;
-    const static long long mod = 1e9 + 7;
-    const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
-    const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    int maxValue(vector<int> &nums, int k)
     {
+        int n = nums.size();
+        for (int i = 0; i < k; ++i)
+        {
+        }
     }
 };
-
 int t, n, m, k;
 int main()
 {

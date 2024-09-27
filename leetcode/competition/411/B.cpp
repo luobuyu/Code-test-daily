@@ -1,6 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
+#define lll long long
+#define PII pair<int, int>
 namespace FAST_IO
 {
     static string buf_line;
@@ -115,17 +118,25 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    using ll = long long;
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    long long maxEnergyBoost(vector<int> &energyDrinkA, vector<int> &energyDrinkB)
     {
+        int n = energyDrinkA.size();
+        vector<vector<long long>> dp(n + 1, vector<long long>(2));
+        dp[1][0] = energyDrinkA[0];
+        dp[1][1] = energyDrinkB[0];
+        for (int i = 2; i <= n; ++i)
+        {
+            dp[i][0] = max(dp[i - 1][0], dp[i - 2][1]) + energyDrinkA[i - 1];
+            dp[i][1] = max(dp[i - 1][1], dp[i - 2][0]) + energyDrinkB[i - 1];
+        }
+        return max(dp[n][0], dp[n][1]);
     }
 };
-
 int t, n, m, k;
 int main()
 {

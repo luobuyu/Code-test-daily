@@ -1,6 +1,9 @@
 // #pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
+#define ll long long
+#define lll long long
+#define PII pair<int, int>
 namespace FAST_IO
 {
     static string buf_line;
@@ -115,14 +118,47 @@ auto optimize_cpp_stdio = []()
 class Solution
 {
 public:
-    using ll = long long;
     const static int maxn = 1e5 + 10;
     const static int maxm = 1e5 + 10;
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int minSubarray(vector<int> &nums, int p)
+    int n, m;
+    vector<vector<int>> grid;
+    int ans = 0;
+    bitset<101> vis;
+    int dfs(int step, int sum)
     {
+        if (step == n)
+        {
+            ans = max(ans, sum);
+            return sum;
+        }
+        int maxx = 0;
+        for (int i = 0; i < m; ++i)
+        {
+            if (vis.test(grid[step][i]))
+                continue;
+            if (i > 0 && grid[step][i] == grid[step][i - 1])
+                continue;
+            vis.set(grid[step][i]);
+            maxx = max(maxx, dfs(step + 1, sum + grid[step][i]));
+            vis.reset(grid[step][i]);
+        }
+        maxx = max(maxx, dfs(step + 1, sum));
+        return maxx;
+    }
+    int maxScore(vector<vector<int>> &grid)
+    {
+        n = grid.size();
+        m = grid[0].size();
+        for (int i = 0; i < n; ++i)
+        {
+            sort(grid[i].begin(), grid[i].end());
+        }
+        this->grid = grid;
+        dfs(0, 0);
+        return ans;
     }
 };
 
@@ -136,6 +172,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-
+    vector<vector<int>> a = {{17, 17, 14, 14}, {17, 17, 17, 17}, {17, 17, 13, 17}, {14, 18, 14, 18}};
+    solution.maxScore(a);
     return 0;
 }
