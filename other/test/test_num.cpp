@@ -121,32 +121,35 @@ public:
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int takeCharacters(string s, int k)
+    int minSubarray(vector<int> &nums)
     {
-        unordered_map<char, int> win_max, win;
-        for (auto &ch : s)
+        int n = nums.size();
+        for (int i = 0; i < n; ++i)
         {
-            win_max[ch]++;
-        }
-        for (auto &[_, v] : win_max)
-        {
-            if (v < k)
-                return -1;
-            v -= k;
-        }
-        int n = s.length();
-        int max_len = 0;
-        for (int l = 0, r = 0; r < n; ++r)
-        {
-            win[s[r]]++;
-            while (l <= r && win[s[r]] > win_max[s[r]])
+            while (nums[nums[i] - 1] != nums[i])
             {
-                win[s[l]]--;
-                ++l;
+                swap(nums[nums[i] - 1], nums[i]);
             }
-            max_len = max(max_len, r - l + 1);
         }
-        return n - max_len;
+        for (int i = 0; i < n; ++i)
+        {
+            if (nums[nums[i] - 1] > 0)
+            {
+                nums[nums[i] - 1] = -1;
+            }
+            else
+            {
+                nums[nums[i] - 1]--;
+            }
+        }
+        for (int i = 0; i < n; ++i)
+        {
+            if (nums[i] < 0)
+            {
+                cout << (i + 1) << ", " << -nums[i] << endl;
+            }
+        }
+        return 0;
     }
 };
 
@@ -160,6 +163,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    cout << solution.takeCharacters("aabaaaacaabc", 2) << endl;
+    vector<int> a = {1, 2, 2, 4};
+    solution.minSubarray(a);
     return 0;
 }

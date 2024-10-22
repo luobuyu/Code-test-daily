@@ -121,32 +121,33 @@ public:
     const static long long mod = 1e9 + 7;
     const long long INF_LL = 0x3f3f3f3f3f3f3f3f;
     const int INF = 0x3f3f3f3f;
-    int takeCharacters(string s, int k)
+    int find(vector<int> &arr)
     {
-        unordered_map<char, int> win_max, win;
-        for (auto &ch : s)
+        int n = arr.size();
+        vector<int> dp(n, 1);
+        int ans = 1;
+        for (int i = 1; i < n; ++i)
         {
-            win_max[ch]++;
-        }
-        for (auto &[_, v] : win_max)
-        {
-            if (v < k)
-                return -1;
-            v -= k;
-        }
-        int n = s.length();
-        int max_len = 0;
-        for (int l = 0, r = 0; r < n; ++r)
-        {
-            win[s[r]]++;
-            while (l <= r && win[s[r]] > win_max[s[r]])
+            if (arr[i] == arr[i - 1])
             {
-                win[s[l]]--;
-                ++l;
+                dp[i] += (dp[i - 1] - 1);
             }
-            max_len = max(max_len, r - l + 1);
+            else
+            {
+                for (int j = 0; j < i; ++j)
+                {
+                    if (arr[j] < arr[i])
+                    {
+                        dp[i] += dp[j];
+                    }
+                }
+            }
+
+            ans += dp[i];
         }
-        return n - max_len;
+        int num = unordered_set<int>(arr.begin(), arr.end()).size();
+        ans -= num; // 减去只有一个元素的。
+        return ans;
     }
 };
 
@@ -160,6 +161,7 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(0);
     Solution solution;
-    cout << solution.takeCharacters("aabaaaacaabc", 2) << endl;
+    vector<int> a = {3, 3, 4, 2, 2, 4, 4, 5, 5, 7, 7, 0, 0, 1, 1};
+    cout << solution.find(a) << endl;
     return 0;
 }
