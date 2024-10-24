@@ -25,7 +25,7 @@ public:
         }
     };
 
-    const ll INT_LL = 0x3f3f3f3f3f3f3f3f;
+    const static ll INT_LL = 0x3f3f3f3f3f3f3f3f;
     int n, m;
     int dx[8] = {-1, -1, -1, 0, 1, 1, 1, 0};
     int dy[8] = {-1, 0, 1, 1, 1, 0, -1, -1};
